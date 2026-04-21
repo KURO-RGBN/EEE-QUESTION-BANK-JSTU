@@ -64,32 +64,7 @@
     {::-webkit-scrollbar { width: 0px; }   
 
 
-/* --- REPLACE THE PREVIOUS BLOCK WITH THIS --- */
 
-/* 1. Force the scroll container to show the glow area */
-div.scroll-container {
-    padding-top: 15px !important;
-    padding-bottom: 15px !important;
-    margin-top: -5px !important;
-}
-
-/* 2. Target the button with high specificity to force the glow */
-div.scroll-container button.session-btn:active,
-div.scroll-container .session-btn:active {
-    background-color: #dc2626 !important; /* The Icon Red */
-    color: #ffffff !important;
-    border-color: #dc2626 !important;
-    box-shadow: 0 0 25px 8px rgba(220, 38, 38, 0.8) !important;
-    transform: scale(0.85) !important; /* More dramatic press */
-    z-index: 999 !important;
-    opacity: 1 !important;
-}
-
-/* 3. Ensure the text inside also forces a color change */
-div.scroll-container button.session-btn:active span {
-    color: #ffffff !important;
-    opacity: 1 !important;
-}
 
         
 </style>
