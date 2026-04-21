@@ -20,8 +20,31 @@
             overscroll-behavior-y: contain; 
             -webkit-overflow-scrolling: touch;
             user-select: none;
+            color: #e5e5e5;
         }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .glass-card { background: rgba(15, 15,15, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(220,38,38,0.1); }
+        
+.session-btn:active {
+        background-color: #dc2626 !important;
+        color: white !important;
+        box-shadow: 0 0 20px #dc2626;
+        transform: scale(0.95);
+    }
+    
+    /* For PC Hover */
+    @media (hover: hover) {
+        .session-btn:hover {
+            border-color: #dc2626;
+            color: #dc2626;
+            box-shadow: 0 0 10px rgba(220, 38, 38, 0.2);
+        }
+    }
+
+    ::-webkit-scrollbar { width: 0px; }
+</style>
+
+
+        
         /* Hide scrollbar but allow scrolling */
         ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
