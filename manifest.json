@@ -1,0 +1,18 @@
+{
+  "name": "EEE Question Bank",
+  "short_name": "EEE Archive",
+  "description": "A professional archive for EEE students to access question papers.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1e1b4b",
+  "theme_color": "#1e1b4b",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
