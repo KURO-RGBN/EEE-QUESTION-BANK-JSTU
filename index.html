@@ -24,22 +24,38 @@
         }
         .glass-card { background: rgba(255, 255,255, 0.95); backdrop-filter: blur(10px); }
         
-.session-btn:active {
-        background-color: #dc2626 !important;
-        color: white !important;
-        box-shadow: 0 0 20px #dc2626;
-        transform: scale(0.95);
-    }
-    
-    /* For PC Hover */
-    @media (hover: hover) {
-        .session-btn:hover {
-            border-color: #dc2626;
-            color: #dc2626;
-            box-shadow: 0 0 10px rgba(220, 38, 38, 0.2);
-        }
-    }
+/* Base style for all session buttons */
+.session-btn {
+    background: rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #4b5563; /* Darker gray for better visibility */
+    transition: all 0.2s ease;
+}
 
+/* Style for buttons that have a paper (Available) */
+.btn-available {
+    background: rgba(220, 38, 38, 0.05) !important;
+    border: 1px solid rgba(220, 38, 38, 0.3) !important;
+    color: #dc2626 !important; /* Bold Red text */
+    font-weight: 700 !important;
+}
+
+/* THE "LIT UP" EFFECT: Triggered when clicked/pressed */
+.session-btn:active {
+    background: #dc2626 !important; /* Solid Red */
+    color: white !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.7); /* Red Glow */
+    transform: scale(0.92); /* Physical press feel */
+}
+
+/* Desktop Hover Glow */
+@media (hover: hover) {
+    .session-btn:hover {
+        border-color: #dc2626;
+        background: rgba(220, 38, 38, 0.02);
+    }
+}
     {::-webkit-scrollbar { width: 0px; }
 </style>
 
