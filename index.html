@@ -137,37 +137,37 @@
         }
 
         function renderCourses(data) {
-            const container = document.getElementById('courseContainer');
-            if(data.length === 0) {
-                container.innerHTML = `<div class="text-center py-10 text-slate-400">No courses found matching your search.</div>`;
-                return;
-            }
-            container.innerHTML = data.map(course => `
-                <div class="glass-card p-6 rounded-3xl shadow-sm border border-white hover:shadow-md transition">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex-1">
-                            <span class="text-[10px] font-black text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded uppercase mb-1 inline-block border border-indigo-100">${course.code}</span>
-                            <h3 class="text-lg font-bold text-slate-800 leading-tight">${course.title}</h3>
-                            <p class="text-xs text-slate-400 mt-1">${course.semester}</p>
-                        </div>
-                        <div class="flex flex-wrap gap-2">
-                            ${batches.map(batch => {
-                                const link = course.links[batch];
-                                const isMissing = !link || link === "missing";
-                                return `
-                                    <button onclick="${isMissing ? 'openUpload()' : `viewPaper('${link}', '${course.title} - ${batch}')`}" 
-                                            class="flex-1 min-w-[70px] text-center p-2 rounded-2xl border transition active:scale-90 
-                                            ${isMissing ? 'bg-white text-slate-300 border-slate-100 border-dashed' : 'bg-indigo-50 text-indigo-700 border-indigo-200 font-bold shadow-sm'}">
-                                        <div class="text-[10px] opacity-70">${batch}</div>
-                                        <div class="text-[9px] uppercase tracking-tighter">${isMissing ? 'Missing' : 'Open'}</div>
-                                    </button>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
+    const container = document.getElementById('courseContainer');
+    if(data.length === 0) {
+        container.innerHTML = `<div class="text-center py-10 text-slate-400">No courses found.</div>`;
+        return;
+    }
+    container.innerHTML = data.map(course => `
+        <div class="glass-card p-6 rounded-3xl shadow-sm border border-white hover:shadow-md transition mb-4">
+            <div class="flex flex-col gap-4">
+                <div>
+                    <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
+                    <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
+                    <p class="text-xs text-slate-400">${course.semester}</p>
                 </div>
-            `).join('');
-        }
+                
+                <div class="grid grid-cols-3 gap-2">
+                    ${batches.map(batch => {
+                        const link = course.links[batch];
+                        const isMissing = !link || link === "missing";
+                        return `
+                            <button onclick="${isMissing ? 'openUpload()' : `viewPaper('${link}', '${course.title} - ${batch}')`}" 
+                                    class="session-btn p-2 rounded-xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                                <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
+                                <span class="text-[8px] opacity-80">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                            </button>
+                        `;
+                    }).join('')}
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
 
         function filterContent() {
             const query = document.getElementById('mainSearch').value.toLowerCase();
