@@ -61,7 +61,34 @@
         background: rgba(220, 38, 38, 0.02);
     }
 }
-    {::-webkit-scrollbar { width: 0px; }
+    {::-webkit-scrollbar { width: 0px; }   
+
+/* --- PASTE THIS AT THE BOTTOM OF YOUR STYLE SECTION --- */
+
+/* 1. Ensure the container doesn't cut off the glow */
+.scroll-container {
+    padding: 12px 5px !important; 
+}
+
+/* 2. Force the Red "Lit Up" effect on press */
+.session-btn:active {
+    background: #dc2626 !important; /* The icon red */
+    color: white !important;
+    border-color: #dc2626 !important;
+    box-shadow: 0 0 20px 5px rgba(220, 38, 38, 0.6) !important;
+    transform: scale(0.9) !important;
+    z-index: 50 !important;
+    transition: 0s; /* Instant light-up */
+}
+
+/* 3. Make sure text inside turns white instantly when pressed */
+.session-btn:active span {
+    color: white !important;
+    opacity: 1 !important;
+}
+
+
+        
 </style>
 
 
