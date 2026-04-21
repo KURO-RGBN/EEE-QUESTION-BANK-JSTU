@@ -114,23 +114,28 @@
         <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
     </main>
 
-    <div id="viewerModal" class="fixed inset-0 bg-slate-900 z-[100] hidden flex flex-col animate-fade-in">
-        <div class="p-4 bg-white flex justify-between items-center shadow-md">
-            <h2 id="viewingTitle" class="font-bold truncate pr-4 text-slate-800"></h2>
-            <button onclick="closeViewer()" class="text-red-500 font-bold px-3 py-1 bg-red-50 rounded-lg">CLOSE</button>
+   <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
+    <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30">
+        <div class="flex flex-col">
+            <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>
+            <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>
         </div>
-        <iframe id="pdfIframe" class="w-full flex-grow border-none bg-white"></iframe>
+        <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl shadow-lg active:scale-95 transition-transform">CLOSE</button>
     </div>
-
-    <div id="uploadModal" class="fixed inset-0 bg-white z-[100] hidden overflow-y-auto">
-        <div class="max-w-xl mx-auto p-8">
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-indigo-900">Contribute</h2>
-                <button onclick="closeUpload()" class="text-3xl">&times;</button>
-            </div>
-            <iframe src="YOUR_GOOGLE_FORM_LINK" width="100%" height="700" frameborder="0">Loading…</iframe>
+    
+    <div class="flex-grow overflow-auto flex items-start justify-center bg-black relative">
+        <img id="paperImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
+        
+        <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4">
+            <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white border border-white/10 active:bg-red-600">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white border border-white/10 active:bg-red-600">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </div>
+</div>
 
     <script>
         let courseData = [];
@@ -184,18 +189,58 @@
             renderCourses(filtered);
         }
 
-        function viewPaper(url, title) {
-            document.getElementById('viewingTitle').innerText = title;
-            document.getElementById('pdfIframe').src = url;
-            document.getElementById('viewerModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
+        let currentPages = []; 
+let currentPageIndex = 0;
 
-        function closeViewer() {
-            document.getElementById('viewerModal').classList.add('hidden');
-            document.getElementById('pdfIframe').src = "";
-            document.body.style.overflow = 'auto';
-        }
+function viewPaper(links, title) {
+    // 1. Detect if it's a single string or an array from your JSON
+    currentPages = Array.isArray(links) ? links : [links];
+    currentPageIndex = 0;
+    
+    document.getElementById('viewingTitle').innerText = title;
+    
+    // 2. Hide navigation buttons if there is only 1 page
+    const nav = document.getElementById('navControls');
+    nav.style.display = currentPages.length > 1 ? 'flex' : 'none';
+    
+    updateViewer();
+
+    // 3. Open Modal
+    document.getElementById('viewerModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden'; // Stop scrolling behind modal
+}
+
+function updateViewer() {
+    const img = document.getElementById('paperImage');
+    // Set the source to the current page in the array
+    img.src = currentPages[currentPageIndex];
+    
+    // Update the counter text
+    document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
+    
+    // Scroll image back to top for new page
+    document.querySelector('#viewerModal .flex-grow').scrollTop = 0;
+}
+
+function nextPage() {
+    if (currentPageIndex < currentPages.length - 1) {
+        currentPageIndex++;
+        updateViewer();
+    }
+}
+
+function prevPage() {
+    if (currentPageIndex > 0) {
+        currentPageIndex--;
+        updateViewer();
+    }
+}
+
+function closeViewer() {
+    document.getElementById('viewerModal').classList.add('hidden');
+    document.getElementById('paperImage').src = ""; // Clear to save memory
+    document.body.style.overflow = 'auto';
+}
 
         function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
         function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
