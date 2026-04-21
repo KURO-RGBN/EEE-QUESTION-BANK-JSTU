@@ -24,31 +24,36 @@
         }
         .glass-card { background: rgba(255, 255,255, 0.95); backdrop-filter: blur(10px); }
         
-/* Base style for all session buttons */
+/* Container for buttons - enables swiping */
+.scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 8px; /* Space for a clean look */
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Hide the ugly scrollbar while keeping functionality */
+.scroll-container::-webkit-scrollbar {
+    display: none;
+}
+
+/* Each button becomes a scroll item */
 .session-btn {
+    flex: 0 0 85px; /* Fixed width so they stay in a row */
+    scroll-snap-align: start;
     background: rgba(0, 0, 0, 0.05);
     border: 1px solid rgba(0, 0, 0, 0.1);
-    color: #4b5563; /* Darker gray for better visibility */
+    color: #4b5563;
     transition: all 0.2s ease;
 }
 
-/* Style for buttons that have a paper (Available) */
 .btn-available {
     background: rgba(220, 38, 38, 0.05) !important;
     border: 1px solid rgba(220, 38, 38, 0.3) !important;
-    color: #dc2626 !important; /* Bold Red text */
-    font-weight: 700 !important;
+    color: #dc2626 !important;
 }
-
-/* THE "LIT UP" EFFECT: Triggered when clicked/pressed */
-.session-btn:active {
-    background: #dc2626 !important; /* Solid Red */
-    color: white !important;
-    border-color: #dc2626 !important;
-    box-shadow: 0 0 15px rgba(220, 38, 38, 0.7); /* Red Glow */
-    transform: scale(0.92); /* Physical press feel */
-}
-
 /* Desktop Hover Glow */
 @media (hover: hover) {
     .session-btn:hover {
@@ -136,39 +141,34 @@
             } catch (err) { console.error("Data load failed"); }
         }
 
-        function renderCourses(data) {
+       function renderCourses(data) {
     const container = document.getElementById('courseContainer');
-    if(data.length === 0) {
-        container.innerHTML = `<div class="text-center py-10 text-slate-400">No courses found.</div>`;
-        return;
-    }
     container.innerHTML = data.map(course => `
-        <div class="glass-card p-6 rounded-3xl shadow-sm border border-white hover:shadow-md transition mb-4">
-            <div class="flex flex-col gap-4">
+        <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
+            <div class="flex flex-col gap-3">
                 <div>
                     <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
                     <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
-                    <p class="text-xs text-slate-400">${course.semester}</p>
                 </div>
                 
-                <div class="grid grid-cols-3 gap-2">
+                <div class="scroll-container">
                     ${batches.map(batch => {
                         const link = course.links[batch];
                         const isMissing = !link || link === "missing";
                         return `
                             <button onclick="${isMissing ? 'openUpload()' : `viewPaper('${link}', '${course.title} - ${batch}')`}" 
-                                    class="session-btn p-2 rounded-xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                                    class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
                                 <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
-                                <span class="text-[8px] opacity-80">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                                <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
                             </button>
                         `;
                     }).join('')}
+                    <div class="flex-none w-4"></div>
                 </div>
             </div>
         </div>
     `).join('');
 }
-
         function filterContent() {
             const query = document.getElementById('mainSearch').value.toLowerCase();
             const sem = document.getElementById('semesterFilter').value;
