@@ -2,24 +2,39 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>EEE Question Bank Portal</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#1e1b4b">
+    <link rel="apple-touch-icon" href="icon.png">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body { 
+            overscroll-behavior-y: contain; 
+            -webkit-overflow-scrolling: touch;
+            user-select: none;
+        }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
-        .pdf-container { height: calc(100vh - 64px); }
+        /* Hide scrollbar but allow scrolling */
+        ::-webkit-scrollbar { width: 0px; background: transparent; }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen text-slate-800">
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-10">
 
-    <nav class="bg-indigo-900 text-white shadow-xl sticky top-0 z-50 p-4">
+    <nav class="bg-indigo-900 text-white shadow-xl sticky top-0 z-50 p-4 pt-8">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-microchip text-yellow-400 text-2xl"></i>
                 <h1 class="font-bold text-xl tracking-tight">EEE ARCHIVE</h1>
             </div>
-            <button onclick="openUpload()" class="bg-indigo-500 hover:bg-indigo-400 px-4 py-2 rounded-full text-sm font-semibold transition">
+            <button onclick="openUpload()" class="bg-indigo-500 hover:bg-indigo-400 px-4 py-2 rounded-full text-sm font-semibold transition shadow-lg active:scale-95">
                 <i class="fa-solid fa-plus mr-1"></i> Add Paper
             </button>
         </div>
@@ -30,10 +45,10 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative">
                     <i class="fa-solid fa-search absolute left-4 top-4 text-slate-400"></i>
-                    <input type="text" id="mainSearch" placeholder="Search Title or Course Code..." 
+                    <input type="text" id="mainSearch" placeholder="Search Title or Code..." 
                     class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none">
                 </div>
-                <select id="semesterFilter" class="bg-slate-100 py-3 px-4 rounded-2xl border-none outline-none focus:ring-2 focus:ring-indigo-500">
+                <select id="semesterFilter" class="bg-slate-100 py-3 px-4 rounded-2xl border-none outline-none focus:ring-2 focus:ring-indigo-500 appearance-none">
                     <option value="all">All Semesters</option>
                     <option value="1st Year 1st Semester">1st Year 1st Sem</option>
                     <option value="1st Year 2nd Semester">1st Year 2nd Sem</option>
@@ -47,26 +62,24 @@
             </div>
         </div>
 
-        <div id="courseContainer" class="grid grid-cols-1 gap-6">
-            </div>
+        <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
     </main>
 
-    <div id="viewerModal" class="fixed inset-0 bg-slate-900 z-[100] hidden flex flex-col">
+    <div id="viewerModal" class="fixed inset-0 bg-slate-900 z-[100] hidden flex flex-col animate-fade-in">
         <div class="p-4 bg-white flex justify-between items-center shadow-md">
-            <h2 id="viewingTitle" class="font-bold truncate pr-4"></h2>
-            <button onclick="closeViewer()" class="text-slate-500 hover:text-red-500 text-2xl font-bold">&times; Close</button>
+            <h2 id="viewingTitle" class="font-bold truncate pr-4 text-slate-800"></h2>
+            <button onclick="closeViewer()" class="text-red-500 font-bold px-3 py-1 bg-red-50 rounded-lg">CLOSE</button>
         </div>
-        <iframe id="pdfIframe" class="w-full flex-grow border-none"></iframe>
+        <iframe id="pdfIframe" class="w-full flex-grow border-none bg-white"></iframe>
     </div>
 
     <div id="uploadModal" class="fixed inset-0 bg-white z-[100] hidden overflow-y-auto">
         <div class="max-w-xl mx-auto p-8">
             <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-indigo-900">Upload Missing Paper</h2>
+                <h2 class="text-2xl font-bold text-indigo-900">Contribute</h2>
                 <button onclick="closeUpload()" class="text-3xl">&times;</button>
             </div>
-            <p class="mb-6 text-slate-500">Please mention the Course Code and Batch in your upload.</p>
-            <iframe src="YOUR_GOOGLE_FORM_LINK" width="100%" height="600" frameborder="0">Loading…</iframe>
+            <iframe src="YOUR_GOOGLE_FORM_LINK" width="100%" height="700" frameborder="0">Loading…</iframe>
         </div>
     </div>
 
@@ -75,40 +88,41 @@
         const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
 
         async function init() {
-            // Load your data.json
-            const res = await fetch('data.json');
-            courseData = await res.json();
-            renderCourses(courseData);
-
-            document.getElementById('mainSearch').addEventListener('input', filterContent);
-            document.getElementById('semesterFilter').addEventListener('change', filterContent);
+            try {
+                const res = await fetch('data.json');
+                courseData = await res.json();
+                renderCourses(courseData);
+                document.getElementById('mainSearch').addEventListener('input', filterContent);
+                document.getElementById('semesterFilter').addEventListener('change', filterContent);
+            } catch (err) { console.error("Data load failed"); }
         }
 
         function renderCourses(data) {
             const container = document.getElementById('courseContainer');
+            if(data.length === 0) {
+                container.innerHTML = `<div class="text-center py-10 text-slate-400">No courses found matching your search.</div>`;
+                return;
+            }
             container.innerHTML = data.map(course => `
                 <div class="glass-card p-6 rounded-3xl shadow-sm border border-white hover:shadow-md transition">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div>
-                            <span class="text-xs font-bold text-indigo-500 bg-indigo-50 px-3 py-1 rounded-full uppercase mb-2 inline-block">
-                                ${course.code}
-                            </span>
-                            <h3 class="text-lg font-bold text-slate-800">${course.title}</h3>
-                            <p class="text-sm text-slate-400 italic">${course.semester}</p>
+                        <div class="flex-1">
+                            <span class="text-[10px] font-black text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded uppercase mb-1 inline-block border border-indigo-100">${course.code}</span>
+                            <h3 class="text-lg font-bold text-slate-800 leading-tight">${course.title}</h3>
+                            <p class="text-xs text-slate-400 mt-1">${course.semester}</p>
                         </div>
-                        
                         <div class="flex flex-wrap gap-2">
                             ${batches.map(batch => {
                                 const link = course.links[batch];
-                                if (link === "missing") {
-                                    return `<button onclick="openUpload()" class="text-[10px] bg-slate-100 text-slate-400 px-3 py-2 rounded-xl hover:bg-yellow-50 hover:text-yellow-600 transition border border-dashed border-slate-300">
-                                                ${batch}<br><span class="font-bold">Missing</span>
-                                            </button>`;
-                                } else {
-                                    return `<button onclick="viewPaper('${link}', '${course.title} - ${batch}')" class="text-[10px] bg-indigo-50 text-indigo-700 px-3 py-2 rounded-xl hover:bg-indigo-600 hover:text-white transition border border-indigo-100">
-                                                ${batch}<br><span class="font-bold underline">Available</span>
-                                            </button>`;
-                                }
+                                const isMissing = !link || link === "missing";
+                                return `
+                                    <button onclick="${isMissing ? 'openUpload()' : `viewPaper('${link}', '${course.title} - ${batch}')`}" 
+                                            class="flex-1 min-w-[70px] text-center p-2 rounded-2xl border transition active:scale-90 
+                                            ${isMissing ? 'bg-white text-slate-300 border-slate-100 border-dashed' : 'bg-indigo-50 text-indigo-700 border-indigo-200 font-bold shadow-sm'}">
+                                        <div class="text-[10px] opacity-70">${batch}</div>
+                                        <div class="text-[9px] uppercase tracking-tighter">${isMissing ? 'Missing' : 'Open'}</div>
+                                    </button>
+                                `;
                             }).join('')}
                         </div>
                     </div>
@@ -119,12 +133,10 @@
         function filterContent() {
             const query = document.getElementById('mainSearch').value.toLowerCase();
             const sem = document.getElementById('semesterFilter').value;
-            
-            const filtered = courseData.filter(c => {
-                const matchesSearch = c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query);
-                const matchesSem = sem === "all" || c.semester === sem;
-                return matchesSearch && matchesSem;
-            });
+            const filtered = courseData.filter(c => 
+                (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
+                (sem === "all" || c.semester === sem)
+            );
             renderCourses(filtered);
         }
 
