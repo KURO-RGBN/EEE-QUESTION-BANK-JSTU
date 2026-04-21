@@ -193,23 +193,23 @@
 let currentPageIndex = 0;
 
 function viewPaper(links, title) {
-    // 1. Detect if it's a single string or an array from your JSON
+    // This line is the magic - it converts your JSON list into a real Javascript array
     currentPages = Array.isArray(links) ? links : [links];
     currentPageIndex = 0;
     
     document.getElementById('viewingTitle').innerText = title;
     
-    // 2. Hide navigation buttons if there is only 1 page
+    // Show navigation arrows only if there's more than one page
     const nav = document.getElementById('navControls');
-    nav.style.display = currentPages.length > 1 ? 'flex' : 'none';
+    if (nav) {
+        nav.style.display = currentPages.length > 1 ? 'flex' : 'none';
+    }
     
     updateViewer();
 
-    // 3. Open Modal
     document.getElementById('viewerModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden'; // Stop scrolling behind modal
+    document.body.style.overflow = 'hidden';
 }
-
 function updateViewer() {
     const img = document.getElementById('paperImage');
     // Set the source to the current page in the array
