@@ -257,8 +257,11 @@ function openPaperByCode(code, batch) {
         );
         renderCourses(filtered);
     }
-
-    function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
+function openUpload() { 
+    // Replace the URL below with your actual Google Form link
+    window.open("https://forms.gle/tMdJEMrjGWHMmQuP8", "_blank"); 
+}
+    
     function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
 
     init();
