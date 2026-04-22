@@ -163,28 +163,27 @@
         } catch (err) { console.error("Data load failed"); }
     }
 
-    function renderCourses(data) {
+ function renderCourses(data) {
     const container = document.getElementById('courseContainer');
-    container.innerHTML = data.map((course, cIndex) => `
+    container.innerHTML = data.map((course, courseIndex) => `
         <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
             <div class="flex flex-col gap-3">
                 <div>
                     <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
                     <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
                 </div>
+                
                 <div class="scroll-container">
                     ${batches.map(batch => {
                         const link = course.links[batch];
-                        
-                        // FIX: Improved check to see if the link is valid
+                        // Check if missing: works for strings "missing" or empty arrays []
                         const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
                         
-                        const clickHandler = isMissing ? 
-                            `openUpload()` : 
-                            `preparePaper(${cIndex}, '${batch}')`;
+                        // FIX: We pass the INDEX (courseIndex) and the BATCH name
+                        const clickAction = isMissing ? 'openUpload()' : `openPaperByIndex(${courseIndex}, '${batch}')`;
                         
                         return `
-                            <button onclick="${clickHandler}" 
+                            <button onclick="${clickAction}" 
                                     class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
                                 <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
                                 <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
@@ -195,6 +194,13 @@
             </div>
         </div>
     `).join('');
+}
+
+// Add this new helper function below renderCourses
+function openPaperByIndex(index, batch) {
+    const course = courseData[index];
+    const links = course.links[batch];
+    viewPaper(links, `${course.title} - ${batch}`);
 }
 
     // Helper to find the correct links from our data object
