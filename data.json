@@ -3,29 +3,39 @@
     "semester": "1st Year 1st Semester",
     "title": "Electrical Circuit I",
     "code": "EEE 1111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing",
+      "24-25":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p3.jpeg"] }
   },
   {
     "semester": "1st Year 1st Semester",
     "title": "Technical and Communicative English",
     "code": "HUM 1111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing",
+      "21-22": "missing",
+      "22-23": "missing", 
+      "23-24": "missing",
+      "24-25":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/hum-1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/hum1111p2.jpeg"] }
   },
   {
     "semester": "1st Year 1st Semester",
-    "title": "Calculus and Coordinate Geometry",
+    "title": "Differential and Integral Calculus",
     "code": "MATH 1111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", 
+      "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p2.jpeg"] }
   },
   {
     "semester": "1st Year 1st Semester",
     "title": "Physics",
     "code": "PHY 1111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", 
+      "21-22": "missing",
+      "22-23": "missing", 
+      "23-24": "missing",
+      "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/phy1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/phy1111p2.jpeg"] }
   },
   {
     "semester": "1st Year 1st Semester",
-    "title": "Computer Fundamental and Programming",
+    "title": "Computer Programming",
     "code": "CSE 1111",
     "links": { "20-21": "missing",
       "21-22": "missing", "22-23": "missing", "23-24": "missing",
