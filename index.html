@@ -61,10 +61,10 @@
         background: rgba(220, 38, 38, 0.02);
     }
 }
-    {::-webkit-scrollbar { width: 0px; }   
+      
 
 
-
+::-webkit-scrollbar { width: 0px; height: 0px; }
 
         
 </style>
@@ -165,7 +165,7 @@
 
  function renderCourses(data) {
     const container = document.getElementById('courseContainer');
-    container.innerHTML = data.map((course, courseIndex) => `
+    container.innerHTML = data.map((course) => `
         <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
             <div class="flex flex-col gap-3">
                 <div>
@@ -176,11 +176,10 @@
                 <div class="scroll-container">
                     ${batches.map(batch => {
                         const link = course.links[batch];
-                        // Check if missing: works for strings "missing" or empty arrays []
                         const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
                         
-                        // FIX: We pass the INDEX (courseIndex) and the BATCH name
-                        const clickAction = isMissing ? 'openUpload()' : `openPaperByIndex(${courseIndex}, '${batch}')`;
+                        // FIX: Pass the 'course.code' instead of 'courseIndex'
+                        const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
                         
                         return `
                             <button onclick="${clickAction}" 
@@ -196,11 +195,13 @@
     `).join('');
 }
 
-// Add this new helper function below renderCourses
-function openPaperByIndex(index, batch) {
-    const course = courseData[index];
-    const links = course.links[batch];
-    viewPaper(links, `${course.title} - ${batch}`);
+// FIX: New helper that finds the course by its unique code
+function openPaperByCode(code, batch) {
+    const course = courseData.find(c => c.code === code);
+    if (course) {
+        const links = course.links[batch];
+        viewPaper(links, `${course.title} - ${batch}`);
+    }
 }
 
     // Helper to find the correct links from our data object
