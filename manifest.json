@@ -1,6 +1,6 @@
 {
   "name": "EEE Question Bank",
-  "short_name": "EEE Archive",
+  "short_name": "EEE Vault",
   "description": "A professional archive for EEE students to access question papers.",
   "start_url": "index.html",
   "display": "standalone",
