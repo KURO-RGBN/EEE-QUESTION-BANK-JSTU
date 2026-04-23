@@ -23,7 +23,7 @@
             color: #e5e5e5;
             font-family: sans-serif;
         }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: reletive; z-index: 1; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: reletive; z-index: 1; transform: translatez(0);  }
         
         .scroll-container {
             display: flex;
@@ -73,6 +73,10 @@
 
         /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
         .modal-overlay {
+            z-index:9999 !impoertant;
+            position: fixed;
+            inset: 0;
+            transform:translateZ(100px);
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
@@ -89,12 +93,14 @@
 
         .modal-content-slide { 
             position:reletive;
-            z-index:130;
+            z-index:10000!impoertant;
+            background: #ffffff;
             transform: translateY(100%);
             transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: transform;
             /* FIX: Prevents APK Swipe-to-Refresh */
-            overscroll-behavior-y: contain; 
+            overscroll-behavior:none !important; 
+            touch-action:none;
         }
 
         .modal-overlay.active-sheet .modal-content-slide {
@@ -102,7 +108,8 @@
         }
 
         #notesList {
-            overscroll-behavior-y: contain;
+            overscroll-behavior-y: contain !important; 
+            touch-action: pan-y;
             -webkit-overflow-scrolling: touch;
         }
 
@@ -264,7 +271,9 @@
         `).join('');
         
         modal.classList.remove('hidden');
-        
+        // DISABLE SWIPE TO REFRESH FOR APK
+    document.documentElement.style.overscrollBehaviorY = 'none';
+    document.body.style.overscrollBehaviorY = 'none';
         // Double RAF for 60FPS entry
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
@@ -278,6 +287,9 @@
     function closeNotes() {
         const modal = document.getElementById('notesModal');
         modal.classList.remove('active-sheet');
+        // RE-ENABLE SWIPE TO REFRESH
+    document.documentElement.style.overscrollBehaviorY = 'auto';
+    document.body.style.overscrollBehaviorY = 'auto';
         
         setTimeout(() => {
             if (!modal.classList.contains('active-sheet')) {
