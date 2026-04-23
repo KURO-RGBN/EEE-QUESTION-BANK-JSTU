@@ -23,7 +23,7 @@
             color: #e5e5e5;
             font-family: sans-serif;
         }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: reletive; z-index: 1; }
         
         .scroll-container {
             display: flex;
@@ -191,7 +191,7 @@
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
             <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>
             <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned Image files to the Google form to add a missing paper.</p>
-            <button onclick="window.open('https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform', '_blank')" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
+            <button onclick="window.open('https://forms.gle/vcrdmPxXQ3ZkXZjLA/viewform', '_blank')" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
             <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>
         </div>
     </div>
