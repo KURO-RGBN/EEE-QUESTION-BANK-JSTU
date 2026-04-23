@@ -70,20 +70,21 @@
             transition: 0.2s;
         }
         /* Smooth Pop Animation */
-.animate-pop {
-    animation: modalPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+/* Premium Slide-Up Animation */
+.modal-overlay {
+    transition: opacity 0.3s ease;
 }
 
-@keyframes modalPop {
-    0% {
-        transform: scale(0.9) translateY(20px);
-        opacity: 0;
-    }
-    100% {
-        transform: scale(1) translateY(0);
-        opacity: 1;
-    }
+.modal-content-slide {
+    transform: translateY(100%); /* Start off-screen */
+    transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1);
 }
+
+/* When the modal is active */
+#notesModal.flex .modal-content-slide {
+    transform: translateY(0); /* Slide into view */
+}
+
 
 /* Optional: Make the scroll inside the modal smoother */
 #notesList::-webkit-scrollbar {
@@ -133,8 +134,10 @@
         <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
     </main>
 
-<div id="notesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120] hidden flex items-end sm:items-center justify-center">
-    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl animate-pop">
+<div id="notesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120] hidden flex items-end justify-center modal-overlay">
+    <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">
+        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+        
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Lecture Notes</h3>
@@ -144,10 +147,11 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
-        <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-6">
+        <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8">
             </div>
     </div>
 </div>
+
 
 
     <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
@@ -232,26 +236,44 @@
     }
 
     function openNotes(code) {
-        const course = courseData.find(c => c.code === code);
-        const list = document.getElementById('notesList');
-        document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
-        
-        list.innerHTML = course.notes.map(note => `
-            <a href="${note.url}" download class="file-card">
-                <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
-                <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
-                <span class="text-[9px] text-slate-400 mt-1 uppercase">Download</span>
-            </a>
-        `).join('');
-        
-        document.getElementById('notesModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
+    const course = courseData.find(c => c.code === code);
+    const list = document.getElementById('notesList');
+    const modal = document.getElementById('notesModal');
+    
+    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+    
+    list.innerHTML = course.notes.map(note => `
+        <a href="${note.url}" download class="file-card">
+            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
+            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black">Download</span>
+        </a>
+    `).join('');
+    
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
 
-    function closeNotes() {
-        document.getElementById('notesModal').classList.add('hidden');
+    // Tiny delay to trigger the slide-up transition
+    setTimeout(() => {
+        modal.classList.add('active-sheet'); // You can use this for extra styling if needed
+    }, 10);
+}
+
+function closeNotes() {
+    const modal = document.getElementById('notesModal');
+    const content = modal.querySelector('.modal-content-slide');
+    
+    // Slide it back down first
+    content.style.transform = "translateY(100%)";
+    
+    // Wait for animation to finish then hide the whole overlay
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        content.style.transform = ""; // Reset for next time
         document.body.style.overflow = 'auto';
-    }
+    }, 400); 
+}
+
 
     function openPaperByCode(code, batch) {
         const course = courseData.find(c => c.code === code);
