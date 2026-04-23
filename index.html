@@ -69,6 +69,33 @@
             align-items: center;
             transition: 0.2s;
         }
+        /* Smooth Pop Animation */
+.animate-pop {
+    animation: modalPop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+    0% {
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Optional: Make the scroll inside the modal smoother */
+#notesList::-webkit-scrollbar {
+    width: 4px;
+}
+#notesList::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+}
+
+
+        
         .file-card:active { transform: scale(0.95); background: #f1f5f9; }
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
@@ -106,19 +133,22 @@
         <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
     </main>
 
-    <div id="notesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120] hidden flex items-end sm:items-center justify-center">
-        <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl animate-in slide-in-from-bottom duration-300">
-            <div class="flex justify-between items-center mb-6">
-                <div>
-                    <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Lecture Notes</h3>
-                    <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>
-                </div>
-                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+<div id="notesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120] hidden flex items-end sm:items-center justify-center">
+    <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl animate-pop">
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Lecture Notes</h3>
+                <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>
             </div>
-            <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-6">
-                </div>
+            <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
+        <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-6">
+            </div>
     </div>
+</div>
+
 
     <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
         <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30">
