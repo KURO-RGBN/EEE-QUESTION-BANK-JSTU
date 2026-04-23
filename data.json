@@ -3,246 +3,276 @@
     "semester": "1st Year 1st Semester",
     "title": "Electrical Circuit I",
     "code": "EEE 1111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing",
-      "24-25":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p3.jpeg"] }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p3.jpeg"] },
+    "notes": [
+      { "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }
+    ]
   },
   {
     "semester": "1st Year 1st Semester",
     "title": "Technical and Communicative English",
     "code": "HUM 1111",
-    "links": { "20-21": "missing",
-      "21-22": "missing",
-      "22-23": "missing", 
-      "23-24": "missing",
-      "24-25":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/hum-1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/hum1111p2.jpeg"] }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/hum-1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/hum1111p2.jpeg"] },
+    "notes": []
   },
   {
     "semester": "1st Year 1st Semester",
     "title": "Differential and Integral Calculus",
     "code": "MATH 1111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", 
-      "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p2.jpeg"] }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p2.jpeg"] },
+    "notes": []
   },
   {
     "semester": "1st Year 1st Semester",
     "title": "Physics",
     "code": "PHY 1111",
-    "links": { "20-21": "missing", 
-      "21-22": "missing",
-      "22-23": "missing", 
-      "23-24": "missing",
-      "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/phy1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/phy1111p2.jpeg"] }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/phy1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/phy1111p2.jpeg"] },
+    "notes": []
   },
   {
     "semester": "1st Year 1st Semester",
     "title": "Computer Programming",
     "code": "CSE 1111",
-    "links": { "20-21": "missing",
-      "21-22": "missing", "22-23": "missing", "23-24": "missing",
-      "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/cse1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/cse1111p2.jpeg"]  }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/cse1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/cse1111p2.jpeg"]  },
+    "notes": []
   },
   {
     "semester": "1st Year 2nd Semester",
     "title": "Electrical Circuit II",
     "code": "EEE 1211",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "1st Year 2nd Semester",
     "title": "Electronic Device and Circuit I",
     "code": "EEE 1221",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "1st Year 2nd Semester",
     "title": "Bangladesh Studies",
     "code": "HUM 1211",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "1st Year 2nd Semester",
     "title": "Linear Algebra and Vector Analysis",
     "code": "MATH 1211",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "1st Year 2nd Semester",
     "title": "Physical and Inorganic Chemistry",
     "code": "CHEM 1211",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 1st Semester",
     "title": "Electrical Engineering Materials",
     "code": "EEE 2111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 1st Semester",
     "title": "Electronic Device and Circuit II",
     "code": "EEE 2121",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 1st Semester",
     "title": "Basic Mechanical Engineering",
     "code": "ME 2111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 1st Semester",
     "title": "Statistics for Engineers",
     "code": "STAT 2111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 1st Semester",
     "title": "Accounting and Economics for Engineers",
     "code": "HUM 2111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 1st Semester",
     "title": "Legal Issues and Professional Ethics for Engineers",
     "code": "HUM 2121",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 2nd Semester",
     "title": "Electronic Device and Circuit III",
     "code": "EEE 2211",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 2nd Semester",
     "title": "Electrical Machine I",
     "code": "EEE 2221",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 2nd Semester",
     "title": "Digital Electronics",
     "code": "EEE 2231",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 2nd Semester",
     "title": "Computational Methods for Engineers",
     "code": "EEE 2241",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "2nd Year 2nd Semester",
     "title": "Fourier Analysis, Laplace Transform and Differential Equation",
     "code": "MATH 2211",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 1st Semester",
     "title": "Measurement & Instrumentation",
     "code": "EEE 3111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 1st Semester",
     "title": "Electrical Machine II",
     "code": "EEE 3121",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 1st Semester",
     "title": "Microprocessor and Microcontroller",
     "code": "EEE 3131",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 1st Semester",
     "title": "Power Electronics",
     "code": "EEE 3141",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 1st Semester",
     "title": "Signals and Linear Systems",
     "code": "EEE 3151",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 2nd Semester",
     "title": "Communication Engineering I",
     "code": "EEE 3211",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 2nd Semester",
     "title": "Power System I",
     "code": "EEE 3221",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 2nd Semester",
     "title": "Power Plant Engineering and Economy",
     "code": "EEE 3231",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 2nd Semester",
     "title": "Control Systems",
     "code": "EEE 3241",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "3rd Year 2nd Semester",
     "title": "Engineering Electromagnetics",
     "code": "EEE 3251",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "4th Year 1st Semester",
     "title": "Communication Engineering II",
     "code": "EEE 4111",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "4th Year 1st Semester",
     "title": "Power System II",
     "code": "EEE 4121",
-    "links": {"20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/POWERSYSTEM 2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/POWERSYSTEM2_02.jpg"] , "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": {"20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/POWERSYSTEM 2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/POWERSYSTEM2_02.jpg"] , "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "4th Year 1st Semester",
     "title": "Digital Signal Processing",
     "code": "EEE 4131",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "4th Year 1st Semester",
     "title": "Elective I",
     "code": "EEE 41**",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "4th Year 2nd Semester",
     "title": "Communication Engineering III",
     "code": "EEE 4211",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "4th Year 2nd Semester",
     "title": "Power System Protection and Switchgear",
     "code": "EEE 4221",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "4th Year 2nd Semester",
     "title": "VLSI Circuits and Design",
     "code": "EEE 4231",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   },
   {
     "semester": "4th Year 2nd Semester",
     "title": "Elective II",
     "code": "EEE 42**",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" }
+    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "notes": []
   }
 ]
+
