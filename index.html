@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,130 +25,127 @@
         }
         .glass-card { background: rgba(255, 255,255, 0.95); backdrop-filter: blur(10px); }
         
-/* Container for buttons - enables swiping */
-.scroll-container {
-    display: flex;
-    overflow-x: auto;
-    gap: 8px;
-    padding-bottom: 8px; /* Space for a clean look */
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-}
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding-bottom: 8px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
 
-/* Hide the ugly scrollbar while keeping functionality */
-.scroll-container::-webkit-scrollbar {
-    display: none;
-}
+        .scroll-container::-webkit-scrollbar { display: none; }
 
-/* Each button becomes a scroll item */
-.session-btn {
-    flex: 0 0 85px; /* Fixed width so they stay in a row */
-    scroll-snap-align: start;
-    background: rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.1);
-    color: #4b5563;
-    transition: all 0.2s ease;
-}
+        .session-btn {
+            flex: 0 0 85px;
+            scroll-snap-align: start;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #4b5563;
+            transition: all 0.2s ease;
+        }
 
-.btn-available {
-    background: rgba(220, 38, 38, 0.05) !important;
-    border: 1px solid rgba(220, 38, 38, 0.3) !important;
-    color: #dc2626 !important;
-}
-/* Desktop Hover Glow */
-@media (hover: hover) {
-    .session-btn:hover {
-        border-color: #dc2626;
-        background: rgba(220, 38, 38, 0.02);
-    }
-}
-      
+        .btn-available {
+            background: rgba(220, 38, 38, 0.05) !important;
+            border: 1px solid rgba(220, 38, 38, 0.3) !important;
+            color: #dc2626 !important;
+        }
 
+        .btn-notes {
+            background: rgba(255, 152, 0, 0.1) !important;
+            border: 1px solid rgba(255, 152, 0, 0.4) !important;
+            color: #ef6c00 !important;
+        }
 
-::-webkit-scrollbar { width: 0px; height: 0px; }
+        /* File Card Styling */
+        .file-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .file-card:active { transform: scale(0.95); background: #f1f5f9; }
 
-        
-</style>
-
-
-        
-       
-       
+        ::-webkit-scrollbar { width: 0px; height: 0px; }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen text-slate-800 pb-10">
 
     <nav class="bg-black text-white shadow-xl border-b border-red-900/30 sticky top-0 z-50 p-4 pt-8">
-    <div class="max-w-6xl mx-auto flex justify-between items-center">
-        <div class="flex items-center gap-2">
-            <i class="fa-solid fa-brain text-red-600 text-2xl"></i>
-            <h1 class="font-bold text-xl tracking-tight uppercase">EEE <span class="text-red-600">Vault</span></h1>
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-brain text-red-600 text-2xl"></i>
+                <h1 class="font-bold text-xl tracking-tight uppercase">EEE <span class="text-red-600">Vault</span></h1>
+            </div>
+            <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white transition shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">
+                <i class="fa-solid fa-plus mr-1"></i> Add Paper
+            </button>
         </div>
-       <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" 
-        class="bg-red-600 hover:bg-red-500 px-4 py-2 rounded-full text-sm font-semibold text-white transition shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">
-    <i class="fa-solid fa-plus mr-1"></i> Add Paper
-</button>
-    </div>
-</nav>
+    </nav>
 
     <main class="max-w-6xl mx-auto p-4 md:p-8">
         <div class="glass-card p-6 rounded-3xl shadow-sm mb-8 border border-white">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative">
                     <i class="fa-solid fa-search absolute left-4 top-4 text-slate-400"></i>
-                    <input type="text" id="mainSearch" placeholder="Search Title or Code..." 
-                    class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none">
+                    <input type="text" id="mainSearch" placeholder="Search Title or Code..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 outline-none">
                 </div>
-                <select id="semesterFilter" class="bg-slate-100 py-3 px-4 rounded-2xl border-none outline-none focus:ring-2 focus:ring-indigo-500 appearance-none">
+                <select id="semesterFilter" class="bg-slate-100 py-3 px-4 rounded-2xl border-none outline-none appearance-none">
                     <option value="all">All Semesters</option>
                     <option value="1st Year 1st Semester">1st Year 1st Sem</option>
                     <option value="1st Year 2nd Semester">1st Year 2nd Sem</option>
-                    <option value="2nd Year 1st Semester">2nd Year 1st Sem</option>
-                    <option value="2nd Year 2nd Semester">2nd Year 2nd Sem</option>
-                    <option value="3rd Year 1st Semester">3rd Year 1st Sem</option>
-                    <option value="3rd Year 2nd Semester">3rd Year 2nd Sem</option>
-                    <option value="4th Year 1st Semester">4th Year 1st Sem</option>
-                    <option value="4th Year 2nd Semester">4th Year 2nd Sem</option>
-                </select>
+                    </select>
             </div>
         </div>
 
         <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
     </main>
 
-   <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
-    <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30">
-        <div class="flex flex-col">
-            <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>
-            <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>
-        </div>
-        <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl shadow-lg active:scale-95 transition-transform">CLOSE</button>
-    </div>
-    
-    <div class="flex-grow overflow-auto flex items-start justify-center bg-black relative">
-        <img id="paperImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
-        
-        <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4">
-            <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white border border-white/10 active:bg-red-600">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white border border-white/10 active:bg-red-600">
-                <i class="fas fa-chevron-right"></i>
-            </button>
+    <div id="notesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120] hidden flex items-end sm:items-center justify-center">
+        <div class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 shadow-2xl animate-in slide-in-from-bottom duration-300">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Lecture Notes</h3>
+                    <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>
+                </div>
+                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-6">
+                </div>
         </div>
     </div>
-</div>
 
+    <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
+        <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30">
+            <div class="flex flex-col">
+                <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>
+                <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>
+            </div>
+            <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
+        </div>
+        <div class="flex-grow overflow-auto flex items-start justify-center bg-black relative">
+            <img id="paperImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
+            <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4">
+                <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-left"></i></button>
+                <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
 
-<div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">
+    <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
             <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>
             <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned Image files to the Google form to add a missing paper.</p>
-            <button onclick="closeUpload()" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl">GOT IT</button>
+            <button onclick="window.open('https://docs.google.com/forms/d/e/YOUR_FORM_ID/viewform', '_blank')" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
+            <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>
         </div>
     </div>
 
-    
 <script>
     let courseData = [];
     const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
@@ -164,52 +162,73 @@
         } catch (err) { console.error("Data load failed"); }
     }
 
- function renderCourses(data) {
-    const container = document.getElementById('courseContainer');
-    container.innerHTML = data.map((course) => `
-        <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
-            <div class="flex flex-col gap-3">
-                <div>
-                    <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
-                    <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
-                </div>
-                
-                <div class="scroll-container">
-                    ${batches.map(batch => {
-                        const link = course.links[batch];
-                        const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
+    function renderCourses(data) {
+        const container = document.getElementById('courseContainer');
+        container.innerHTML = data.map((course) => {
+            const hasNotes = course.notes && course.notes.length > 0;
+            
+            return `
+                <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
+                    <div class="flex flex-col gap-3">
+                        <div>
+                            <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
+                            <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
+                        </div>
                         
-                        // FIX: Pass the 'course.code' instead of 'courseIndex'
-                        const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
-                        
-                        return `
-                            <button onclick="${clickAction}" 
-                                    class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
-                                <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
-                                <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                        <div class="scroll-container">
+                            <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
+                                    class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
+                                <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
+                                <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
                             </button>
-                        `;
-                    }).join('')}
+
+                            ${batches.map(batch => {
+                                const link = course.links[batch];
+                                const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
+                                const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
+                                
+                                return `
+                                    <button onclick="${clickAction}" 
+                                            class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                                        <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
+                                        <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-    `).join('');
-}
-
-// FIX: New helper that finds the course by its unique code
-function openPaperByCode(code, batch) {
-    const course = courseData.find(c => c.code === code);
-    if (course) {
-        const links = course.links[batch];
-        viewPaper(links, `${course.title} - ${batch}`);
+            `}).join('');
     }
-}
 
-    // Helper to find the correct links from our data object
-    function preparePaper(courseIdx, batch) {
-        const course = courseData[courseIdx];
-        const links = course.links[batch];
-        viewPaper(links, `${course.title} - ${batch}`);
+    function openNotes(code) {
+        const course = courseData.find(c => c.code === code);
+        const list = document.getElementById('notesList');
+        document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+        
+        list.innerHTML = course.notes.map(note => `
+            <a href="${note.url}" download class="file-card">
+                <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+                <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
+                <span class="text-[9px] text-slate-400 mt-1 uppercase">Download</span>
+            </a>
+        `).join('');
+        
+        document.getElementById('notesModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeNotes() {
+        document.getElementById('notesModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    function openPaperByCode(code, batch) {
+        const course = courseData.find(c => c.code === code);
+        if (course) {
+            const links = course.links[batch];
+            viewPaper(links, `${course.title} - ${batch}`);
+        }
     }
 
     function viewPaper(links, title) {
@@ -229,19 +248,8 @@ function openPaperByCode(code, batch) {
         document.querySelector('#viewerModal .flex-grow').scrollTop = 0;
     }
 
-    function nextPage() {
-        if (currentPageIndex < currentPages.length - 1) {
-            currentPageIndex++;
-            updateViewer();
-        }
-    }
-
-    function prevPage() {
-        if (currentPageIndex > 0) {
-            currentPageIndex--;
-            updateViewer();
-        }
-    }
+    function nextPage() { if (currentPageIndex < currentPages.length - 1) { currentPageIndex++; updateViewer(); } }
+    function prevPage() { if (currentPageIndex > 0) { currentPageIndex--; updateViewer(); } }
 
     function closeViewer() {
         document.getElementById('viewerModal').classList.add('hidden');
@@ -259,15 +267,10 @@ function openPaperByCode(code, batch) {
         renderCourses(filtered);
     }
 
-    function openUpload() { 
-    document.getElementById('uploadModal').classList.remove('hidden'); 
-}
+    function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
     function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
 
     init();
 </script>
-
-
-    
 </body>
 </html>
