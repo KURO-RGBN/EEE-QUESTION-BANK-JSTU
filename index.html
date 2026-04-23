@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,8 +21,9 @@
             -webkit-overflow-scrolling: touch;
             user-select: none;
             color: #e5e5e5;
+            font-family: sans-serif;
         }
-        .glass-card { background: rgba(255, 255,255, 0.95); backdrop-filter: blur(10px); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
         
         .scroll-container {
             display: flex;
@@ -69,35 +69,43 @@
             align-items: center;
             transition: 0.2s;
         }
-        /* Smooth Pop Animation */
-/* Premium Slide-Up Animation */
-.modal-overlay {
-    transition: opacity 0.3s ease;
-}
-
-.modal-content-slide {
-    transform: translateY(100%); /* Start off-screen */
-    transition: transform 0.8s cubic-bezier(0.32, 0.72, 0, 1);
-}
-
-/* When the modal is active */
-#notesModal.flex .modal-content-slide {
-    transform: translateY(0); /* Slide into view */
-}
-
-
-/* Optional: Make the scroll inside the modal smoother */
-#notesList::-webkit-scrollbar {
-    width: 4px;
-}
-#notesList::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
-    border-radius: 10px;
-}
-
-
-        
         .file-card:active { transform: scale(0.95); background: #f1f5f9; }
+
+        /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
+        .modal-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+        }
+
+        .modal-overlay.active-sheet {
+            opacity: 1;
+            pointer-events: auto;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .modal-content-slide {
+            transform: translateY(100%);
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+            /* FIX: Prevents APK Swipe-to-Refresh */
+            overscroll-behavior-y: contain; 
+        }
+
+        .modal-overlay.active-sheet .modal-content-slide {
+            transform: translateY(0%);
+        }
+
+        #notesList {
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        #notesList::-webkit-scrollbar { width: 4px; }
+        #notesList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
     </style>
@@ -127,32 +135,32 @@
                     <option value="all">All Semesters</option>
                     <option value="1st Year 1st Semester">1st Year 1st Sem</option>
                     <option value="1st Year 2nd Semester">1st Year 2nd Sem</option>
-                    </select>
+                </select>
             </div>
         </div>
 
         <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
     </main>
 
-<div id="notesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[120] hidden flex items-end justify-center modal-overlay">
-    <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">
-        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-4"></div>
+    <div id="notesModal" 
+         onclick="if(event.target === this) closeNotes()" 
+         class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">
         
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Lecture Notes</h3>
-                <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>
+        <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Lecture Notes</h3>
+                    <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>
+                </div>
+                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-            <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8"></div>
         </div>
-        <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8">
-            </div>
     </div>
-</div>
-
-
 
     <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
         <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30">
@@ -200,7 +208,6 @@
         const container = document.getElementById('courseContainer');
         container.innerHTML = data.map((course) => {
             const hasNotes = course.notes && course.notes.length > 0;
-            
             return `
                 <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
                     <div class="flex flex-col gap-3">
@@ -208,19 +215,16 @@
                             <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
                             <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
                         </div>
-                        
                         <div class="scroll-container">
                             <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
                                     class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
                                 <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
                                 <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
                             </button>
-
                             ${batches.map(batch => {
                                 const link = course.links[batch];
                                 const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
                                 const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
-                                
                                 return `
                                     <button onclick="${clickAction}" 
                                             class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
@@ -235,45 +239,45 @@
             `}).join('');
     }
 
+    // --- ULTRA SMOOTH MODAL LOGIC ---
     function openNotes(code) {
-    const course = courseData.find(c => c.code === code);
-    const list = document.getElementById('notesList');
-    const modal = document.getElementById('notesModal');
-    
-    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
-    
-    list.innerHTML = course.notes.map(note => `
-        <a href="${note.url}" download class="file-card">
-            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
-            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
-            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black">Download</span>
-        </a>
-    `).join('');
-    
-    modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+        const course = courseData.find(c => c.code === code);
+        const list = document.getElementById('notesList');
+        const modal = document.getElementById('notesModal');
+        
+        document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+        
+        list.innerHTML = course.notes.map(note => `
+            <a href="${note.url}" download class="file-card">
+                <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+                <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
+                <span class="text-[9px] text-slate-400 mt-1 uppercase font-black">Download</span>
+            </a>
+        `).join('');
+        
+        modal.classList.remove('hidden');
+        
+        // Double RAF for 60FPS entry
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                modal.classList.add('active-sheet');
+            });
+        });
 
-    // Tiny delay to trigger the slide-up transition
-    setTimeout(() => {
-        modal.classList.add('active-sheet'); // You can use this for extra styling if needed
-    }, 10);
-}
+        document.body.style.overflow = 'hidden';
+    }
 
-function closeNotes() {
-    const modal = document.getElementById('notesModal');
-    const content = modal.querySelector('.modal-content-slide');
-    
-    // Slide it back down first
-    content.style.transform = "translateY(100%)";
-    
-    // Wait for animation to finish then hide the whole overlay
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        content.style.transform = ""; // Reset for next time
-        document.body.style.overflow = 'auto';
-    }, 400); 
-}
-
+    function closeNotes() {
+        const modal = document.getElementById('notesModal');
+        modal.classList.remove('active-sheet');
+        
+        setTimeout(() => {
+            if (!modal.classList.contains('active-sheet')) {
+                modal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        }, 600); 
+    }
 
     function openPaperByCode(code, batch) {
         const course = courseData.find(c => c.code === code);
