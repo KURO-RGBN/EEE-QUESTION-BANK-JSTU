@@ -342,16 +342,12 @@ function confirmDownload(url, fileName) {
     const alertEl = document.getElementById('customAlert');
     setTimeout(() => alertEl.classList.add('active'), 10);
 
-    document.getElementById('startDownload').onclick = (e) => {
-        // Stop the click from traveling further
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Trigger the download
-        window.location.href = url; 
-        
-        // Close our premium alert immediately
-        closeAlert();
+    document.getElementById('startDownload').onclick = () => {
+    // This is the most reliable way for a WebView/APK to hand off 
+    // the file to the system download manager.
+    window.location.assign(url); 
+    closeAlert();
+    
     };
 }
 
