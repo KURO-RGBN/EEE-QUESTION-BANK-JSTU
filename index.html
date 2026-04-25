@@ -320,14 +320,13 @@
 // --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
 
 function confirmDownload(url, fileName) {
-    // Create the HTML for the premium frosted-glass alert
     const alertHTML = `
         <div id="customAlert" class="premium-alert-overlay">
             <div class="premium-alert-card">
                 <div class="alert-icon-circle">
                     <i class="fa-solid fa-cloud-arrow-down"></i>
                 </div>
-                <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download File?</h3>
+                <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
                 <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>
                 <div class="alert-btn-group">
                     <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
@@ -339,28 +338,17 @@ function confirmDownload(url, fileName) {
 
     document.body.insertAdjacentHTML('beforeend', alertHTML);
     const alertEl = document.getElementById('customAlert');
-    
-    // Trigger the smooth scale-in animation
     setTimeout(() => alertEl.classList.add('active'), 10);
 
-    // Handle the actual download trigger
-        document.getElementById('startDownload').onclick = () => {
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', fileName);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-        // Fallback for APK WebViews
-        setTimeout(() => {
-            window.location.href = url;
-        }, 150);
-
+    document.getElementById('startDownload').onclick = () => {
+        // We only use one method here to prevent multiple popups
+        window.location.href = url; 
         closeAlert();
     };
-
 }
+
+
+
 
 function closeAlert() {
     const alertEl = document.getElementById('customAlert');
@@ -410,7 +398,7 @@ function openNotes(code) {
         requestAnimationFrame(() => {
             modal.classList.add('active-sheet');
             // Move main content off-screen to prevent text "ghosting" through the modal
-            if(main) main.style.transform = "translateX(-200%)"; 
+            
             document.body.classList.add('modal-open');
         });
     });
@@ -422,8 +410,6 @@ function closeNotes() {
     
     modal.classList.remove('active-sheet');
     
-    // Bring main content back
-    if(main) main.style.transform = "translateX(0)";
     document.body.classList.remove('modal-open');
 
     window.removeEventListener('touchstart', handleTouchStart);
