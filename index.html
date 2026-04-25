@@ -318,44 +318,39 @@
             `}).join('');
     }
 // --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
-    async function confirmDownload(url, fileName) {
-    // 1. Create and show the alert (as we did before)
+    
+function confirmDownload(url, fileName) {
+    // 1. Check if an alert already exists to prevent duplicates
     if (document.getElementById('customAlert')) return;
+
     const alertHTML = `
         <div id="customAlert" class="premium-alert-overlay">
             <div class="premium-alert-card">
-                <div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+                <div class="alert-icon-circle">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
                 <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
-                <p style="color: #64748b; font-size: 12px; line-height: 1.5;">${fileName}</p>
+                <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>
                 <div class="alert-btn-group">
                     <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
                     <button class="alert-btn btn-confirm" id="startDownload">Download</button>
                 </div>
             </div>
-        </div>`;
+        </div>
+    `;
+
     document.body.insertAdjacentHTML('beforeend', alertHTML);
     const alertEl = document.getElementById('customAlert');
     setTimeout(() => alertEl.classList.add('active'), 10);
 
-    // 2. The New Action Logic
     document.getElementById('startDownload').onclick = () => {
-    // 1. Force the file to open in the system's actual browser
-    // This bypasses the APK's broken "Save As" dialog
-    const downloadUrl = url;
-    
-    // We try to trigger an Android "Intent" to open the system browser
-    window.open(downloadUrl, '_system'); 
-    
-    // Fallback for some APK wrappers
-    setTimeout(() => {
-        window.location.assign(downloadUrl);
-    }, 100);
-
+    // This is the most reliable way for a WebView/APK to hand off 
+    // the file to the system download manager.
+    window.location.assign(url); 
     closeAlert();
     
     };
 }
-
 
 
 
