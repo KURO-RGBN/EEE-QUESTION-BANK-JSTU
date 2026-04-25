@@ -318,54 +318,54 @@
             `}).join('');
     }
 // --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
-function confirmDownload(url, fileName) {
-    // 1. Check if an alert already exists to prevent duplicates
+    async function confirmDownload(url, fileName) {
+    // 1. Create and show the alert (as we did before)
     if (document.getElementById('customAlert')) return;
-
     const alertHTML = `
         <div id="customAlert" class="premium-alert-overlay">
             <div class="premium-alert-card">
-                <div class="alert-icon-circle">
-                    <i class="fa-solid fa-cloud-arrow-down"></i>
-                </div>
+                <div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div>
                 <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
-                <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>
+                <p style="color: #64748b; font-size: 12px; line-height: 1.5;">${fileName}</p>
                 <div class="alert-btn-group">
                     <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
                     <button class="alert-btn btn-confirm" id="startDownload">Download</button>
                 </div>
             </div>
-        </div>
-    `;
-
+        </div>`;
     document.body.insertAdjacentHTML('beforeend', alertHTML);
     const alertEl = document.getElementById('customAlert');
     setTimeout(() => alertEl.classList.add('active'), 10);
 
+    // 2. The New Action Logic
     document.getElementById('startDownload').onclick = async () => {
-    try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = window.URL.createObjectURL(blob);
-        
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = fileName; // This forces the .pdf extension
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        // Clean up the blob memory
-        setTimeout(() => window.URL.revokeObjectURL(blobUrl), 100);
-        closeAlert();
-    } catch (err) {
-        // Fallback if fetch fails
-        window.location.href = url;
-        closeAlert();
-    }
-};
+        const btn = document.getElementById('startDownload');
+        btn.innerText = "Processing...";
+        btn.style.opacity = "0.5";
 
+        try {
+            const response = await fetch(url);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = blobUrl;
+            link.download = fileName.endsWith('.pdf') ? fileName : fileName + '.pdf';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Allow time for trigger before cleaning up
+            setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
+            closeAlert();
+        } catch (err) {
+            // Fallback for APKs that block 'fetch'
+            window.location.assign(url);
+            closeAlert();
+        }
+    };
 }
+
 
 
 
