@@ -3,7 +3,7 @@
     "semester": "1st Year 1st Semester",
     "title": "Electrical Circuit I",
     "code": "EEE 1111",
-    "links": { "20-21": "missing",
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Circuit-1-p1.png","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Circuit-1-p2.png"],
       "21-22": "missing", 
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Circuit-I_p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Circuit-I_p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Circuit-I_p3.jpg"],
       "23-24": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/Electrical%20Circuit-I_p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/Electrical%20Circuit-I_p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/Electrical%20Circuit-I_p3.jpg"], 
