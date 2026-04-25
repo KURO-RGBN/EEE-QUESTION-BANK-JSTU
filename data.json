@@ -34,7 +34,7 @@
       "22-23": "missing",
       "23-24": "missing",
       "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p2.jpeg"] },
-    "notes": []
+    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
   },
   {
     "semester": "1st Year 1st Semester",
@@ -45,7 +45,7 @@
       "22-23": "missing",
       "23-24": "missing", 
       "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/phy1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/phy1111p2.jpeg"] },
-    "notes": []
+    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
   },
   {
     "semester": "1st Year 1st Semester",
@@ -56,7 +56,7 @@
       "22-23": "missing",
       "23-24": "missing",
       "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/cse1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/cse1111p2.jpeg"]  },
-    "notes": []
+    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
   },
   {
     "semester": "1st Year 2nd Semester",
@@ -67,7 +67,7 @@
       "22-23": "missing",
       "23-24": "missing",
       "24-25": "missing" },
-    "notes": []
+    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
   },
   {
     "semester": "1st Year 2nd Semester",
@@ -78,14 +78,14 @@
       "22-23": "missing",
       "23-24": "missing",
       "24-25": "missing" },
-    "notes": []
+    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
   },
   {
     "semester": "1st Year 2nd Semester",
     "title": "Accounting and Economics for Engineers",
     "code": "HUM 1211",
     "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
-    "notes": []
+    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
   },
   {
     "semester": "1st Year 2nd Semester",
@@ -96,7 +96,7 @@
       "22-23": "missing",
       "23-24": "missing",
       "24-25": "missing" },
-    "notes": []
+    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
   },
   {
     "semester": "1st Year 2nd Semester",
@@ -107,7 +107,7 @@
       "22-23": "missing",
       "23-24": "missing",
       "24-25": "missing" },
-    "notes": []
+    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
   },
   {
     "semester": "2nd Year 1st Semester",
@@ -171,7 +171,7 @@
     "semester": "2nd Year 2nd Semester",
     "title": "Digital Electronics",
     "code": "EEE 2231",
-    "links": { "20-21": "missing",
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/digital%20electronics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Digital%20Electronics-p2.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Digital%20Electronics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Digital%20Electronics-p2.jpg"],
       "22-23": "missing",
       "23-24": "missing", 
@@ -182,7 +182,7 @@
     "semester": "2nd Year 2nd Semester",
     "title": "Computational Methods for Engineers",
     "code": "EEE 2241",
-    "links": { "20-21": "missing",
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Computational%20Methods%20for%20Engineers-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Computational%20Methods%20for%20Engineers-p2.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/copmutionalmethod2241p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/computationalmethod2241p2.jpg"],
       "22-23": "missing",
       "23-24": "missing",
@@ -193,7 +193,7 @@
     "semester": "2nd Year 2nd Semester",
     "title": "Fourier Analysis, Laplace Transform and Differential Equation",
     "code": "MATH 2211",
-    "links": { "20-21": "missing",
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p2.jpg"]
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p2.jpg"],
       "22-23": "missing",
       "23-24": "missing",
@@ -237,7 +237,7 @@
     "semester": "3rd Year 1st Semester",
     "title": "Power Electronics",
     "code": "EEE 3141",
-    "links": { "20-21": "missing", 
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20Electronics.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Power%20Electronics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Power%20Electronics-p2.jpg"],
       "22-23": "missing",
       "23-24": "missing",
@@ -248,14 +248,19 @@
     "semester": "3rd Year 1st Semester",
     "title": "Signals and Linear Systems",
     "code": "EEE 3151",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "links": { "20-21":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Signals%20and%20Linear%20Systems-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Signals%20and%20Linear%20Systems-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Signals%20and%20Linear%20Systems-p3.jpg"],
+      "21-22": "missing",
+      "22-23": "missing",
+      
+      "23-24": "missing",
+      "24-25": "missing" },
     "notes": []
   },
   {
     "semester": "3rd Year 2nd Semester",
     "title": "Communication Engineering I",
     "code": "EEE 3211",
-    "links": { "20-21": "missing",
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Communication%20Engineering%20I-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Communication%20Engineering%20I-p2.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/communication%201-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/communication%201-p2.jpeg"],
       "22-23": "missing",
       "23-24": "missing",
@@ -266,14 +271,23 @@
     "semester": "3rd Year 2nd Semester",
     "title": "Power System I",
     "code": "EEE 3221",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "links": { "20-21":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20System%20I-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20System%20I-p2.jpg"],
+      "21-22": "missing",
+      "22-23": "missing",
+      "23-24": "missing",
+      "24-25": "missing" },
     "notes": []
   },
   {
     "semester": "3rd Year 2nd Semester",
     "title": "Power Plant Engineering and Economy",
     "code": "EEE 3231",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20Plant%20Engineering%20and%20Economy-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20Plant%20Engineering%20and%20Economy-p2.jpg"]
+      "21-22": "missing",
+      "22-23":"missing",
+       "23-24":
+      "missing",
+      "24-25": "missing" },
     "notes": []
   },
   {
@@ -291,7 +305,7 @@
     "semester": "3rd Year 2nd Semester",
     "title": "Engineering Electromagnetics",
     "code": "EEE 3251",
-    "links": { "20-21": "missing",
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Engineering%20Electromagnetics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Engineering%20Electromagnetics-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Engineering%20Electromagnetics-p3.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Engineering%20Electromagnetics-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Engineering%20Electromagnetics-p2.jpeg"],
       "22-23": "missing",
       "23-24": "missing",
@@ -319,21 +333,33 @@
     "semester": "4th Year 1st Semester",
     "title": "Digital Signal Processing",
     "code": "EEE 4131",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/digital%20processing-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Digital%20Signal%20Processing-p2.jpg"]
+      "21-22": "missing",
+      "22-23": "missing",
+      "23-24": "missing",
+      "24-25": "missing" },
     "notes": []
   },
   {
     "semester": "4th Year 1st Semester",
     "title": "Elective I",
     "code": "EEE 41**",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Biomedical%20Engineering-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Biomedical%20Engineering_p2.jpg"],
+      "21-22": "missing",
+      "22-23": "missing",
+      "23-24": "missing",
+      "24-25": "missing" },
     "notes": []
   },
   {
     "semester": "4th Year 2nd Semester",
     "title": "Communication Engineering III",
     "code": "EEE 4211",
-    "links": { "20-21": "missing", "21-22": "missing", "22-23": "missing", "23-24": "missing", "24-25": "missing" },
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Communication%20Engineering%20II-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Communication%20Engineering%20II-p2.jpg"],
+      "21-22": "missing",
+      "22-23": "missing",
+      "23-24": "missing", 
+      "24-25": "missing" },
     "notes": []
   },
   {
