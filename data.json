@@ -10,7 +10,15 @@
       "24-25":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/eee1111p3.jpeg"] },
     "notes": [
       { "name": "Electric Circuits -Alexander 7th edition", "url": "https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/Copy%20of%20Electric%20Circuits%20-Alexander%207th%20edition-%20(1).pdf" },
-      { "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" },{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" },{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" },{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }
+      { "name": "S-1 Alternating current circuits", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/S-1%20Alternating%20current%20circuits.pdf" },
+      { "name": "S-2 Lag lead phasor", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/S-2%20Lag%20lead%20phasor.pdf" },
+      { "name": "S-1 Voltage, Current", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/S-1%20Voltage%2C%20Current.pdf" },
+      { "name": "S-2 Nodal, Mesh Analysis, Star delta", "url": "ENTER_URL_HERE" },
+      { "name": "S-3 Superposition and Maximum Power Theorem", "url": "ENTER_URL_HERE" },
+      { "name": "S-4 Source Transformation", "url": "ENTER_URL_HERE" },
+      { "name": "S-5 Thevenin, Norton Theorem.pdf", "url": "ENTER_URL_HERE" },
+      { "name": "S-6 C-4 Magnetic Quantities & Magnetization Curve", "url": "ENTER_URL_HERE" }
+    
     
     ]
   },
