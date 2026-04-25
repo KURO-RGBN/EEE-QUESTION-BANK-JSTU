@@ -338,31 +338,21 @@
     setTimeout(() => alertEl.classList.add('active'), 10);
 
     // 2. The New Action Logic
-    document.getElementById('startDownload').onclick = async () => {
-        const btn = document.getElementById('startDownload');
-        btn.innerText = "Processing...";
-        btn.style.opacity = "0.5";
+    document.getElementById('startDownload').onclick = () => {
+    // 1. Force the file to open in the system's actual browser
+    // This bypasses the APK's broken "Save As" dialog
+    const downloadUrl = url;
+    
+    // We try to trigger an Android "Intent" to open the system browser
+    window.open(downloadUrl, '_system'); 
+    
+    // Fallback for some APK wrappers
+    setTimeout(() => {
+        window.location.assign(downloadUrl);
+    }, 100);
 
-        try {
-            const response = await fetch(url);
-            const blob = await response.blob();
-            const blobUrl = window.URL.createObjectURL(blob);
-            
-            const link = document.createElement('a');
-            link.href = blobUrl;
-            link.download = fileName.endsWith('.pdf') ? fileName : fileName + '.pdf';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            
-            // Allow time for trigger before cleaning up
-            setTimeout(() => window.URL.revokeObjectURL(blobUrl), 1000);
-            closeAlert();
-        } catch (err) {
-            // Fallback for APKs that block 'fetch'
-            window.location.assign(url);
-            closeAlert();
-        }
+    closeAlert();
+    
     };
 }
 
@@ -372,7 +362,22 @@
 
 
 function closeAlert() {
-    const alertEl = document.getElementById('customAlert');
+    const alertEl = document.getElementBydocument.getElementById('startDownload').onclick = () => {
+    // 1. Force the file to open in the system's actual browser
+    // This bypasses the APK's broken "Save As" dialog
+    const downloadUrl = url;
+    
+    // We try to trigger an Android "Intent" to open the system browser
+    window.open(downloadUrl, '_system'); 
+    
+    // Fallback for some APK wrappers
+    setTimeout(() => {
+        window.location.assign(downloadUrl);
+    }, 100);
+
+    closeAlert();
+};
+Id('customAlert');
     if (alertEl) {
         alertEl.classList.remove('active');
         setTimeout(() => alertEl.remove(), 300);
