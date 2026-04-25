@@ -318,8 +318,10 @@
             `}).join('');
     }
 // --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
-
 function confirmDownload(url, fileName) {
+    // 1. Check if an alert already exists to prevent duplicates
+    if (document.getElementById('customAlert')) return;
+
     const alertHTML = `
         <div id="customAlert" class="premium-alert-overlay">
             <div class="premium-alert-card">
@@ -340,12 +342,19 @@ function confirmDownload(url, fileName) {
     const alertEl = document.getElementById('customAlert');
     setTimeout(() => alertEl.classList.add('active'), 10);
 
-    document.getElementById('startDownload').onclick = () => {
-        // We only use one method here to prevent multiple popups
+    document.getElementById('startDownload').onclick = (e) => {
+        // Stop the click from traveling further
+        e.preventDefault();
+        e.stopPropagation();
+
+        // Trigger the download
         window.location.href = url; 
+        
+        // Close our premium alert immediately
         closeAlert();
     };
 }
+
 
 
 
