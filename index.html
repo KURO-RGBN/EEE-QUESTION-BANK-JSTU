@@ -318,7 +318,6 @@
             `}).join('');
     }
 // --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
-    
 function confirmDownload(url, fileName) {
     // 1. Check if an alert already exists to prevent duplicates
     if (document.getElementById('customAlert')) return;
@@ -357,22 +356,7 @@ function confirmDownload(url, fileName) {
 
 
 function closeAlert() {
-    const alertEl = document.getElementBydocument.getElementById('startDownload').onclick = () => {
-    // 1. Force the file to open in the system's actual browser
-    // This bypasses the APK's broken "Save As" dialog
-    const downloadUrl = url;
-    
-    // We try to trigger an Android "Intent" to open the system browser
-    window.open(downloadUrl, '_system'); 
-    
-    // Fallback for some APK wrappers
-    setTimeout(() => {
-        window.location.assign(downloadUrl);
-    }, 100);
-
-    closeAlert();
-};
-Id('customAlert');
+    const alertEl = document.getElementById('customAlert');
     if (alertEl) {
         alertEl.classList.remove('active');
         setTimeout(() => alertEl.remove(), 300);
@@ -495,4 +479,5 @@ function closeNotes() {
 </script>
 </body>
 </html>
+
 
