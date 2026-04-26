@@ -231,7 +231,7 @@
     "semester": "3rd Year 1st Semester",
     "title": "Measurement & Instrumentation",
     "code": "EEE 3111",
-    "links": { "20-21": "missing",
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/measurement-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/measurement-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/measurement-p3.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/measurement-p4.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Measurement%20%26%20Instrumentation-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Measurement%20%26%20Instrumentation-p2.jpg"],
       "22-23": "missing",
       "23-24": "missing",
@@ -253,7 +253,7 @@
     "semester": "3rd Year 1st Semester",
     "title": "Microprocessor and Microcontroller",
     "code": "EEE 3131",
-    "links": { "20-21": "missing",
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Micro-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/micro-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/micro-p3.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/micro-p4.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Microprocessor%20and%20Microcontroller-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Microprocessor%20and%20Microcontroller-p3.jpg"]
       , "22-23": "missing",
       "23-24": "missing", 
