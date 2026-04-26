@@ -31,7 +31,9 @@
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/eng-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/eng-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/eng-p3.jpeg"],
       "23-24": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/eng-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/eng-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/eng-p3.jpeg"],
       "24-25":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/hum-1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/hum1111p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/hum1111p3.jpeg"] },
-    "notes": [{ "name": "Academic-Writing-from-Paragraph-to-Essay", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/Academic-Writing-from-Paragraph-to-Essay.pdf" }]
+    "notes": [{ "name": "Academic-Writing-from-Paragraph-to-Essay", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/Academic-Writing-from-Paragraph-to-Essay.pdf" }, 
+      { "name": "TRANSFORMATION SENTENCE, CONDITIONAL", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/transformation%20sentence%20%26%20condition%20al.pdf" }, 
+      { "name": "ENGLISH NOTES", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/English_Note.pdf" }]
   },
   {
     "semester": "1st Year 1st Semester",
@@ -42,7 +44,9 @@
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Differential%20and%20integral%20calculas_p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Differential%20and%20integral%20calculas_p2.jpg"],
       "23-24": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/math1111-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/math1111-p2.jpeg"],
       "24-25": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/math1111p2.jpeg"] },
-    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
+    "notes": [{ "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" },
+    { "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" },
+    { "name": "ENTER_NAME_HERE", "url": "ENTER_URL_HERE" }]
   },
   {
     "semester": "1st Year 1st Semester",
