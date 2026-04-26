@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EEE Vault - Question Bank</title>
+    <title>EEE Question Bank Portal</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -22,11 +22,9 @@
             user-select: none;
             color: #e5e5e5;
             font-family: sans-serif;
-            background-color: #f1f5f9;
         }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }
         
-        /* Session Horizontal Scroll */
         .scroll-container {
             display: flex;
             overflow-x: auto;
@@ -35,6 +33,7 @@
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
         }
+
         .scroll-container::-webkit-scrollbar { display: none; }
 
         .session-btn {
@@ -58,47 +57,6 @@
             color: #ef6c00 !important;
         }
 
-        /* Paper Bounce Animation Overlay */
-        .paper-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 3000;
-            display: none; /* Controlled by JS */
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            will-change: opacity;
-        }
-        
-        .paper-modal.active { display: flex; opacity: 1; }
-        
-        .paper-content {
-            width: 95%;
-            max-width: 500px;
-            position: relative;
-            opacity: 0;
-            transform: scale(0.8) translateY(30px);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-            will-change: transform, opacity;
-        }
-
-        .paper-modal.active .paper-content {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-
-        .close-btn-animated {
-            position: absolute;
-            top: -50px;
-            right: 0;
-            color: white;
-            font-size: 32px;
-            background: none;
-            border: none;
-        }
-
         /* File Card Styling */
         .file-card {
             background: #f8fafc;
@@ -113,65 +71,119 @@
         }
         .file-card:active { transform: scale(0.95); background: #f1f5f9; }
 
-        /* Premium Bottom Sheet Modal */
+        /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
         .modal-overlay {
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
             backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
         }
+
         .modal-overlay.active-sheet {
             opacity: 1;
             pointer-events: auto;
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
+
         .modal-content-slide { 
+            position:relative;
+            z-index:130;
             transform: translateY(100%);
             transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+            /* FIX: Prevents APK Swipe-to-Refresh */
+            overscroll-behavior-y: contain; 
         }
-        .modal-overlay.active-sheet .modal-content-slide { transform: translateY(0%); }
 
-        /* Download Alert */
-        .premium-alert-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            z-index: 20000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
+        .modal-overlay.active-sheet .modal-content-slide {
+            transform: translateY(0%);
         }
-        .premium-alert-overlay.active { opacity: 1; pointer-events: auto; }
-        .premium-alert-card {
-            background: white;
-            width: 85%;
-            max-width: 320px;
-            padding: 24px;
-            border-radius: 28px;
-            text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* --- PREMIUM DOWNLOAD ALERT STYLES --- */
+.premium-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.premium-alert-overlay.active { 
+    opacity: 1; 
+    pointer-events: auto;
+}
+
+.premium-alert-card {
+    background: white;
+    width: 85%;
+    max-width: 320px;
+    padding: 24px;
+    border-radius: 28px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.premium-alert-overlay.active .premium-alert-card { 
+    transform: scale(1); 
+}
+
+.alert-icon-circle {
+    width: 60px;
+    height: 60px;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 24px;
+}
+
+.alert-btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.alert-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-cancel { background: #f1f5f9; color: #64748b; }
+.btn-confirm { background: #dc2626; color: white; }
+
+
+        #notesList {
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
         }
-        .premium-alert-overlay.active .premium-alert-card { transform: scale(1); }
-        .alert-icon-circle {
-            width: 60px; height: 60px; background: #fee2e2; color: #dc2626;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 16px; font-size: 24px;
-        }
-        .alert-btn-group { display: flex; gap: 12px; margin-top: 24px; }
-        .alert-btn { flex: 1; padding: 12px; border-radius: 14px; font-weight: 700; font-size: 14px; }
-        .btn-cancel { background: #f1f5f9; color: #64748b; }
-        .btn-confirm { background: #dc2626; color: white; }
+        #appBody {
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+        #notesList::-webkit-scrollbar { width: 4px; }
+        #notesList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
     </style>
 </head>
-
-<body class="min-h-screen text-slate-800 pb-10">
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-10">
 
     <nav class="bg-black text-white shadow-xl border-b border-red-900/30 sticky top-0 z-50 p-4 pt-8">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
@@ -179,13 +191,13 @@
                 <i class="fa-solid fa-brain text-red-600 text-2xl"></i>
                 <h1 class="font-bold text-xl tracking-tight uppercase">EEE <span class="text-red-600">Vault</span></h1>
             </div>
-            <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">
+            <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white transition shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">
                 <i class="fa-solid fa-plus mr-1"></i> Add Paper
             </button>
         </div>
     </nav>
 
-    <main id="appBody" class="max-w-6xl mx-auto p-4 md:p-8">
+    <main id="appBody"class="max-w-6xl mx-auto p-4 md:p-8">
         <div class="glass-card p-6 rounded-3xl shadow-sm mb-8 border border-white">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative">
@@ -193,7 +205,7 @@
                     <input type="text" id="mainSearch" placeholder="Search Title or Code..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 outline-none">
                 </div>
                 <select id="semesterFilter" class="bg-slate-100 py-3 px-4 rounded-2xl border-none outline-none appearance-none">
-                    <option value="all">All Semesters</option>
+                     <option value="all">All Semesters</option>
                     <option value="1st Year 1st Semester">1st Year 1st Sem</option>
                     <option value="1st Year 2nd Semester">1st Year 2nd Sem</option>
                     <option value="2nd Year 1st Semester">2nd Year 1st Sem</option>
@@ -205,18 +217,25 @@
                 </select>
             </div>
         </div>
+
         <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
     </main>
 
-    <div id="notesModal" onclick="if(event.target === this) closeNotes()" class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">
+    <div id="notesModal" 
+         onclick="if(event.target === this) closeNotes()" 
+         class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">
+        
         <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Notes & Materials</h3>
                     <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>
                 </div>
-                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
             <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8"></div>
         </div>
@@ -231,7 +250,7 @@
             <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
         </div>
         <div class="flex-grow overflow-auto flex items-start justify-center bg-black relative">
-            <img id="viewerImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
+            <img id="paperImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
             <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4">
                 <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-left"></i></button>
                 <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-right"></i></button>
@@ -239,211 +258,232 @@
         </div>
     </div>
 
-    <div id="paperModal" class="paper-modal" onclick="closePaper()">
-        <div class="paper-content" onclick="event.stopPropagation()">
-            <button class="close-btn-animated" onclick="closePaper()">×</button>
-            <img id="animatedPaperImage" src="" class="w-full h-auto rounded-lg shadow-2xl">
-        </div>
-    </div>
-
     <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
             <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>
-            <p class="text-slate-500 text-sm mb-6">Help your fellow students by uploading papers to our Google Form.</p>
-            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
+            <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned image/pdf files to the Google form to add a missing Paper/Notes -kuro(^~^).</p>
+            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" target="_blank" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
             <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>
         </div>
     </div>
+	
+<script>
+    let courseData = [];
+    const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
+    let currentPages = []; 
+    let currentPageIndex = 0;
 
-    <script>
-        let courseData = [];
-        const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
-        let currentPages = []; 
-        let currentPageIndex = 0;
+    async function init() {
+        try {
+            const res = await fetch('data.json');
+            courseData = await res.json();
+            renderCourses(courseData);
+            document.getElementById('mainSearch').addEventListener('input', filterContent);
+            document.getElementById('semesterFilter').addEventListener('change', filterContent);
+        } catch (err) { console.error("Data load failed"); }
+    }
 
-        // --- FIXED PAPER ANIMATION LOGIC ---
-        function openPaper(imageUrl) {
-            const modal = document.getElementById('paperModal');
-            const img = document.getElementById('animatedPaperImage');
-            
-            // Set source first
-            img.src = imageUrl;
-            
-            // Force modal to display block so we can animate classes
-            modal.style.display = 'flex';
-            
-            // Use double frame delay to ensure the browser has painted the display:flex
-            // and the image has started loading before we run the transform
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    modal.classList.add('active');
-                });
-            });
-
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closePaper() {
-            const modal = document.getElementById('paperModal');
-            modal.classList.remove('active');
-            // Wait for transition to finish (400ms) before hiding
-            setTimeout(() => { 
-                if(!modal.classList.contains('active')) {
-                    modal.style.display = 'none'; 
-                    document.body.style.overflow = 'auto';
-                }
-            }, 400);
-        }
-
-        async function init() {
-            try {
-                const res = await fetch('data.json');
-                courseData = await res.json();
-                renderCourses(courseData);
-                document.getElementById('mainSearch').addEventListener('input', filterContent);
-                document.getElementById('semesterFilter').addEventListener('change', filterContent);
-            } catch (err) { console.error("Data load failed"); }
-        }
-
-        function renderCourses(data) {
-            const container = document.getElementById('courseContainer');
-            container.innerHTML = data.map((course) => {
-                const hasNotes = course.notes && course.notes.length > 0;
-                return `
-                    <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
-                        <div class="flex flex-col gap-3">
-                            <div>
-                                <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
-                                <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
-                            </div>
-                            <div class="scroll-container">
-                                <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
-                                        class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
-                                    <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
-                                    <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
-                                </button>
-                                ${batches.map(batch => {
-                                    const link = course.links[batch];
-                                    const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
-                                    const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
-                                    return `
-                                        <button onclick="${clickAction}" 
-                                                class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
-                                            <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
-                                            <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
-                                        </button>
-                                    `;
-                                }).join('')}
-                            </div>
+    function renderCourses(data) {
+        const container = document.getElementById('courseContainer');
+        container.innerHTML = data.map((course) => {
+            const hasNotes = course.notes && course.notes.length > 0;
+            return `
+                <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
+                    <div class="flex flex-col gap-3">
+                        <div>
+                            <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
+                            <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
+                        </div>
+                        <div class="scroll-container">
+                            <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
+                                    class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
+                                <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
+                                <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
+                            </button>
+                            ${batches.map(batch => {
+                                const link = course.links[batch];
+                                const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
+                                const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
+                                return `
+                                    <button onclick="${clickAction}" 
+                                            class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                                        <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
+                                        <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                                    </button>
+                                `;
+                            }).join('')}
                         </div>
                     </div>
-                `}).join('');
-        }
-
-        function openPaperByCode(code, batch) {
-            const course = courseData.find(c => c.code === code);
-            if (course) {
-                const links = course.links[batch];
-                // Use animated modal for single links, Paged Viewer for multiples
-                if (Array.isArray(links) && links.length > 1) {
-                    viewPaper(links, `${course.title} - ${batch}`);
-                } else {
-                    const url = Array.isArray(links) ? links[0] : links;
-                    openPaper(url);
-                }
-            }
-        }
-
-        // Paged Viewer functions
-        function viewPaper(links, title) {
-            currentPages = Array.isArray(links) ? links : [links];
-            currentPageIndex = 0;
-            document.getElementById('viewingTitle').innerText = title;
-            document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
-            updateViewer();
-            document.getElementById('viewerModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-        function updateViewer() {
-            const img = document.getElementById('viewerImage');
-            img.src = currentPages[currentPageIndex];
-            document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
-        }
-        function nextPage() { if (currentPageIndex < currentPages.length - 1) { currentPageIndex++; updateViewer(); } }
-        function prevPage() { if (currentPageIndex > 0) { currentPageIndex--; updateViewer(); } }
-        function closeViewer() {
-            document.getElementById('viewerModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Notes and Downloads
-        function openNotes(code) {
-            const course = courseData.find(c => c.code === code);
-            const list = document.getElementById('notesList');
-            const modal = document.getElementById('notesModal');
-            document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
-            list.innerHTML = course.notes.map(note => `
-                <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
-                    <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
-                    <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
-                    <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
                 </div>
-            `).join('');
-            modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.add('active-sheet'); }, 10);
-        }
-        function closeNotes() {
-            const modal = document.getElementById('notesModal');
-            modal.classList.remove('active-sheet');
-            setTimeout(() => { modal.classList.add('hidden'); }, 500);
-        }
-        function confirmDownload(url, fileName) {
-            if (document.getElementById('customAlert')) return;
-            const alertHTML = `
-                <div id="customAlert" class="premium-alert-overlay">
-                    <div class="premium-alert-card">
-                        <div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                        <h3 class="text-slate-800 font-bold">Download File?</h3>
-                        <p class="text-slate-500 text-xs mb-4">${fileName}</p>
-                        <div class="alert-btn-group">
-                            <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
-                            <button class="alert-btn btn-confirm" id="startDownload">Download</button>
-                        </div>
-                    </div>
-                </div>`;
-            document.body.insertAdjacentHTML('beforeend', alertHTML);
-            const alertEl = document.getElementById('customAlert');
-            setTimeout(() => alertEl.classList.add('active'), 10);
-            document.getElementById('startDownload').onclick = () => { window.location.assign(url); closeAlert(); };
-        }
-        function closeAlert() {
-            const alertEl = document.getElementById('customAlert');
-            if (alertEl) { alertEl.classList.remove('active'); setTimeout(() => alertEl.remove(), 300); }
-        }
+            `}).join('');
+    }
+// --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
+function confirmDownload(url, fileName) {
+    // 1. Check if an alert already exists to prevent duplicates
+    if (document.getElementById('customAlert')) return;
 
-        function filterContent() {
-            const query = document.getElementById('mainSearch').value.toLowerCase();
-            const sem = document.getElementById('semesterFilter').value;
-            const filtered = courseData.filter(c => 
-                (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
-                (sem === "all" || c.semester === sem)
-            );
-            renderCourses(filtered);
+    const alertHTML = `
+        <div id="customAlert" class="premium-alert-overlay">
+            <div class="premium-alert-card">
+                <div class="alert-icon-circle">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
+                <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>
+                <div class="alert-btn-group">
+                    <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
+                    <button class="alert-btn btn-confirm" id="startDownload">Download</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', alertHTML);
+    const alertEl = document.getElementById('customAlert');
+    setTimeout(() => alertEl.classList.add('active'), 10);
+
+    document.getElementById('startDownload').onclick = () => {
+    // This is the most reliable way for a WebView/APK to hand off 
+    // the file to the system download manager.
+    window.location.assign(url); 
+    closeAlert();
+    
+    };
+}
+
+
+
+
+
+function closeAlert() {
+    const alertEl = document.getElementById('customAlert');
+    if (alertEl) {
+        alertEl.classList.remove('active');
+        setTimeout(() => alertEl.remove(), 300);
+    }
+}
+
+// Smart APK Refresh Blocker variables
+let touchStartLine = 0;
+function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }
+function handleTouchMove(e) {
+    const list = document.getElementById('notesList');
+    const touchCurrent = e.touches[0].pageY;
+    if (list.scrollTop <= 0 && touchCurrent > touchStartLine) {
+        if (e.cancelable) e.preventDefault(); 
+    }
+}
+
+function openNotes(code) {
+    // Find the course in your data.json
+    const course = courseData.find(c => c.code === code);
+    const list = document.getElementById('notesList');
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody'); // Ensure your main content has this ID
+    
+    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+    
+    // Generate the notes grid
+    // Note: We add .pdf automatically here to the filename
+    list.innerHTML = course.notes.map(note => `
+        <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
+            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
+            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
+        </div>
+    `).join('');
+    
+    modal.classList.remove('hidden');
+
+    // Block APK pull-to-refresh
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            modal.classList.add('active-sheet');
+            // Move main content off-screen to prevent text "ghosting" through the modal
+            
+            document.body.classList.add('modal-open');
+        });
+    });
+}
+
+function closeNotes() {
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody');
+    
+    modal.classList.remove('active-sheet');
+    
+    document.body.classList.remove('modal-open');
+
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+
+    setTimeout(() => {
+        if (!modal.classList.contains('active-sheet')) {
+            modal.classList.add('hidden');
         }
+    }, 500); 
+}
 
-        function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
-        function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
 
-        init();
-    </script>
+    function openPaperByCode(code, batch) {
+        const course = courseData.find(c => c.code === code);
+        if (course) {
+            const links = course.links[batch];
+            viewPaper(links, `${course.title} - ${batch}`);
+        }
+    }
+
+    function viewPaper(links, title) {
+        currentPages = Array.isArray(links) ? links : [links];
+        currentPageIndex = 0;
+        document.getElementById('viewingTitle').innerText = title;
+        document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
+        updateViewer();
+        document.getElementById('viewerModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function updateViewer() {
+        const img = document.getElementById('paperImage');
+        img.src = currentPages[currentPageIndex];
+        document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
+        document.querySelector('#viewerModal .flex-grow').scrollTop = 0;
+    }
+
+    function nextPage() { if (currentPageIndex < currentPages.length - 1) { currentPageIndex++; updateViewer(); } }
+    function prevPage() { if (currentPageIndex > 0) { currentPageIndex--; updateViewer(); } }
+
+    function closeViewer() {
+        document.getElementById('viewerModal').classList.add('hidden');
+        document.getElementById('paperImage').src = "";
+        document.body.style.overflow = 'auto';
+    }
+
+    function filterContent() {
+        const query = document.getElementById('mainSearch').value.toLowerCase();
+        const sem = document.getElementById('semesterFilter').value;
+        const filtered = courseData.filter(c => 
+            (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
+            (sem === "all" || c.semester === sem)
+        );
+        renderCourses(filtered);
+    }
+
+    function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
+    function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
+
+    init();
+</script>
 </body>
-</html>
-<!DOCTYPE html>
+</html><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>EEE Vault - Question Bank</title>
+    <title>EEE Question Bank Portal</title>
     
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -462,11 +502,9 @@
             user-select: none;
             color: #e5e5e5;
             font-family: sans-serif;
-            background-color: #f1f5f9;
         }
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }
         
-        /* Session Horizontal Scroll */
         .scroll-container {
             display: flex;
             overflow-x: auto;
@@ -475,6 +513,7 @@
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
         }
+
         .scroll-container::-webkit-scrollbar { display: none; }
 
         .session-btn {
@@ -498,45 +537,484 @@
             color: #ef6c00 !important;
         }
 
-        /* Paper Bounce Animation Overlay */
-        .paper-modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 3000;
-            display: none; /* Controlled by JS */
-            justify-content: center;
+        /* File Card Styling */
+        .file-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
             align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            will-change: opacity;
+            transition: 0.2s;
         }
-        
-        .paper-modal.active { display: flex; opacity: 1; }
-        
-        .paper-content {
-            width: 95%;
-            max-width: 500px;
-            position: relative;
+        .file-card:active { transform: scale(0.95); background: #f1f5f9; }
+
+        /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
+        .modal-overlay {
             opacity: 0;
-            transform: scale(0.8) translateY(30px);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
-            will-change: transform, opacity;
+            pointer-events: none;
+            transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
         }
 
-        .paper-modal.active .paper-content {
+        .modal-overlay.active-sheet {
             opacity: 1;
-            transform: scale(1) translateY(0);
+            pointer-events: auto;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
-        .close-btn-animated {
-            position: absolute;
-            top: -50px;
-            right: 0;
-            color: white;
-            font-size: 32px;
-            background: none;
-            border: none;
+        .modal-content-slide { 
+            position:relative;
+            z-index:130;
+            transform: translateY(100%);
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+            /* FIX: Prevents APK Swipe-to-Refresh */
+            overscroll-behavior-y: contain; 
+        }
+
+        .modal-overlay.active-sheet .modal-content-slide {
+            transform: translateY(0%);
+        }
+        /* --- PREMIUM DOWNLOAD ALERT STYLES --- */
+.premium-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.premium-alert-overlay.active { 
+    opacity: 1; 
+    pointer-events: auto;
+}
+
+.premium-alert-card {
+    background: white;
+    width: 85%;
+    max-width: 320px;
+    padding: 24px;
+    border-radius: 28px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.premium-alert-overlay.active .premium-alert-card { 
+    transform: scale(1); 
+}
+
+.alert-icon-circle {
+    width: 60px;
+    height: 60px;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 24px;
+}
+
+.alert-btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.alert-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-cancel { background: #f1f5f9; color: #64748b; }
+.btn-confirm { background: #dc2626; color: white; }
+
+
+        #notesList {
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+        #appBody {
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+        #notesList::-webkit-scrollbar { width: 4px; }
+        #notesList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        ::-webkit-scrollbar { width: 0px; height: 0px; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-10">
+
+    <nav class="bg-black text-white shadow-xl border-b border-red-900/30 sticky top-0 z-50 p-4 pt-8">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-brain text-red-600 text-2xl"></i>
+                <h1 class="font-bold text-xl tracking-tight uppercase">EEE <span class="text-red-600">Vault</span></h1>
+            </div>
+            <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white transition shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">
+                <i class="fa-solid fa-plus mr-1"></i> Add Paper
+            </button>
+        </div>
+    </nav>
+
+    <main id="appBody"class="max-w-6xl mx-auto p-4 md:p-8">
+        <div class="glass-card p-6 rounded-3xl shadow-sm mb-8 border border-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-4 top-4 text-slate-400"></i>
+                    <input type="text" id="mainSearch" placeholder="Search Title or Code..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 outline-none">
+                </div>
+                <select id="semesterFilter" class="bg-slate-100 py-3 px-4 rounded-2xl border-none outline-none appearance-none">
+                     <option value="all">All Semesters</option>
+                    <option value="1st Year 1st Semester">1st Year 1st Sem</option>
+                    <option value="1st Year 2nd Semester">1st Year 2nd Sem</option>
+                    <option value="2nd Year 1st Semester">2nd Year 1st Sem</option>
+                    <option value="2nd Year 2nd Semester">2nd Year 2nd Sem</option>
+                    <option value="3rd Year 1st Semester">3rd Year 1st Sem</option>
+                    <option value="3rd Year 2nd Semester">3rd Year 2nd Sem</option>
+                    <option value="4th Year 1st Semester">4th Year 1st Sem</option>
+                    <option value="4th Year 2nd Semester">4th Year 2nd Sem</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
+    </main>
+
+    <div id="notesModal" 
+         onclick="if(event.target === this) closeNotes()" 
+         class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">
+        
+        <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Notes & Materials</h3>
+                    <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>
+                </div>
+                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8"></div>
+        </div>
+    </div>
+
+    <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
+        <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30">
+            <div class="flex flex-col">
+                <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>
+                <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>
+            </div>
+            <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
+        </div>
+        <div class="flex-grow overflow-auto flex items-start justify-center bg-black relative">
+            <img id="paperImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
+            <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4">
+                <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-left"></i></button>
+                <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
+            <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>
+            <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned image/pdf files to the Google form to add a missing Paper/Notes -kuro(^~^).</p>
+            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" target="_blank" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
+            <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>
+        </div>
+    </div>
+	
+<script>
+    let courseData = [];
+    const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
+    let currentPages = []; 
+    let currentPageIndex = 0;
+
+    async function init() {
+        try {
+            const res = await fetch('data.json');
+            courseData = await res.json();
+            renderCourses(courseData);
+            document.getElementById('mainSearch').addEventListener('input', filterContent);
+            document.getElementById('semesterFilter').addEventListener('change', filterContent);
+        } catch (err) { console.error("Data load failed"); }
+    }
+
+    function renderCourses(data) {
+        const container = document.getElementById('courseContainer');
+        container.innerHTML = data.map((course) => {
+            const hasNotes = course.notes && course.notes.length > 0;
+            return `
+                <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
+                    <div class="flex flex-col gap-3">
+                        <div>
+                            <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
+                            <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
+                        </div>
+                        <div class="scroll-container">
+                            <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
+                                    class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
+                                <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
+                                <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
+                            </button>
+                            ${batches.map(batch => {
+                                const link = course.links[batch];
+                                const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
+                                const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
+                                return `
+                                    <button onclick="${clickAction}" 
+                                            class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                                        <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
+                                        <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+    }
+// --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
+function confirmDownload(url, fileName) {
+    // 1. Check if an alert already exists to prevent duplicates
+    if (document.getElementById('customAlert')) return;
+
+    const alertHTML = `
+        <div id="customAlert" class="premium-alert-overlay">
+            <div class="premium-alert-card">
+                <div class="alert-icon-circle">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
+                <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>
+                <div class="alert-btn-group">
+                    <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
+                    <button class="alert-btn btn-confirm" id="startDownload">Download</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', alertHTML);
+    const alertEl = document.getElementById('customAlert');
+    setTimeout(() => alertEl.classList.add('active'), 10);
+
+    document.getElementById('startDownload').onclick = () => {
+    // This is the most reliable way for a WebView/APK to hand off 
+    // the file to the system download manager.
+    window.location.assign(url); 
+    closeAlert();
+    
+    };
+}
+
+
+
+
+
+function closeAlert() {
+    const alertEl = document.getElementById('customAlert');
+    if (alertEl) {
+        alertEl.classList.remove('active');
+        setTimeout(() => alertEl.remove(), 300);
+    }
+}
+
+// Smart APK Refresh Blocker variables
+let touchStartLine = 0;
+function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }
+function handleTouchMove(e) {
+    const list = document.getElementById('notesList');
+    const touchCurrent = e.touches[0].pageY;
+    if (list.scrollTop <= 0 && touchCurrent > touchStartLine) {
+        if (e.cancelable) e.preventDefault(); 
+    }
+}
+
+function openNotes(code) {
+    // Find the course in your data.json
+    const course = courseData.find(c => c.code === code);
+    const list = document.getElementById('notesList');
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody'); // Ensure your main content has this ID
+    
+    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+    
+    // Generate the notes grid
+    // Note: We add .pdf automatically here to the filename
+    list.innerHTML = course.notes.map(note => `
+        <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
+            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
+            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
+        </div>
+    `).join('');
+    
+    modal.classList.remove('hidden');
+
+    // Block APK pull-to-refresh
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            modal.classList.add('active-sheet');
+            // Move main content off-screen to prevent text "ghosting" through the modal
+            
+            document.body.classList.add('modal-open');
+        });
+    });
+}
+
+function closeNotes() {
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody');
+    
+    modal.classList.remove('active-sheet');
+    
+    document.body.classList.remove('modal-open');
+
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+
+    setTimeout(() => {
+        if (!modal.classList.contains('active-sheet')) {
+            modal.classList.add('hidden');
+        }
+    }, 500); 
+}
+
+
+    function openPaperByCode(code, batch) {
+        const course = courseData.find(c => c.code === code);
+        if (course) {
+            const links = course.links[batch];
+            viewPaper(links, `${course.title} - ${batch}`);
+        }
+    }
+
+    function viewPaper(links, title) {
+        currentPages = Array.isArray(links) ? links : [links];
+        currentPageIndex = 0;
+        document.getElementById('viewingTitle').innerText = title;
+        document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
+        updateViewer();
+        document.getElementById('viewerModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function updateViewer() {
+        const img = document.getElementById('paperImage');
+        img.src = currentPages[currentPageIndex];
+        document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
+        document.querySelector('#viewerModal .flex-grow').scrollTop = 0;
+    }
+
+    function nextPage() { if (currentPageIndex < currentPages.length - 1) { currentPageIndex++; updateViewer(); } }
+    function prevPage() { if (currentPageIndex > 0) { currentPageIndex--; updateViewer(); } }
+
+    function closeViewer() {
+        document.getElementById('viewerModal').classList.add('hidden');
+        document.getElementById('paperImage').src = "";
+        document.body.style.overflow = 'auto';
+    }
+
+    function filterContent() {
+        const query = document.getElementById('mainSearch').value.toLowerCase();
+        const sem = document.getElementById('semesterFilter').value;
+        const filtered = courseData.filter(c => 
+            (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
+            (sem === "all" || c.semester === sem)
+        );
+        renderCourses(filtered);
+    }
+
+    function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
+    function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
+
+    init();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EEE Question Bank Portal</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="icon.jpeg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body { 
+            overscroll-behavior-y: contain; 
+            -webkit-overflow-scrolling: touch;
+            user-select: none;
+            color: #e5e5e5;
+            font-family: sans-serif;
+        }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }
+        
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding-bottom: 8px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scroll-container::-webkit-scrollbar { display: none; }
+
+        .session-btn {
+            flex: 0 0 85px;
+            scroll-snap-align: start;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #4b5563;
+            transition: all 0.2s ease;
+        }
+
+        .btn-available {
+            background: rgba(220, 38, 38, 0.05) !important;
+            border: 1px solid rgba(220, 38, 38, 0.3) !important;
+            color: #dc2626 !important;
+        }
+
+        .btn-notes {
+            background: rgba(255, 152, 0, 0.1) !important;
+            border: 1px solid rgba(255, 152, 0, 0.4) !important;
+            color: #ef6c00 !important;
         }
 
         /* File Card Styling */
@@ -553,65 +1031,119 @@
         }
         .file-card:active { transform: scale(0.95); background: #f1f5f9; }
 
-        /* Premium Bottom Sheet Modal */
+        /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
         .modal-overlay {
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
             backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
         }
+
         .modal-overlay.active-sheet {
             opacity: 1;
             pointer-events: auto;
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
+
         .modal-content-slide { 
+            position:relative;
+            z-index:130;
             transform: translateY(100%);
             transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+            /* FIX: Prevents APK Swipe-to-Refresh */
+            overscroll-behavior-y: contain; 
         }
-        .modal-overlay.active-sheet .modal-content-slide { transform: translateY(0%); }
 
-        /* Download Alert */
-        .premium-alert-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            z-index: 20000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
+        .modal-overlay.active-sheet .modal-content-slide {
+            transform: translateY(0%);
         }
-        .premium-alert-overlay.active { opacity: 1; pointer-events: auto; }
-        .premium-alert-card {
-            background: white;
-            width: 85%;
-            max-width: 320px;
-            padding: 24px;
-            border-radius: 28px;
-            text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        /* --- PREMIUM DOWNLOAD ALERT STYLES --- */
+.premium-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.premium-alert-overlay.active { 
+    opacity: 1; 
+    pointer-events: auto;
+}
+
+.premium-alert-card {
+    background: white;
+    width: 85%;
+    max-width: 320px;
+    padding: 24px;
+    border-radius: 28px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.premium-alert-overlay.active .premium-alert-card { 
+    transform: scale(1); 
+}
+
+.alert-icon-circle {
+    width: 60px;
+    height: 60px;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 24px;
+}
+
+.alert-btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.alert-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-cancel { background: #f1f5f9; color: #64748b; }
+.btn-confirm { background: #dc2626; color: white; }
+
+
+        #notesList {
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
         }
-        .premium-alert-overlay.active .premium-alert-card { transform: scale(1); }
-        .alert-icon-circle {
-            width: 60px; height: 60px; background: #fee2e2; color: #dc2626;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 16px; font-size: 24px;
-        }
-        .alert-btn-group { display: flex; gap: 12px; margin-top: 24px; }
-        .alert-btn { flex: 1; padding: 12px; border-radius: 14px; font-weight: 700; font-size: 14px; }
-        .btn-cancel { background: #f1f5f9; color: #64748b; }
-        .btn-confirm { background: #dc2626; color: white; }
+        #appBody {
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+        #notesList::-webkit-scrollbar { width: 4px; }
+        #notesList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
     </style>
 </head>
-
-<body class="min-h-screen text-slate-800 pb-10">
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-10">
 
     <nav class="bg-black text-white shadow-xl border-b border-red-900/30 sticky top-0 z-50 p-4 pt-8">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
@@ -619,13 +1151,13 @@
                 <i class="fa-solid fa-brain text-red-600 text-2xl"></i>
                 <h1 class="font-bold text-xl tracking-tight uppercase">EEE <span class="text-red-600">Vault</span></h1>
             </div>
-            <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">
+            <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white transition shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">
                 <i class="fa-solid fa-plus mr-1"></i> Add Paper
             </button>
         </div>
     </nav>
 
-    <main id="appBody" class="max-w-6xl mx-auto p-4 md:p-8">
+    <main id="appBody"class="max-w-6xl mx-auto p-4 md:p-8">
         <div class="glass-card p-6 rounded-3xl shadow-sm mb-8 border border-white">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative">
@@ -633,7 +1165,7 @@
                     <input type="text" id="mainSearch" placeholder="Search Title or Code..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 outline-none">
                 </div>
                 <select id="semesterFilter" class="bg-slate-100 py-3 px-4 rounded-2xl border-none outline-none appearance-none">
-                    <option value="all">All Semesters</option>
+                     <option value="all">All Semesters</option>
                     <option value="1st Year 1st Semester">1st Year 1st Sem</option>
                     <option value="1st Year 2nd Semester">1st Year 2nd Sem</option>
                     <option value="2nd Year 1st Semester">2nd Year 1st Sem</option>
@@ -645,18 +1177,25 @@
                 </select>
             </div>
         </div>
+
         <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
     </main>
 
-    <div id="notesModal" onclick="if(event.target === this) closeNotes()" class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">
+    <div id="notesModal" 
+         onclick="if(event.target === this) closeNotes()" 
+         class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">
+        
         <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Notes & Materials</h3>
                     <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>
                 </div>
-                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90"><i class="fa-solid fa-xmark"></i></button>
+                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
             <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8"></div>
         </div>
@@ -671,7 +1210,7 @@
             <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
         </div>
         <div class="flex-grow overflow-auto flex items-start justify-center bg-black relative">
-            <img id="viewerImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
+            <img id="paperImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
             <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4">
                 <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-left"></i></button>
                 <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-right"></i></button>
@@ -679,202 +1218,704 @@
         </div>
     </div>
 
-    <div id="paperModal" class="paper-modal" onclick="closePaper()">
-        <div class="paper-content" onclick="event.stopPropagation()">
-            <button class="close-btn-animated" onclick="closePaper()">×</button>
-            <img id="animatedPaperImage" src="" class="w-full h-auto rounded-lg shadow-2xl">
+    <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
+            <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>
+            <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned image/pdf files to the Google form to add a missing Paper/Notes -kuro(^~^).</p>
+            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" target="_blank" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
+            <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>
+        </div>
+    </div>
+	
+<script>
+    let courseData = [];
+    const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
+    let currentPages = []; 
+    let currentPageIndex = 0;
+
+    async function init() {
+        try {
+            const res = await fetch('data.json');
+            courseData = await res.json();
+            renderCourses(courseData);
+            document.getElementById('mainSearch').addEventListener('input', filterContent);
+            document.getElementById('semesterFilter').addEventListener('change', filterContent);
+        } catch (err) { console.error("Data load failed"); }
+    }
+
+    function renderCourses(data) {
+        const container = document.getElementById('courseContainer');
+        container.innerHTML = data.map((course) => {
+            const hasNotes = course.notes && course.notes.length > 0;
+            return `
+                <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
+                    <div class="flex flex-col gap-3">
+                        <div>
+                            <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
+                            <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
+                        </div>
+                        <div class="scroll-container">
+                            <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
+                                    class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
+                                <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
+                                <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
+                            </button>
+                            ${batches.map(batch => {
+                                const link = course.links[batch];
+                                const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
+                                const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
+                                return `
+                                    <button onclick="${clickAction}" 
+                                            class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                                        <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
+                                        <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+    }
+// --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
+function confirmDownload(url, fileName) {
+    // 1. Check if an alert already exists to prevent duplicates
+    if (document.getElementById('customAlert')) return;
+
+    const alertHTML = `
+        <div id="customAlert" class="premium-alert-overlay">
+            <div class="premium-alert-card">
+                <div class="alert-icon-circle">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
+                <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>
+                <div class="alert-btn-group">
+                    <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
+                    <button class="alert-btn btn-confirm" id="startDownload">Download</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', alertHTML);
+    const alertEl = document.getElementById('customAlert');
+    setTimeout(() => alertEl.classList.add('active'), 10);
+
+    document.getElementById('startDownload').onclick = () => {
+    // This is the most reliable way for a WebView/APK to hand off 
+    // the file to the system download manager.
+    window.location.assign(url); 
+    closeAlert();
+    
+    };
+}
+
+
+
+
+
+function closeAlert() {
+    const alertEl = document.getElementById('customAlert');
+    if (alertEl) {
+        alertEl.classList.remove('active');
+        setTimeout(() => alertEl.remove(), 300);
+    }
+}
+
+// Smart APK Refresh Blocker variables
+let touchStartLine = 0;
+function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }
+function handleTouchMove(e) {
+    const list = document.getElementById('notesList');
+    const touchCurrent = e.touches[0].pageY;
+    if (list.scrollTop <= 0 && touchCurrent > touchStartLine) {
+        if (e.cancelable) e.preventDefault(); 
+    }
+}
+
+function openNotes(code) {
+    // Find the course in your data.json
+    const course = courseData.find(c => c.code === code);
+    const list = document.getElementById('notesList');
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody'); // Ensure your main content has this ID
+    
+    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+    
+    // Generate the notes grid
+    // Note: We add .pdf automatically here to the filename
+    list.innerHTML = course.notes.map(note => `
+        <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
+            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
+            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
+        </div>
+    `).join('');
+    
+    modal.classList.remove('hidden');
+
+    // Block APK pull-to-refresh
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            modal.classList.add('active-sheet');
+            // Move main content off-screen to prevent text "ghosting" through the modal
+            
+            document.body.classList.add('modal-open');
+        });
+    });
+}
+
+function closeNotes() {
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody');
+    
+    modal.classList.remove('active-sheet');
+    
+    document.body.classList.remove('modal-open');
+
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+
+    setTimeout(() => {
+        if (!modal.classList.contains('active-sheet')) {
+            modal.classList.add('hidden');
+        }
+    }, 500); 
+}
+
+
+    function openPaperByCode(code, batch) {
+        const course = courseData.find(c => c.code === code);
+        if (course) {
+            const links = course.links[batch];
+            viewPaper(links, `${course.title} - ${batch}`);
+        }
+    }
+
+    function viewPaper(links, title) {
+        currentPages = Array.isArray(links) ? links : [links];
+        currentPageIndex = 0;
+        document.getElementById('viewingTitle').innerText = title;
+        document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
+        updateViewer();
+        document.getElementById('viewerModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function updateViewer() {
+        const img = document.getElementById('paperImage');
+        img.src = currentPages[currentPageIndex];
+        document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
+        document.querySelector('#viewerModal .flex-grow').scrollTop = 0;
+    }
+
+    function nextPage() { if (currentPageIndex < currentPages.length - 1) { currentPageIndex++; updateViewer(); } }
+    function prevPage() { if (currentPageIndex > 0) { currentPageIndex--; updateViewer(); } }
+
+    function closeViewer() {
+        document.getElementById('viewerModal').classList.add('hidden');
+        document.getElementById('paperImage').src = "";
+        document.body.style.overflow = 'auto';
+    }
+
+    function filterContent() {
+        const query = document.getElementById('mainSearch').value.toLowerCase();
+        const sem = document.getElementById('semesterFilter').value;
+        const filtered = courseData.filter(c => 
+            (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
+            (sem === "all" || c.semester === sem)
+        );
+        renderCourses(filtered);
+    }
+
+    function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
+    function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
+
+    init();
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>EEE Question Bank Portal</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="icon.jpeg">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body { 
+            overscroll-behavior-y: contain; 
+            -webkit-overflow-scrolling: touch;
+            user-select: none;
+            color: #e5e5e5;
+            font-family: sans-serif;
+        }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }
+        
+        .scroll-container {
+            display: flex;
+            overflow-x: auto;
+            gap: 8px;
+            padding-bottom: 8px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .scroll-container::-webkit-scrollbar { display: none; }
+
+        .session-btn {
+            flex: 0 0 85px;
+            scroll-snap-align: start;
+            background: rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            color: #4b5563;
+            transition: all 0.2s ease;
+        }
+
+        .btn-available {
+            background: rgba(220, 38, 38, 0.05) !important;
+            border: 1px solid rgba(220, 38, 38, 0.3) !important;
+            color: #dc2626 !important;
+        }
+
+        .btn-notes {
+            background: rgba(255, 152, 0, 0.1) !important;
+            border: 1px solid rgba(255, 152, 0, 0.4) !important;
+            color: #ef6c00 !important;
+        }
+
+        /* File Card Styling */
+        .file-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .file-card:active { transform: scale(0.95); background: #f1f5f9; }
+
+        /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
+        .modal-overlay {
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+            backdrop-filter: blur(0px);
+            -webkit-backdrop-filter: blur(0px);
+        }
+
+        .modal-overlay.active-sheet {
+            opacity: 1;
+            pointer-events: auto;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .modal-content-slide { 
+            position:relative;
+            z-index:130;
+            transform: translateY(100%);
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            will-change: transform;
+            /* FIX: Prevents APK Swipe-to-Refresh */
+            overscroll-behavior-y: contain; 
+        }
+
+        .modal-overlay.active-sheet .modal-content-slide {
+            transform: translateY(0%);
+        }
+        /* --- PREMIUM DOWNLOAD ALERT STYLES --- */
+.premium-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+
+.premium-alert-overlay.active { 
+    opacity: 1; 
+    pointer-events: auto;
+}
+
+.premium-alert-card {
+    background: white;
+    width: 85%;
+    max-width: 320px;
+    padding: 24px;
+    border-radius: 28px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.premium-alert-overlay.active .premium-alert-card { 
+    transform: scale(1); 
+}
+
+.alert-icon-circle {
+    width: 60px;
+    height: 60px;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 24px;
+}
+
+.alert-btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.alert-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.btn-cancel { background: #f1f5f9; color: #64748b; }
+.btn-confirm { background: #dc2626; color: white; }
+
+
+        #notesList {
+            overscroll-behavior-y: contain;
+            -webkit-overflow-scrolling: touch;
+        }
+        #appBody {
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+        #notesList::-webkit-scrollbar { width: 4px; }
+        #notesList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        ::-webkit-scrollbar { width: 0px; height: 0px; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 pb-10">
+
+    <nav class="bg-black text-white shadow-xl border-b border-red-900/30 sticky top-0 z-50 p-4 pt-8">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-brain text-red-600 text-2xl"></i>
+                <h1 class="font-bold text-xl tracking-tight uppercase">EEE <span class="text-red-600">Vault</span></h1>
+            </div>
+            <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white transition shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">
+                <i class="fa-solid fa-plus mr-1"></i> Add Paper
+            </button>
+        </div>
+    </nav>
+
+    <main id="appBody"class="max-w-6xl mx-auto p-4 md:p-8">
+        <div class="glass-card p-6 rounded-3xl shadow-sm mb-8 border border-white">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="relative">
+                    <i class="fa-solid fa-search absolute left-4 top-4 text-slate-400"></i>
+                    <input type="text" id="mainSearch" placeholder="Search Title or Code..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 outline-none">
+                </div>
+                <select id="semesterFilter" class="bg-slate-100 py-3 px-4 rounded-2xl border-none outline-none appearance-none">
+                     <option value="all">All Semesters</option>
+                    <option value="1st Year 1st Semester">1st Year 1st Sem</option>
+                    <option value="1st Year 2nd Semester">1st Year 2nd Sem</option>
+                    <option value="2nd Year 1st Semester">2nd Year 1st Sem</option>
+                    <option value="2nd Year 2nd Semester">2nd Year 2nd Sem</option>
+                    <option value="3rd Year 1st Semester">3rd Year 1st Sem</option>
+                    <option value="3rd Year 2nd Semester">3rd Year 2nd Sem</option>
+                    <option value="4th Year 1st Semester">4th Year 1st Sem</option>
+                    <option value="4th Year 2nd Semester">4th Year 2nd Sem</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
+    </main>
+
+    <div id="notesModal" 
+         onclick="if(event.target === this) closeNotes()" 
+         class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">
+        
+        <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Notes & Materials</h3>
+                    <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>
+                </div>
+                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8"></div>
+        </div>
+    </div>
+
+    <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
+        <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30">
+            <div class="flex flex-col">
+                <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>
+                <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>
+            </div>
+            <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
+        </div>
+        <div class="flex-grow overflow-auto flex items-start justify-center bg-black relative">
+            <img id="paperImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
+            <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4">
+                <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-left"></i></button>
+                <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-right"></i></button>
+            </div>
         </div>
     </div>
 
     <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
             <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>
-            <p class="text-slate-500 text-sm mb-6">Help your fellow students by uploading papers to our Google Form.</p>
-            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
+            <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned image/pdf files to the Google form to add a missing Paper/Notes -kuro(^~^).</p>
+            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" target="_blank" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
             <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>
         </div>
     </div>
+	
+<script>
+    let courseData = [];
+    const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
+    let currentPages = []; 
+    let currentPageIndex = 0;
 
-    <script>
-        let courseData = [];
-        const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
-        let currentPages = []; 
-        let currentPageIndex = 0;
+    async function init() {
+        try {
+            const res = await fetch('data.json');
+            courseData = await res.json();
+            renderCourses(courseData);
+            document.getElementById('mainSearch').addEventListener('input', filterContent);
+            document.getElementById('semesterFilter').addEventListener('change', filterContent);
+        } catch (err) { console.error("Data load failed"); }
+    }
 
-        // --- FIXED PAPER ANIMATION LOGIC ---
-        function openPaper(imageUrl) {
-            const modal = document.getElementById('paperModal');
-            const img = document.getElementById('animatedPaperImage');
-            
-            // Set source first
-            img.src = imageUrl;
-            
-            // Force modal to display block so we can animate classes
-            modal.style.display = 'flex';
-            
-            // Use double frame delay to ensure the browser has painted the display:flex
-            // and the image has started loading before we run the transform
-            requestAnimationFrame(() => {
-                requestAnimationFrame(() => {
-                    modal.classList.add('active');
-                });
-            });
-
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closePaper() {
-            const modal = document.getElementById('paperModal');
-            modal.classList.remove('active');
-            // Wait for transition to finish (400ms) before hiding
-            setTimeout(() => { 
-                if(!modal.classList.contains('active')) {
-                    modal.style.display = 'none'; 
-                    document.body.style.overflow = 'auto';
-                }
-            }, 400);
-        }
-
-        async function init() {
-            try {
-                const res = await fetch('data.json');
-                courseData = await res.json();
-                renderCourses(courseData);
-                document.getElementById('mainSearch').addEventListener('input', filterContent);
-                document.getElementById('semesterFilter').addEventListener('change', filterContent);
-            } catch (err) { console.error("Data load failed"); }
-        }
-
-        function renderCourses(data) {
-            const container = document.getElementById('courseContainer');
-            container.innerHTML = data.map((course) => {
-                const hasNotes = course.notes && course.notes.length > 0;
-                return `
-                    <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
-                        <div class="flex flex-col gap-3">
-                            <div>
-                                <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
-                                <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
-                            </div>
-                            <div class="scroll-container">
-                                <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
-                                        class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
-                                    <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
-                                    <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
-                                </button>
-                                ${batches.map(batch => {
-                                    const link = course.links[batch];
-                                    const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
-                                    const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
-                                    return `
-                                        <button onclick="${clickAction}" 
-                                                class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
-                                            <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
-                                            <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
-                                        </button>
-                                    `;
-                                }).join('')}
-                            </div>
+    function renderCourses(data) {
+        const container = document.getElementById('courseContainer');
+        container.innerHTML = data.map((course) => {
+            const hasNotes = course.notes && course.notes.length > 0;
+            return `
+                <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
+                    <div class="flex flex-col gap-3">
+                        <div>
+                            <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
+                            <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
+                        </div>
+                        <div class="scroll-container">
+                            <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
+                                    class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
+                                <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
+                                <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
+                            </button>
+                            ${batches.map(batch => {
+                                const link = course.links[batch];
+                                const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
+                                const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
+                                return `
+                                    <button onclick="${clickAction}" 
+                                            class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                                        <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
+                                        <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                                    </button>
+                                `;
+                            }).join('')}
                         </div>
                     </div>
-                `}).join('');
-        }
-
-        function openPaperByCode(code, batch) {
-            const course = courseData.find(c => c.code === code);
-            if (course) {
-                const links = course.links[batch];
-                // Use animated modal for single links, Paged Viewer for multiples
-                if (Array.isArray(links) && links.length > 1) {
-                    viewPaper(links, `${course.title} - ${batch}`);
-                } else {
-                    const url = Array.isArray(links) ? links[0] : links;
-                    openPaper(url);
-                }
-            }
-        }
-
-        // Paged Viewer functions
-        function viewPaper(links, title) {
-            currentPages = Array.isArray(links) ? links : [links];
-            currentPageIndex = 0;
-            document.getElementById('viewingTitle').innerText = title;
-            document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
-            updateViewer();
-            document.getElementById('viewerModal').classList.remove('hidden');
-            document.body.style.overflow = 'hidden';
-        }
-        function updateViewer() {
-            const img = document.getElementById('viewerImage');
-            img.src = currentPages[currentPageIndex];
-            document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
-        }
-        function nextPage() { if (currentPageIndex < currentPages.length - 1) { currentPageIndex++; updateViewer(); } }
-        function prevPage() { if (currentPageIndex > 0) { currentPageIndex--; updateViewer(); } }
-        function closeViewer() {
-            document.getElementById('viewerModal').classList.add('hidden');
-            document.body.style.overflow = 'auto';
-        }
-
-        // Notes and Downloads
-        function openNotes(code) {
-            const course = courseData.find(c => c.code === code);
-            const list = document.getElementById('notesList');
-            const modal = document.getElementById('notesModal');
-            document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
-            list.innerHTML = course.notes.map(note => `
-                <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
-                    <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
-                    <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
-                    <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
                 </div>
-            `).join('');
-            modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.add('active-sheet'); }, 10);
-        }
-        function closeNotes() {
-            const modal = document.getElementById('notesModal');
-            modal.classList.remove('active-sheet');
-            setTimeout(() => { modal.classList.add('hidden'); }, 500);
-        }
-        function confirmDownload(url, fileName) {
-            if (document.getElementById('customAlert')) return;
-            const alertHTML = `
-                <div id="customAlert" class="premium-alert-overlay">
-                    <div class="premium-alert-card">
-                        <div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                        <h3 class="text-slate-800 font-bold">Download File?</h3>
-                        <p class="text-slate-500 text-xs mb-4">${fileName}</p>
-                        <div class="alert-btn-group">
-                            <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
-                            <button class="alert-btn btn-confirm" id="startDownload">Download</button>
-                        </div>
-                    </div>
-                </div>`;
-            document.body.insertAdjacentHTML('beforeend', alertHTML);
-            const alertEl = document.getElementById('customAlert');
-            setTimeout(() => alertEl.classList.add('active'), 10);
-            document.getElementById('startDownload').onclick = () => { window.location.assign(url); closeAlert(); };
-        }
-        function closeAlert() {
-            const alertEl = document.getElementById('customAlert');
-            if (alertEl) { alertEl.classList.remove('active'); setTimeout(() => alertEl.remove(), 300); }
-        }
+            `}).join('');
+    }
+// --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
+function confirmDownload(url, fileName) {
+    // 1. Check if an alert already exists to prevent duplicates
+    if (document.getElementById('customAlert')) return;
 
-        function filterContent() {
-            const query = document.getElementById('mainSearch').value.toLowerCase();
-            const sem = document.getElementById('semesterFilter').value;
-            const filtered = courseData.filter(c => 
-                (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
-                (sem === "all" || c.semester === sem)
-            );
-            renderCourses(filtered);
+    const alertHTML = `
+        <div id="customAlert" class="premium-alert-overlay">
+            <div class="premium-alert-card">
+                <div class="alert-icon-circle">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
+                <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>
+                <div class="alert-btn-group">
+                    <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
+                    <button class="alert-btn btn-confirm" id="startDownload">Download</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', alertHTML);
+    const alertEl = document.getElementById('customAlert');
+    setTimeout(() => alertEl.classList.add('active'), 10);
+
+    document.getElementById('startDownload').onclick = () => {
+    // This is the most reliable way for a WebView/APK to hand off 
+    // the file to the system download manager.
+    window.location.assign(url); 
+    closeAlert();
+    
+    };
+}
+
+
+
+
+
+function closeAlert() {
+    const alertEl = document.getElementById('customAlert');
+    if (alertEl) {
+        alertEl.classList.remove('active');
+        setTimeout(() => alertEl.remove(), 300);
+    }
+}
+
+// Smart APK Refresh Blocker variables
+let touchStartLine = 0;
+function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }
+function handleTouchMove(e) {
+    const list = document.getElementById('notesList');
+    const touchCurrent = e.touches[0].pageY;
+    if (list.scrollTop <= 0 && touchCurrent > touchStartLine) {
+        if (e.cancelable) e.preventDefault(); 
+    }
+}
+
+function openNotes(code) {
+    // Find the course in your data.json
+    const course = courseData.find(c => c.code === code);
+    const list = document.getElementById('notesList');
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody'); // Ensure your main content has this ID
+    
+    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+    
+    // Generate the notes grid
+    // Note: We add .pdf automatically here to the filename
+    list.innerHTML = course.notes.map(note => `
+        <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
+            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
+            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
+        </div>
+    `).join('');
+    
+    modal.classList.remove('hidden');
+
+    // Block APK pull-to-refresh
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            modal.classList.add('active-sheet');
+            // Move main content off-screen to prevent text "ghosting" through the modal
+            
+            document.body.classList.add('modal-open');
+        });
+    });
+}
+
+function closeNotes() {
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody');
+    
+    modal.classList.remove('active-sheet');
+    
+    document.body.classList.remove('modal-open');
+
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+
+    setTimeout(() => {
+        if (!modal.classList.contains('active-sheet')) {
+            modal.classList.add('hidden');
         }
+    }, 500); 
+}
 
-        function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
-        function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
 
-        init();
-    </script>
+    function openPaperByCode(code, batch) {
+        const course = courseData.find(c => c.code === code);
+        if (course) {
+            const links = course.links[batch];
+            viewPaper(links, `${course.title} - ${batch}`);
+        }
+    }
+
+    function viewPaper(links, title) {
+        currentPages = Array.isArray(links) ? links : [links];
+        currentPageIndex = 0;
+        document.getElementById('viewingTitle').innerText = title;
+        document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
+        updateViewer();
+        document.getElementById('viewerModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function updateViewer() {
+        const img = document.getElementById('paperImage');
+        img.src = currentPages[currentPageIndex];
+        document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
+        document.querySelector('#viewerModal .flex-grow').scrollTop = 0;
+    }
+
+    function nextPage() { if (currentPageIndex < currentPages.length - 1) { currentPageIndex++; updateViewer(); } }
+    function prevPage() { if (currentPageIndex > 0) { currentPageIndex--; updateViewer(); } }
+
+    function closeViewer() {
+        document.getElementById('viewerModal').classList.add('hidden');
+        document.getElementById('paperImage').src = "";
+        document.body.style.overflow = 'auto';
+    }
+
+    function filterContent() {
+        const query = document.getElementById('mainSearch').value.toLowerCase();
+        const sem = document.getElementById('semesterFilter').value;
+        const filtered = courseData.filter(c => 
+            (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
+            (sem === "all" || c.semester === sem)
+        );
+        renderCourses(filtered);
+    }
+
+    function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
+    function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
+
+    init();
+</script>
 </body>
 </html>
