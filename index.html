@@ -351,14 +351,16 @@ function confirmDownload(url, fileName) {
     setTimeout(() => alertEl.classList.add('active'), 10);
 
     document.getElementById('startDownload').onclick = () => {
-    // This is the most reliable way for a WebView/APK to hand off 
-    // the file to the system download manager.
-    window.location.assign(url); 
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     closeAlert();
-    
-    };
+};
 }
-
 
 
 
