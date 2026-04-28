@@ -189,7 +189,26 @@
 
 .btn-cancel { background: #f1f5f9; color: #64748b; }
 .btn-confirm { background: #dc2626; color: white; }
+ /* VIEWER MODAL ANIMATION */
+#viewerModal {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+}
 
+#viewerModal.viewer-active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+#viewerModal .flex-grow {
+    transform: translateY(40px) scale(0.96);
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#viewerModal.viewer-active .flex-grow {
+    transform: translateY(0px) scale(1);
+}
 
         #notesList {
             overscroll-behavior-y: contain;
@@ -511,7 +530,6 @@ function closeNotes() {
     
     document.getElementById('viewingTitle').innerText = title;
     
-    // Inject all images into the filmstrip at once
     const filmstrip = document.getElementById('paperFilmstrip');
     filmstrip.innerHTML = currentPages.map(url => `
         <div class="viewer-page">
@@ -519,14 +537,20 @@ function closeNotes() {
         </div>
     `).join('');
 
-    // Reset position
     filmstrip.style.transform = `translateX(0%)`;
-    
     document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
     updatePageCounter();
     
-    document.getElementById('viewerModal').classList.remove('hidden');
+    // Show modal first, then animate in
+    const modal = document.getElementById('viewerModal');
+    modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            modal.classList.add('viewer-active');
+        });
+    });
 }
 
 function updateViewerPosition() {
@@ -554,10 +578,15 @@ function prevPage() {
         updateViewerPosition(); 
     } 
 }
-   function closeViewer() {
-    document.getElementById('viewerModal').classList.add('hidden');
-    document.getElementById('paperFilmstrip').innerHTML = ""; 
+	function closeViewer() {
+    const modal = document.getElementById('viewerModal');
+    modal.classList.remove('viewer-active');
     document.body.style.overflow = 'auto';
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.getElementById('paperFilmstrip').innerHTML = "";
+    }, 350);
 }
 
     function filterContent() {
