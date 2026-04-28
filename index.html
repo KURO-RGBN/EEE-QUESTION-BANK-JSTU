@@ -69,7 +69,30 @@
             align-items: center;
             transition: 0.2s;
         }
-        .file-card:active { transform: scale(0.95); background: #f1f5f9; }
+        .file-card:active { transform: scale(0.95); background: #f1f5f9; } 
+		/* Container that holds the sliding images */
+        .viewer-filmstrip {
+         display: flex;
+         transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+         will-change: transform;
+         height: 100%;
+         width: 100%;
+}
+
+/* Individual page wrappers */
+       .viewer-page {
+       min-width: 100%;
+      height: 100%;
+      display: flex;
+  	  align-items: flex-start;
+     justify-content: center;
+     overflow-y: auto; /* Allows scrolling long vertical papers */
+}
+
+.viewer-page img {
+    width: 100%;
+    height: auto;
+}
 
         /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
         .modal-overlay {
@@ -268,22 +291,29 @@
         </div>
     </div>
 
-    <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
-        <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30">
-            <div class="flex flex-col">
-                <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>
-                <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>
-            </div>
-            <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
+   <div id="viewerModal" class="fixed inset-0 bg-black z-[100] hidden flex flex-col">
+    <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110]">
+        <div class="flex flex-col">
+            <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>
+            <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>
         </div>
-        <div class="flex-grow overflow-auto flex items-start justify-center bg-black relative">
-            <img id="paperImage" src="" class="max-w-none w-full h-auto" style="min-width: 100%;">
-            <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4">
-                <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-left"></i></button>
-                <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white"><i class="fas fa-chevron-right"></i></button>
+        <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
+    </div>
+    
+    <div class="flex-grow overflow-hidden bg-black relative">
+        <div id="paperFilmstrip" class="viewer-filmstrip">
             </div>
+
+        <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4 z-[105]">
+            <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white backdrop-blur-sm border border-white/10 active:scale-90 transition-transform">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white backdrop-blur-sm border border-white/10 active:scale-90 transition-transform">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </div>
+</div>
 
     <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
@@ -475,31 +505,60 @@ function closeNotes() {
         }
     }
 
-    function viewPaper(links, title) {
-        currentPages = Array.isArray(links) ? links : [links];
-        currentPageIndex = 0;
-        document.getElementById('viewingTitle').innerText = title;
-        document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
-        updateViewer();
-        document.getElementById('viewerModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
+  function viewPaper(links, title) {
+    currentPages = Array.isArray(links) ? links : [links];
+    currentPageIndex = 0;
+    
+    document.getElementById('viewingTitle').innerText = title;
+    
+    // Inject all images into the filmstrip at once
+    const filmstrip = document.getElementById('paperFilmstrip');
+    filmstrip.innerHTML = currentPages.map(url => `
+        <div class="viewer-page">
+            <img src="${url}" loading="lazy">
+        </div>
+    `).join('');
 
-    function updateViewer() {
-        const img = document.getElementById('paperImage');
-        img.src = currentPages[currentPageIndex];
-        document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
-        document.querySelector('#viewerModal .flex-grow').scrollTop = 0;
-    }
+    // Reset position
+    filmstrip.style.transform = `translateX(0%)`;
+    
+    document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
+    updatePageCounter();
+    
+    document.getElementById('viewerModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
 
-    function nextPage() { if (currentPageIndex < currentPages.length - 1) { currentPageIndex++; updateViewer(); } }
-    function prevPage() { if (currentPageIndex > 0) { currentPageIndex--; updateViewer(); } }
+function updateViewerPosition() {
+    const filmstrip = document.getElementById('paperFilmstrip');
+    // Calculate the percentage to shift
+    const offset = currentPageIndex * 100;
+    filmstrip.style.transform = `translateX(-${offset}%)`;
+    updatePageCounter();
+}
 
-    function closeViewer() {
-        document.getElementById('viewerModal').classList.add('hidden');
-        document.getElementById('paperImage').src = "";
-        document.body.style.overflow = 'auto';
-    }
+function updatePageCounter() {
+    document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
+}
+
+function nextPage() { 
+    if (currentPageIndex < currentPages.length - 1) { 
+        currentPageIndex++; 
+        updateViewerPosition(); 
+    } 
+}
+
+function prevPage() { 
+    if (currentPageIndex > 0) { 
+        currentPageIndex--; 
+        updateViewerPosition(); 
+    } 
+}
+   function closeViewer() {
+    document.getElementById('viewerModal').classList.add('hidden');
+    document.getElementById('paperFilmstrip').innerHTML = ""; 
+    document.body.style.overflow = 'auto';
+}
 
     function filterContent() {
         const query = document.getElementById('mainSearch').value.toLowerCase();
