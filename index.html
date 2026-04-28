@@ -193,7 +193,7 @@
 #viewerModal {
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.35s ease;
+    transition: opacity 0.25s ease;
 }
 
 #viewerModal.viewer-active {
@@ -202,12 +202,15 @@
 }
 
 #viewerModal .flex-grow {
-    transform: translateY(40px) scale(0.96);
-    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(60px) scale(0.93);
+    transition: transform 0.45s cubic-bezier(0.34, 1.2, 0.64, 1);
+    opacity: 0;
 }
 
 #viewerModal.viewer-active .flex-grow {
     transform: translateY(0px) scale(1);
+    opacity: 1;
+    transition: transform 0.45s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.3s ease;
 }
 
         #notesList {
@@ -577,16 +580,30 @@ function prevPage() {
         currentPageIndex--; 
         updateViewerPosition(); 
     } 
-}
-	function closeViewer() {
+}function closeViewer() {
     const modal = document.getElementById('viewerModal');
-    modal.classList.remove('viewer-active');
-    document.body.style.overflow = 'auto';
+    const flexGrow = modal.querySelector('.flex-grow');
+
+    // Animate content down first
+    flexGrow.style.transform = 'translateY(60px) scale(0.93)';
+    flexGrow.style.opacity = '0';
+    flexGrow.style.transition = 'transform 0.35s cubic-bezier(0.4, 0, 1, 1), opacity 0.25s ease';
+
+    // Then fade out the whole modal slightly after
+    setTimeout(() => {
+        modal.classList.remove('viewer-active');
+    }, 80);
 
     setTimeout(() => {
         modal.classList.add('hidden');
         document.getElementById('paperFilmstrip').innerHTML = "";
-    }, 350);
+        // Reset inline styles for next open
+        flexGrow.style.transform = '';
+        flexGrow.style.opacity = '';
+        flexGrow.style.transition = '';
+    }, 380);
+
+    document.body.style.overflow = 'auto';
 }
 
     function filterContent() {
