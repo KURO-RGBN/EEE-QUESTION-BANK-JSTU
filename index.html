@@ -69,6 +69,11 @@
         transition: 0.2s;  
     }  
     .file-card:active { transform: scale(0.95); background: #f1f5f9; }   
+	body.modal-open {
+    overflow: hidden;
+    touch-action: none;
+}
+	
 	/* Container now stacks images vertically */
 
 .viewer-filmstrip {
@@ -353,7 +358,7 @@ transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
     <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110]">  
         <div class="flex flex-col">  
             <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>  
-            <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>  
+              
         </div>  
         <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>  
     </div>  <div class="flex-grow bg-black relative overflow-y-auto">  
@@ -635,15 +640,7 @@ function closeNotes() {
             viewPaper(links, `${course.title} - ${batch}`);  
         }  
     }  
-  
-const observer = new IntersectionObserver((entries) => {  
-    entries.forEach(entry => {  
-        if (entry.isIntersecting) {  
-            const index = Array.from(entry.target.parentNode.children).indexOf(entry.target);  
-            document.getElementById('pageCounter').innerText = `PAGE ${index + 1} OF ${currentPages.length}`;  
-        }  
-    });  
-}, { threshold: 0.5 });  
+
   
   
 function viewPaper(links, title) {  
@@ -671,27 +668,26 @@ function viewPaper(links, title) {
     });  
   
     filmstrip.scrollTop = 0;  
+	document.body.classList.add('modal-open');
 }  
   
-function updatePageCounter() {  
-    document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;  
-}  
+
   
   
   
   
 	  
-	function closeViewer() {  
-    const modal = document.getElementById('viewerModal');  
-    modal.classList.remove('viewer-active');  
-    document.body.style.overflow = 'auto';  
-  
-   
-    setTimeout(() => {  
-        modal.classList.add('hidden');  
-        document.getElementById('paperFilmstrip').innerHTML = "";  
-    }, 550);  
-}   
+	function closeViewer() {
+    const modal = document.getElementById('viewerModal');
+    modal.classList.remove('viewer-active');
+
+    document.body.classList.remove('modal-open'); // ✅ IMPORTANT
+
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.getElementById('paperFilmstrip').innerHTML = "";
+    }, 550);
+}
 	function enableImageZoom() {  
     const wrappers = document.querySelectorAll('.zoom-wrapper');  
   
