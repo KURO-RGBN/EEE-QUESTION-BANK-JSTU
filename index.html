@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EEE Vault JSTU </title>
     
     <link rel="manifest" href="manifest.json">
@@ -70,28 +70,29 @@
             transition: 0.2s;
         }
         .file-card:active { transform: scale(0.95); background: #f1f5f9; } 
-		/* Container that holds the sliding images */
-        .viewer-filmstrip {
-         display: flex;
-         transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-         will-change: transform;
-         height: 100%;
-         width: 100%;
+		/* Container now stacks images vertically */
+.viewer-filmstrip {
+    display: flex;
+    flex-direction: column; /* Stack vertically */
+    width: 100%;
+    height: 100%;
+    overflow-y: auto; /* Enable vertical scrolling */
+    -webkit-overflow-scrolling: touch;
 }
 
-/* Individual page wrappers */
-       .viewer-page {
-       min-width: 100%;
-      height: 100%;
-      display: flex;
-  	  align-items: flex-start;
-     justify-content: center;
-     overflow-y: auto; /* Allows scrolling long vertical papers */
+/* Individual page adjustments */
+.viewer-page {
+    min-width: 100%;
+    width: 100%;
+    display: block; /* Standard block display for stacking */
+    margin-bottom: 10px; /* Gap between pages */
 }
 
 .viewer-page img {
     width: 100%;
     height: auto;
+    display: block;
+	touch-action: pinch-zoom;
 }
 .modal-content-pop { 
     position: relative;
@@ -353,14 +354,7 @@
         <div id="paperFilmstrip" class="viewer-filmstrip">
             </div>
 
-        <div id="navControls" class="absolute inset-0 pointer-events-none flex items-center justify-between px-4 z-[105]">
-            <button onclick="prevPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white backdrop-blur-sm border border-white/10 active:scale-90 transition-transform">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button onclick="nextPage()" class="pointer-events-auto bg-black/40 p-4 rounded-full text-white backdrop-blur-sm border border-white/10 active:scale-90 transition-transform">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        </div>
+       
     </div>
 </div>
 
@@ -639,10 +633,19 @@ function closeNotes() {
             viewPaper(links, `${course.title} - ${batch}`);
         }
     }
+
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const index = Array.from(entry.target.parentNode.children).indexOf(entry.target);
+            document.getElementById('pageCounter').innerText = `PAGE ${index + 1} OF ${currentPages.length}`;
+        }
+    });
+}, { threshold: 0.5 });
+
+
 function viewPaper(links, title) {
     currentPages = Array.isArray(links) ? links : [links];
-    currentPageIndex = 0;
-
     document.getElementById('viewingTitle').innerText = title;
 
     const filmstrip = document.getElementById('paperFilmstrip');
@@ -651,47 +654,29 @@ function viewPaper(links, title) {
             <img src="${url}" loading="lazy">
         </div>
     `).join('');
+document.querySelectorAll('.viewer-page').forEach(page => observer.observe(page));
+    // Update counter based on scroll position
+    filmstrip.onscroll = () => {
+        const pageHeight = filmstrip.scrollHeight / currentPages.length;
+        const currentPage = Math.round(filmstrip.scrollTop / pageHeight) + 1;
+        document.getElementById('pageCounter').innerText = `PAGE ${currentPage} OF ${currentPages.length}`;
+    };
 
-    filmstrip.style.transform = `translateX(0%)`;
-    document.getElementById('navControls').style.display = currentPages.length > 1 ? 'flex' : 'none';
-    updatePageCounter();
+    filmstrip.scrollTop = 0;
+    document.getElementById('pageCounter').innerText = `PAGE 1 OF ${currentPages.length}`;
 
     const modal = document.getElementById('viewerModal');
     modal.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-
-    requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-            modal.classList.add('viewer-active');
-        });
-    });
-}
-
-function updateViewerPosition() {
-    const filmstrip = document.getElementById('paperFilmstrip');
-    // Calculate the percentage to shift
-    const offset = currentPageIndex * 100;
-    filmstrip.style.transform = `translateX(-${offset}%)`;
-    updatePageCounter();
+    requestAnimationFrame(() => modal.classList.add('viewer-active'));
 }
 
 function updatePageCounter() {
     document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
 }
 
-function nextPage() { 
-    if (currentPageIndex < currentPages.length - 1) { 
-        currentPageIndex++; 
-        updateViewerPosition(); 
-    } 
-}
 
-function prevPage() { 
-    if (currentPageIndex > 0) { 
-        currentPageIndex--; 
-        updateViewerPosition(); 
-    } 
-}
+
+
 	
 	function closeViewer() {
     const modal = document.getElementById('viewerModal');
