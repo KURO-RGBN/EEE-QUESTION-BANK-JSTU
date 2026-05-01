@@ -117,10 +117,9 @@ transition: transform 0.08s linear;
 .modal-content-pop {
 position: relative;
 z-index: 130;
-/* Start closer to full size (0.95) to reduce "mushy" travel distance /
 transform: scale(0.95);
 opacity: 0;
-/ 0.2s is the 'sweet spot' for snappy mobile UI */
+
 transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s linear;
 will-change: transform, opacity;
 }
@@ -646,7 +645,7 @@ function closeNotes() {
 function viewPaper(links, title) {  
     currentPages = Array.isArray(links) ? links : [links];  
     document.getElementById('viewingTitle').innerText = title;  
-	document.querySelectorAll('.viewer-page').forEach(el => observer.observe(el));
+	
   
     const filmstrip = document.getElementById('paperFilmstrip');  
   
@@ -690,6 +689,15 @@ function viewPaper(links, title) {
 }
 	function enableImageZoom() {  
     const wrappers = document.querySelectorAll('.zoom-wrapper');  
+		let originX = 0;
+let originY = 0;
+let rect = null; 
+		function getMidPoint(touches) {
+    return {
+        x: (touches[0].clientX + touches[1].clientX) / 2,
+        y: (touches[0].clientY + touches[1].clientY) / 2
+    };
+}
   
     wrappers.forEach(wrapper => {  
         const img = wrapper.querySelector('img');  
@@ -710,10 +718,11 @@ function viewPaper(links, title) {
         const MIN_SCALE = 1;  
         const MAX_SCALE = 4;  
   
-        function update(smooth = false) {
-    if (smooth) {
+        function update(mode = "instant") {
+    if (mode === "animate") {
         img.style.transition = "transform 0.18s cubic-bezier(0.22, 1, 0.36, 1)";
-    } else {
+    } 
+    else {
         img.style.transition = "transform 0s";
     }
 
@@ -731,36 +740,53 @@ function viewPaper(links, title) {
 }
   
         // DOUBLE TAP  
-        wrapper.addEventListener('touchend', (e) => {  
-            const now = Date.now();  
-  
-            if (now - lastTap < 280) {  
-                if (scale > 1) {  
-                    scale = 1;  
-                    panX = 0;  
-                    panY = 0;  
-  
-                    wrapper.style.touchAction = "pan-y"; // ✅ restore scroll  
-                } else {  
-                    scale = 2.2;  
-  
-                    wrapper.style.touchAction = "none"; // ❌ block scroll while zoomed  
-                }  
-                update();  
-            }  
-  
-            lastTap = now;  
-        });  
-  
+        wrapper.addEventListener('touchend', (e) => {
+    const now = Date.now();
+
+    if (now - lastTap < 280) {
+
+        const rect = img.getBoundingClientRect();
+
+        const x = e.changedTouches[0].clientX - rect.left;
+        const y = e.changedTouches[0].clientY - rect.top;
+
+        if (scale > 1) {
+            scale = 1;
+            panX = 0;
+            panY = 0;
+            wrapper.style.touchAction = "pan-y";
+        } else {
+            scale = 2.2;
+
+            panX = (rect.width / 2 - x) * 1.2;
+            panY = (rect.height / 2 - y) * 1.2;
+
+            wrapper.style.touchAction = "none";
+        }
+
+        update("animate");
+    }
+
+    lastTap = now;
+});
         // TOUCH START  
         wrapper.addEventListener('touchstart', (e) => {  
-            if (e.touches.length === 2) {  
-                startDist = getDistance(e.touches);  
-                lastScale = scale;  
-                isPanning = false;  
-  
-                wrapper.style.touchAction = "none"; // pinch = block scroll  
-            }  
+            if (e.touches.length === 2) {
+    startDist = getDistance(e.touches);
+    lastScale = scale;
+
+    rect = wrapper.getBoundingClientRect();
+
+    const mid = getMidPoint(e.touches);
+
+    const prevScale = scale;
+
+originX = (mid.x - rect.left - panX) / prevScale;
+originY = (mid.y - rect.top - panY) / prevScale;
+
+    isPanning = false;
+    wrapper.style.touchAction = "none";
+}
   
             if (e.touches.length === 1 && scale > 1) {  
                 isPanning = true;  
@@ -773,15 +799,26 @@ function viewPaper(links, title) {
         wrapper.addEventListener('touchmove', (e) => {  
   
             // PINCH  
-            if (e.touches.length === 2) {  
-                e.preventDefault();  
-  
-                const newDist = getDistance(e.touches);  
-                scale = lastScale * (newDist / startDist);  
-  
-                scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));  
-                update();  
-            }  
+            // PINCH (ANCHOR-BASED ZOOM)
+if (e.touches.length === 2) {
+    e.preventDefault();
+
+    const newDist = getDistance(e.touches);
+    const newScale = lastScale * (newDist / startDist);
+
+    scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+
+    const mid = getMidPoint(e.touches);
+
+    const dx = mid.x - rect.left;
+    const dy = mid.y - rect.top;
+
+    panX = dx - originX * scale;
+    panY = dy - originY * scale;
+requestAnimationFrame(() => update("instant"));
+    clampPan();
+    update("instant");
+} 
   
             // PAN ONLY IF ZOOMED  
             if (e.touches.length === 1 && isPanning && scale > 1) {  
