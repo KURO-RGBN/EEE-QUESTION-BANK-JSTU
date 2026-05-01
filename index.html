@@ -649,6 +649,7 @@ const observer = new IntersectionObserver((entries) => {
 function viewPaper(links, title) {  
     currentPages = Array.isArray(links) ? links : [links];  
     document.getElementById('viewingTitle').innerText = title;  
+	document.querySelectorAll('.viewer-page').forEach(el => observer.observe(el));
   
     const filmstrip = document.getElementById('paperFilmstrip');  
   
@@ -685,7 +686,7 @@ function updatePageCounter() {
     modal.classList.remove('viewer-active');  
     document.body.style.overflow = 'auto';  
   
-   document.querySelectorAll('.viewer-page').forEach(el => observer.observe(el));  
+   
     setTimeout(() => {  
         modal.classList.add('hidden');  
         document.getElementById('paperFilmstrip').innerHTML = "";  
