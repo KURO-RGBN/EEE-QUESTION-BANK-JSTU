@@ -73,39 +73,41 @@
 		/* Container now stacks images vertically */
 
 .viewer-filmstrip {
-    display: flex;
-    flex-direction: column;
+    display: block;
     width: 100%;
     height: 100%;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
+    scroll-behavior: smooth;
 }
-/* Individual page adjustments */
+
 .viewer-page {
-    min-width: 100%;
     width: 100%;
-    display: block; /* Standard block display for stacking */
-    margin-bottom: 10px; /* Gap between pages */
+    display: block;
+    margin-bottom: 12px;
 }
 
 .viewer-page img {
     width: 100%;
     height: auto;
     display: block;
-    transform-origin: center;
-    transition: transform 0.2s ease;
+    user-select: none;
 }
-		.zoom-wrapper {
-    touch-action: none;
+
+/* FIXED ZOOM SYSTEM (Adobe-like behavior) */
+.zoom-wrapper {
+    position: relative;
     overflow: hidden;
+    touch-action: none;
 }
 
 .zoom-wrapper img {
     width: 100%;
-    height: auto;
-    transform-origin: center;
+    transform-origin: center center;
     will-change: transform;
+    transition: transform 0.08s linear;
 }
 
 .modal-content-pop { 
@@ -364,7 +366,7 @@
         <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
     </div>
     
-    <div class="flex-grow overflow-hidden bg-black relative">
+    <div class="flex-grow bg-black relative overflow-y-auto">
         <div id="paperFilmstrip" class="viewer-filmstrip">
             </div>
 
@@ -663,30 +665,25 @@ function viewPaper(links, title) {
     document.getElementById('viewingTitle').innerText = title;
 
     const filmstrip = document.getElementById('paperFilmstrip');
-  filmstrip.innerHTML = currentPages.map((url, index) => `
-    <div class="viewer-page">
-        <div class="zoom-wrapper" data-scale="1">
-            <img src="${url}" loading="lazy">
-        </div>
-    </div>
-`).join('');
-	enableImageZoom();
-document.querySelectorAll('.viewer-page').forEach(page => observer.observe(page));
-    // Update counter based on scroll position
-    filmstrip.onscroll = () => {
-        const pageHeight = filmstrip.scrollHeight / currentPages.length;
-        const currentPage = Math.round(filmstrip.scrollTop / pageHeight) + 1;
-        document.getElementById('pageCounter').innerText = `PAGE ${currentPage} OF ${currentPages.length}`;
-    };
 
-    filmstrip.scrollTop = 0;
-    document.getElementById('pageCounter').innerText = `PAGE 1 OF ${currentPages.length}`;
+    filmstrip.innerHTML = currentPages.map((url) => `
+        <div class="viewer-page">
+            <div class="zoom-wrapper">
+                <img src="${url}" loading="lazy">
+            </div>
+        </div>
+    `).join('');
+
+    enableImageZoom();
 
     const modal = document.getElementById('viewerModal');
-   modal.classList.remove('hidden');
-setTimeout(() => {
-    modal.classList.add('viewer-active');
-}, 10);
+    modal.classList.remove('hidden');
+
+    requestAnimationFrame(() => {
+        modal.classList.add('viewer-active');
+    });
+
+    filmstrip.scrollTop = 0;
 }
 
 function updatePageCounter() {
@@ -712,57 +709,66 @@ function enableImageZoom() {
     const wrappers = document.querySelectorAll('.zoom-wrapper');
 
     wrappers.forEach(wrapper => {
+        const img = wrapper.querySelector('img');
+
         let scale = 1;
         let lastScale = 1;
-
-        let startDist = 0;
-        let startX = 0;
-        let startY = 0;
 
         let panX = 0;
         let panY = 0;
 
-        let isPanning = false;
+        let startX = 0;
+        let startY = 0;
 
-        // DOUBLE TAP
+        let startDist = 0;
+        let isPanning = false;
         let lastTap = 0;
 
-        const img = wrapper.querySelector('img');
+        const MIN_SCALE = 1;
+        const MAX_SCALE = 4;
 
-        function setTransform() {
+        function update() {
             img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
         }
 
-        // DOUBLE TAP ZOOM
+        function clampPan() {
+            const limit = (scale - 1) * 300;
+            panX = Math.max(-limit, Math.min(limit, panX));
+            panY = Math.max(-limit, Math.min(limit, panY));
+        }
+
+        // DOUBLE TAP ZOOM (Smart toggle)
         wrapper.addEventListener('touchend', (e) => {
             const now = Date.now();
-            if (now - lastTap < 300) {
+
+            if (now - lastTap < 280) {
                 if (scale > 1) {
                     scale = 1;
                     panX = 0;
                     panY = 0;
                 } else {
-                    scale = 2;
+                    scale = 2.2;
                 }
-                setTransform();
+                update();
             }
+
             lastTap = now;
         });
 
         // TOUCH START
         wrapper.addEventListener('touchstart', (e) => {
             if (e.touches.length === 2) {
-    startDist = getDistance(e.touches);
-    lastScale = scale;
+                startDist = getDistance(e.touches);
+                lastScale = scale;
+                isPanning = false;
+            }
 
-    isPanning = false; // reset pan state
-}
             if (e.touches.length === 1 && scale > 1) {
                 isPanning = true;
                 startX = e.touches[0].clientX - panX;
                 startY = e.touches[0].clientY - panY;
             }
-        }, { passive: true });
+        }, { passive: false });
 
         // TOUCH MOVE
         wrapper.addEventListener('touchmove', (e) => {
@@ -774,19 +780,20 @@ function enableImageZoom() {
                 const newDist = getDistance(e.touches);
                 scale = lastScale * (newDist / startDist);
 
-                scale = Math.max(1, Math.min(scale, 4));
+                scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
 
-                setTransform();
+                update();
             }
 
-            // PAN WHEN ZOOMED
+            // PAN
             if (e.touches.length === 1 && isPanning && scale > 1) {
                 e.preventDefault();
 
                 panX = e.touches[0].clientX - startX;
                 panY = e.touches[0].clientY - startY;
 
-                setTransform();
+                clampPan();
+                update();
             }
 
         }, { passive: false });
@@ -794,7 +801,6 @@ function enableImageZoom() {
         wrapper.addEventListener('touchend', () => {
             isPanning = false;
         });
-
     });
 }
 function getDistance(touches) {
