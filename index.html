@@ -710,17 +710,25 @@ function viewPaper(links, title) {
         const MIN_SCALE = 1;  
         const MAX_SCALE = 4;  
   
-        function update() {  
-            img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;  
-        }  
+        function update(smooth = false) {
+    if (smooth) {
+        img.style.transition = "transform 0.18s cubic-bezier(0.22, 1, 0.36, 1)";
+    } else {
+        img.style.transition = "transform 0s";
+    }
+
+    img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
+}
   
-        function clampPan() {  
-            const limitX = (img.clientWidth * (scale - 1)) / 2;  
-            const limitY = (img.clientHeight * (scale - 1)) / 2;  
-  
-            panX = Math.max(-limitX, Math.min(limitX, panX));  
-            panY = Math.max(-limitY, Math.min(limitY, panY));  
-        }  
+        function clampPan() {
+    const imgRect = img.getBoundingClientRect();
+
+    const limitX = Math.max(0, (imgRect.width * (scale - 1)) / 2);
+    const limitY = Math.max(0, (imgRect.height * (scale - 1)) / 2);
+
+    panX = Math.max(-limitX, Math.min(limitX, panX));
+    panY = Math.max(-limitY, Math.min(limitY, panY));
+}
   
         // DOUBLE TAP  
         wrapper.addEventListener('touchend', (e) => {  
