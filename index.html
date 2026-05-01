@@ -71,7 +71,6 @@
         }
         .file-card:active { transform: scale(0.95); background: #f1f5f9; } 
 		/* Container now stacks images vertically */
-
 .viewer-filmstrip {
     display: block;
     width: 100%;
@@ -81,6 +80,9 @@
     -webkit-overflow-scrolling: touch;
     touch-action: pan-y;
     scroll-behavior: smooth;
+
+    /* 🔥 ADD THIS */
+    overscroll-behavior: contain;
 }
 
 .viewer-page {
@@ -100,7 +102,7 @@
 .zoom-wrapper {
     position: relative;
     overflow: hidden;
-    touch-action: none;
+    touch-action: pan-y; /* allow vertical scroll instantly */
 }
 
 .zoom-wrapper img {
@@ -683,7 +685,8 @@ function viewPaper(links, title) {
         modal.classList.add('viewer-active');
     });
 
-    filmstrip.scrollTop = 0;
+    filmstrip.scrollTop = 1;  // tiny offset
+filmstrip.scrollTop = 0;  // reset
 }
 
 function updatePageCounter() {
@@ -708,6 +711,7 @@ function updatePageCounter() {
 	function enableImageZoom() {
     const wrappers = document.querySelectorAll('.zoom-wrapper');
 
+    setTimeout(() => {
     wrappers.forEach(wrapper => {
         const img = wrapper.querySelector('img');
 
@@ -762,7 +766,8 @@ function updatePageCounter() {
         });
 
         // TOUCH START
-        wrapper.addEventListener('touchstart', (e) => {
+        wrapper.addEventListener('touchstart', (e) => { 
+			if (scale === 1) return;
             if (e.touches.length === 2) {
                 startDist = getDistance(e.touches);
                 lastScale = scale;
@@ -812,7 +817,7 @@ function updatePageCounter() {
                 wrapper.style.touchAction = "pan-y"; // restore scroll
             }
         });
-    });
+    },120);
 }
 
 function getDistance(touches) {
