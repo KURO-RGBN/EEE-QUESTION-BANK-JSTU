@@ -465,10 +465,6 @@ function applyPremiumFilter(val, label) {
     renderCourses(filtered);
 }
 
-// 5. Update Search Listener (Replace your old one)
-document.getElementById('mainSearch').addEventListener('input', () => {
-    applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);
-});
 
 
 	
@@ -488,9 +484,13 @@ document.getElementById('mainSearch').addEventListener('input', () => {
     applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);
 });
        
-    } catch (err) { 
-        console.error("Data load failed", err); 
-    }
+    } 
+		catch (err) { 
+    console.error("Data load failed", err); 
+    document.getElementById('courseContainer').innerHTML = 
+        "<p style='color:red'>Failed to load data.json</p>";
+}
+    
 }
 
 function renderCourses(data) {
