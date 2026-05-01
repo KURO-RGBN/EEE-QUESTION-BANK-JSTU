@@ -704,8 +704,8 @@ function updatePageCounter() {
         modal.classList.add('hidden');
         document.getElementById('paperFilmstrip').innerHTML = "";
     }, 550);
-}
-function enableImageZoom() {
+} 
+	function enableImageZoom() {
     const wrappers = document.querySelectorAll('.zoom-wrapper');
 
     wrappers.forEach(wrapper => {
@@ -732,12 +732,14 @@ function enableImageZoom() {
         }
 
         function clampPan() {
-            const limit = (scale - 1) * 300;
-            panX = Math.max(-limit, Math.min(limit, panX));
-            panY = Math.max(-limit, Math.min(limit, panY));
+            const limitX = (img.clientWidth * (scale - 1)) / 2;
+            const limitY = (img.clientHeight * (scale - 1)) / 2;
+
+            panX = Math.max(-limitX, Math.min(limitX, panX));
+            panY = Math.max(-limitY, Math.min(limitY, panY));
         }
 
-        // DOUBLE TAP ZOOM (Smart toggle)
+        // DOUBLE TAP
         wrapper.addEventListener('touchend', (e) => {
             const now = Date.now();
 
@@ -746,8 +748,12 @@ function enableImageZoom() {
                     scale = 1;
                     panX = 0;
                     panY = 0;
+
+                    wrapper.style.touchAction = "pan-y"; // ✅ restore scroll
                 } else {
                     scale = 2.2;
+
+                    wrapper.style.touchAction = "none"; // ❌ block scroll while zoomed
                 }
                 update();
             }
@@ -761,6 +767,8 @@ function enableImageZoom() {
                 startDist = getDistance(e.touches);
                 lastScale = scale;
                 isPanning = false;
+
+                wrapper.style.touchAction = "none"; // pinch = block scroll
             }
 
             if (e.touches.length === 1 && scale > 1) {
@@ -773,7 +781,7 @@ function enableImageZoom() {
         // TOUCH MOVE
         wrapper.addEventListener('touchmove', (e) => {
 
-            // PINCH ZOOM
+            // PINCH
             if (e.touches.length === 2) {
                 e.preventDefault();
 
@@ -781,11 +789,10 @@ function enableImageZoom() {
                 scale = lastScale * (newDist / startDist);
 
                 scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale));
-
                 update();
             }
 
-            // PAN
+            // PAN ONLY IF ZOOMED
             if (e.touches.length === 1 && isPanning && scale > 1) {
                 e.preventDefault();
 
@@ -800,9 +807,14 @@ function enableImageZoom() {
 
         wrapper.addEventListener('touchend', () => {
             isPanning = false;
+
+            if (scale <= 1) {
+                wrapper.style.touchAction = "pan-y"; // restore scroll
+            }
         });
     });
 }
+
 function getDistance(touches) {
     const dx = touches[0].pageX - touches[1].pageX;
     const dy = touches[0].pageY - touches[1].pageY;
