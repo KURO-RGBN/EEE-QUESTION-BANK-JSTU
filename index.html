@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EEE Vault JSTU </title>
     
     <link rel="manifest" href="manifest.json">
@@ -13,7 +13,6 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://unpkg.com/pinch-zoom-js@2.3.4/dist/pinch-zoom.min.js"></script>
     
     <style>
         * { -webkit-tap-highlight-color: transparent; }
@@ -58,6 +57,7 @@
             color: #ef6c00 !important;
         }
 
+        /* File Card Styling */
         .file-card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
@@ -70,51 +70,60 @@
             transition: 0.2s;
         }
         .file-card:active { transform: scale(0.95); background: #f1f5f9; } 
+		/* Container now stacks images vertically */
 
-        /* FIXED VIEWER SCROLLING */
-        .viewer-filmstrip {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            height: 100%;
-            overflow-y: auto;
-            overflow-x: hidden;
-            -webkit-overflow-scrolling: touch;
-            position: absolute;
-            top: 0;
-            left: 0;
-            touch-action: pan-y pinch-zoom;
-        }
+.viewer-filmstrip {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+}
+/* Individual page adjustments */
+.viewer-page {
+    min-width: 100%;
+    width: 100%;
+    display: block; /* Standard block display for stacking */
+    margin-bottom: 10px; /* Gap between pages */
+}
 
-        .viewer-page {
-            min-width: 100%;
-            width: 100%;
-            display: block;
-            margin-bottom: 15px;
-        }
+.viewer-page img {
+    width: 100%;
+    height: auto;
+    display: block;
+    transform-origin: center;
+    transition: transform 0.2s ease;
+}
+		.zoom-wrapper {
+    touch-action: none;
+    overflow: hidden;
+}
 
-        .viewer-page img {
-            width: 100%;
-            height: auto;
-            display: block;
-            user-select: none;
-            -webkit-user-drag: none;
-        }
+.zoom-wrapper img {
+    width: 100%;
+    height: auto;
+    transform-origin: center;
+    will-change: transform;
+}
 
-        .modal-content-pop { 
-            position: relative;
-            z-index: 130;
-            transform: scale(0.95); 
-            opacity: 0;
-            transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s linear;
-            will-change: transform, opacity;
-        }
+.modal-content-pop { 
+    position: relative;
+    z-index: 130;
+    /* Start closer to full size (0.95) to reduce "mushy" travel distance */
+    transform: scale(0.95); 
+    opacity: 0;
+    /* 0.2s is the 'sweet spot' for snappy mobile UI */
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s linear;
+    will-change: transform, opacity;
+}
 
-        .modal-overlay.active-sheet .modal-content-pop {
-            transform: scale(1);
-            opacity: 1;
-        }
-
+.modal-overlay.active-sheet .modal-content-pop {
+    transform: scale(1);
+    opacity: 1;
+}
+        /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
         .modal-overlay {
             opacity: 0;
             pointer-events: none;
@@ -136,114 +145,122 @@
             transform: translateY(100%);
             transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
             will-change: transform;
+            /* FIX: Prevents APK Swipe-to-Refresh */
             overscroll-behavior-y: contain; 
         }
 
         .modal-overlay.active-sheet .modal-content-slide {
             transform: translateY(0%);
         }
+        /* --- PREMIUM DOWNLOAD ALERT STYLES --- */
+.premium-alert-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 20000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
 
-        .premium-alert-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            z-index: 20000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
+.premium-alert-overlay.active { 
+    opacity: 1; 
+    pointer-events: auto;
+}
 
-        .premium-alert-overlay.active { 
-            opacity: 1; 
-            pointer-events: auto;
-        }
+.premium-alert-card {
+    background: white;
+    width: 85%;
+    max-width: 320px;
+    padding: 24px;
+    border-radius: 28px;
+    text-align: center;
+    transform: scale(0.9);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-        .premium-alert-card {
-            background: white;
-            width: 85%;
-            max-width: 320px;
-            padding: 24px;
-            border-radius: 28px;
-            text-align: center;
-            transform: scale(0.9);
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+.premium-alert-overlay.active .premium-alert-card { 
+    transform: scale(1); 
+}
 
-        .premium-alert-overlay.active .premium-alert-card { 
-            transform: scale(1); 
-        }
+.alert-icon-circle {
+    width: 60px;
+    height: 60px;
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 24px;
+}
 
-        .alert-icon-circle {
-            width: 60px;
-            height: 60px;
-            background: #fee2e2;
-            color: #dc2626;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-            font-size: 24px;
-        }
+.alert-btn-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+}
 
-        .alert-btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-        }
+.alert-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    transition: all 0.2s;
+}
 
-        .alert-btn {
-            flex: 1;
-            padding: 12px;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
+.btn-cancel { background: #f1f5f9; color: #64748b; }
+.btn-confirm { background: #dc2626; color: white; }
+ /* VIEWER MODAL ANIMATION */
+/* VIEWER MODAL ANIMATION */
+#viewerModal {
+    pointer-events: none;
+}
 
-        .btn-cancel { background: #f1f5f9; color: #64748b; }
-        .btn-confirm { background: #dc2626; color: white; }
+#viewerModal.viewer-active {
+    pointer-events: auto;
+}
 
-        #viewerModal {
-            pointer-events: none;
-        }
+/* Header slides down from top */
+#viewerModal .bg-zinc-900 {
+    transform: translateY(-100%);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
 
-        #viewerModal.viewer-active {
-            pointer-events: auto;
-        }
+#viewerModal.viewer-active .bg-zinc-900 {
+    transform: translateY(0%);
+}
 
-        #viewerModal .bg-zinc-900 {
-            transform: translateY(-100%);
-            transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: transform;
-        }
+/* Black bg + content slides up from bottom as one unit */
+#viewerModal .flex-grow {
+    transform: translateY(100%);
+    transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
+}
 
-        #viewerModal.viewer-active .bg-zinc-900 {
-            transform: translateY(0%);
-        }
-
-        #viewerModal .flex-grow {
-            transform: translateY(100%);
-            transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-            will-change: transform;
-        }
-
-        #viewerModal.viewer-active .flex-grow {
-            transform: translateY(0%);
-        }
+#viewerModal.viewer-active .flex-grow {
+    transform: translateY(0%);
+}
 
         #notesList {
             overscroll-behavior-y: contain;
             -webkit-overflow-scrolling: touch;
         }
         #appBody {
-            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-        }
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+        #notesList::-webkit-scrollbar { width: 4px; }
+        #notesList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
     </style>
@@ -253,56 +270,78 @@
     <nav class="bg-black text-white shadow-xl border-b border-red-900/30 sticky top-0 z-50 p-4 pt-8">
         <div class="max-w-6xl mx-auto flex justify-between items-center">
            <div class="flex flex-col items-center">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-brain text-red-600 text-2xl"></i>
-                    <h1 class="font-black text-xl tracking-tighter uppercase leading-none">
-                        EEE <span class="text-red-600">VAULT</span>
-                    </h1>
-                </div>
-                <p class="text-[9px] font-bold tracking-[0.4em] text-slate-400 uppercase mt-1 text-center w-full">JSTU</p>
-            </div>
+    <div class="flex items-center gap-2">
+        <i class="fa-solid fa-brain text-red-600 text-2xl"></i>
+        <h1 class="font-black text-xl tracking-tighter uppercase leading-none">
+            EEE <span class="text-red-600">VAULT</span>
+        </h1>
+    </div>
+    <p class="text-[9px] font-bold tracking-[0.4em] text-slate-400 uppercase mt-1 text-center w-full">
+        JSTU
+    </p>
+</div>
+
             <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white transition shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">
                 <i class="fa-solid fa-plus mr-1"></i> Add Paper
             </button>
         </div>
     </nav>
 
-    <main id="appBody" class="max-w-6xl mx-auto p-4 md:p-8">
+    <main id="appBody"class="max-w-6xl mx-auto p-4 md:p-8">
         <div class="glass-card p-6 rounded-3xl shadow-sm mb-8 border border-white">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="relative">
                     <i class="fa-solid fa-search absolute left-4 top-4 text-slate-400"></i>
                     <input type="text" id="mainSearch" placeholder="Search Title or Code..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 outline-none">
                 </div>
-                <div class="relative">
-                    <button onclick="toggleSemModal(true)" class="w-full flex items-center justify-between bg-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
-                        <span id="currentSemesterText" class="font-bold text-slate-800">All Semesters</span>
-                        <i class="fa-solid fa-chevron-down text-slate-400"></i>
-                    </button>
-                </div>
+               <div class="relative">
+    <button onclick="toggleSemModal(true)" 
+            class="w-full flex items-center justify-between bg-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
+        <span id="currentSemesterText" class="font-bold text-slate-800">All Semesters</span>
+        <i class="fa-solid fa-chevron-down text-slate-400"></i>
+    </button>
+</div>
+				
             </div>
         </div>
 
         <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
 
-        <footer class="w-full py-12 mt-10 border-t border-slate-200 bg-slate-50">
-            <div class="flex flex-col items-center justify-center">
-                <div class="w-8 h-[2px] bg-red-600 rounded-full mb-4"></div>
-                <p class="text-[10px] tracking-[0.3em] text-slate-400 font-black uppercase mb-1">Developed & Maintained by</p>
-                <h4 class="text-lg font-black tracking-tighter text-slate-800">SAIDUL ISLAM  <span class="text-red-600">KURO</span></h4>
-                <div class="flex items-center gap-2 mt-2">
-                    <span class="h-[1px] w-4 bg-slate-300"></span>
-                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">JSTU • EEE BATCH 06</p>
-                    <span class="h-[1px] w-4 bg-slate-300"></span>
-                </div>
-                <p class="text-[10px] text-slate-400 mt-6 italic">© 2026 EEE Vault JSTU</p>
-            </div>
-        </footer>
+<footer class="w-full py-12 mt-10 border-t border-slate-200 bg-slate-50">
+    <div class="flex flex-col items-center justify-center">
+        <div class="w-8 h-[2px] bg-red-600 rounded-full mb-4"></div>
+        
+        <p class="text-[10px] tracking-[0.3em] text-slate-400 font-black uppercase mb-1">
+            Developed & Maintained by 
+        </p>
+        
+        <h4 class="text-lg font-black tracking-tighter text-slate-800">
+            SAIDUL ISLAM  <span class="text-red-600">KURO</span>
+        </h4>
+        
+        <div class="flex items-center gap-2 mt-2">
+            <span class="h-[1px] w-4 bg-slate-300"></span>
+            <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">
+                JSTU • EEE BATCH 06
+            </p>
+            <span class="h-[1px] w-4 bg-slate-300"></span>
+        </div>
+        
+        <p class="text-[10px] text-slate-400 mt-6 italic">© 2026 EEE Vault JSTU</p>
+    </div>
+</footer>
+
+
+		
     </main>
 
-    <div id="notesModal" onclick="if(event.target === this) closeNotes()" class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">
+    <div id="notesModal" 
+         onclick="if(event.target === this) closeNotes()" 
+         class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">
+        
         <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>
+            
             <div class="flex justify-between items-center mb-6">
                 <div>
                     <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Notes & Materials</h3>
@@ -316,259 +355,454 @@
         </div>
     </div>
 
-    <div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col">
-        <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110]">
-            <div class="flex flex-col">
-                <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>
-                <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>
-            </div>
-            <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
+<div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col">
+    <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110]">
+        <div class="flex flex-col">
+            <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>
+            <span id="pageCounter" class="text-[10px] text-red-500 font-bold mt-0.5">PAGE 1 OF 1</span>
         </div>
-        <div class="flex-grow overflow-hidden bg-black relative">
-            <div id="paperFilmstrip" class="viewer-filmstrip"></div>
-        </div>
+        <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>
     </div>
+    
+    <div class="flex-grow overflow-hidden bg-black relative">
+        <div id="paperFilmstrip" class="viewer-filmstrip">
+            </div>
+
+       
+    </div>
+</div>
 
     <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">
             <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>
-            <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned image/pdf files to the Google form.</p>
-            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
+            <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned image/pdf files to the Google form to add a missing Paper/Notes -kuro(^~^).</p>
+            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" target="_blank" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>
             <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>
         </div>
     </div>
 	
-    <div id="semModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 modal-overlay">
-        <div class="absolute inset-0 bg-slate-900/60" onclick="toggleSemModal(false)"></div>
-        <div class="relative w-full max-w-sm bg-white rounded-[32px] overflow-hidden shadow-2xl modal-content-pop" id="semModalContent">
-            <div class="p-6 text-center border-b border-slate-50">
-                <h3 class="text-xl font-black text-slate-900 uppercase tracking-tighter">Select Semester</h3>
-            </div>
-            <div id="semOptionsList" class="p-4 max-h-[60vh] overflow-y-auto"></div>
-            <button onclick="toggleSemModal(false)" class="w-full p-4 bg-slate-50 text-slate-400 font-bold text-xs hover:text-slate-600 transition-colors uppercase tracking-widest">Close</button>
+<div id="semModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 modal-overlay">
+    <div class="absolute inset-0 bg-slate-900/60" onclick="toggleSemModal(false)"></div>
+    
+    <div class="relative w-full max-w-sm bg-white rounded-[32px] overflow-hidden shadow-2xl modal-content-pop" id="semModalContent">
+        <div class="p-6 text-center border-b border-slate-50">
+            <h3 class="text-xl font-black text-slate-900 uppercase tracking-tighter">Select Semester</h3>
+           
         </div>
+
+        <div id="semOptionsList" class="p-4 max-h-[60vh] overflow-y-auto">
+        </div>
+
+        <button onclick="toggleSemModal(false)" class="w-full p-4 bg-slate-50 text-slate-400 font-bold text-xs hover:text-slate-600 transition-colors uppercase tracking-widest">
+            Close
+        </button>
     </div>
+</div>
 
 <script>
-    const semesters = [
-        { label: "All Semesters", value: "all" },
-        { label: "1st Year 1st Sem", value: "1st Year 1st Semester" },
-        { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" },
-        { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" },
-        { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" },
-        { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" },
-        { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" },
-        { label: "4th Year 1st Sem", value: "4th Year 1st Semester" },
-        { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" }
-    ];
+// 1. Semester Data (Replaces your <option> tags)
+const semesters = [
+    { label: "All Semesters", value: "all" },
+    { label: "1st Year 1st Sem", value: "1st Year 1st Semester" },
+    { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" },
+    { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" },
+    { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" },
+    { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" },
+    { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" },
+    { label: "4th Year 1st Sem", value: "4th Year 1st Semester" },
+    { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" }
+];
 
-    let selectedSemValue = "all";
+let selectedSemValue = "all";
+
+// 2. Open/Close Modal with Animation
+function toggleSemModal(show) {
+    const modal = document.getElementById('semModal');
+    
+    if (show) {
+        renderSemOptions();
+        modal.classList.remove('hidden');
+        modal.offsetHeight; // Forces immediate execution
+        modal.classList.add('active-sheet');
+    } else {
+        modal.classList.remove('active-sheet');
+        
+        // Match the 0.2s (200ms) CSS transition
+        setTimeout(() => {
+            if (!modal.classList.contains('active-sheet')) {
+                modal.classList.add('hidden');
+            }
+        }, 200); 
+    }
+}
+// 3. Render the list of buttons (The UI for your options)
+function renderSemOptions() {
+    const container = document.getElementById('semOptionsList');
+    container.innerHTML = semesters.map(s => `
+        <button onclick="applyPremiumFilter('${s.value}', '${s.label}')" 
+            class="w-full flex items-center justify-between p-4 mb-2 rounded-2xl transition-all ${selectedSemValue === s.value ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-slate-50 text-slate-600 font-bold'}">
+            <span class="text-sm">${s.label}</span>
+            ${selectedSemValue === s.value ? '<i class="fa-solid fa-circle-check"></i>' : ''}
+        </button>
+    `).join('');
+}
+
+// 4. Filter Logic (Integrated with your existing renderCourses function)
+function applyPremiumFilter(val, label) {
+    selectedSemValue = val;
+    document.getElementById('currentSemesterText').innerText = label;
+    toggleSemModal(false);
+    
+    const query = document.getElementById('mainSearch').value.toLowerCase();
+    const filtered = courseData.filter(c => 
+        (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
+        (selectedSemValue === "all" || c.semester === selectedSemValue)
+    );
+    renderCourses(filtered);
+}
+
+// 5. Update Search Listener (Replace your old one)
+document.getElementById('mainSearch').addEventListener('input', () => {
+    applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);
+});
+
+
+	
     let courseData = [];
     const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
-    let currentPages = [];
+    let currentPages = []; 
+    let currentPageIndex = 0;
+	async function init() {
+    try {
+        // Cache Buster added here to force automatic refresh on every open
+        const res = await fetch('data.json?t=' + Date.now()); 
+        courseData = await res.json();
+        renderCourses(courseData);
+        
+        // Listeners for your search and semester dropdown
+     document.getElementById('mainSearch').addEventListener('input', () => {
+    applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);
+});
+       
+    } catch (err) { 
+        console.error("Data load failed", err); 
+    }
+}
 
-    function toggleSemModal(show) {
-        const modal = document.getElementById('semModal');
-        if (show) {
-            renderSemOptions();
-            modal.classList.remove('hidden');
-            modal.offsetHeight;
+function renderCourses(data) {
+    const container = document.getElementById('courseContainer');
+    // Using your full original logic to ensure no features are lost
+    container.innerHTML = data.map((course) => {
+        const hasNotes = course.notes && course.notes.length > 0;
+        return `
+            <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
+                <div class="flex flex-col gap-3">
+                    <div>
+                        <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
+                        <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
+                    </div>
+                    <div class="scroll-container">
+                        <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
+                                class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
+                            <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
+                            <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
+                        </button>
+                        ${batches.map(batch => {
+                            const link = course.links[batch];
+                            const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
+                            const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
+                            return `
+                                <button onclick="${clickAction}" 
+                                        class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                                    <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
+                                    <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                                </button>
+                            `;
+                        }).join('')}
+                    </div>
+                </div>
+            </div>
+        `}).join('');
+}
+
+
+    
+// --- PREMIUM DOWNLOAD & MODAL SYSTEM ---
+function confirmDownload(url, fileName) {
+    // 1. Check if an alert already exists to prevent duplicates
+    if (document.getElementById('customAlert')) return;
+
+    const alertHTML = `
+        <div id="customAlert" class="premium-alert-overlay">
+            <div class="premium-alert-card">
+                <div class="alert-icon-circle">
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
+                </div>
+                <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
+                <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>
+                <div class="alert-btn-group">
+                    <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
+                    <button class="alert-btn btn-confirm" id="startDownload">Download</button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', alertHTML);
+    const alertEl = document.getElementById('customAlert');
+    setTimeout(() => alertEl.classList.add('active'), 10);
+
+    document.getElementById('startDownload').onclick = () => {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    closeAlert();
+};
+}
+
+
+
+
+function closeAlert() {
+    const alertEl = document.getElementById('customAlert');
+    if (alertEl) {
+        alertEl.classList.remove('active');
+        setTimeout(() => alertEl.remove(), 300);
+    }
+}
+
+// Smart APK Refresh Blocker variables
+let touchStartLine = 0;
+function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }
+function handleTouchMove(e) {
+    const list = document.getElementById('notesList');
+    const touchCurrent = e.touches[0].pageY;
+    if (list.scrollTop <= 0 && touchCurrent > touchStartLine) {
+        if (e.cancelable) e.preventDefault(); 
+    }
+}
+
+function openNotes(code) {
+    // Find the course in your data.json
+    const course = courseData.find(c => c.code === code);
+    const list = document.getElementById('notesList');
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody'); // Ensure your main content has this ID
+    
+    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+    
+    // Generate the notes grid
+    // Note: We add .pdf automatically here to the filename
+    list.innerHTML = course.notes.map(note => `
+        <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
+            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
+            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
+        </div>
+    `).join('');
+    
+    modal.classList.remove('hidden');
+
+    // Block APK pull-to-refresh
+    window.addEventListener('touchstart', handleTouchStart, { passive: false });
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
             modal.classList.add('active-sheet');
-        } else {
-            modal.classList.remove('active-sheet');
-            setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 200); 
+            // Move main content off-screen to prevent text "ghosting" through the modal
+            
+            document.body.classList.add('modal-open');
+        });
+    });
+}
+
+function closeNotes() {
+    const modal = document.getElementById('notesModal');
+    const main = document.getElementById('appBody');
+    
+    modal.classList.remove('active-sheet');
+    
+    document.body.classList.remove('modal-open');
+
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+
+    setTimeout(() => {
+        if (!modal.classList.contains('active-sheet')) {
+            modal.classList.add('hidden');
         }
-    }
+    }, 500); 
+}
 
-    function renderSemOptions() {
-        const container = document.getElementById('semOptionsList');
-        container.innerHTML = semesters.map(s => `
-            <button onclick="applyPremiumFilter('${s.value}', '${s.label}')" 
-                class="w-full flex items-center justify-between p-4 mb-2 rounded-2xl transition-all ${selectedSemValue === s.value ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-slate-50 text-slate-600 font-bold'}">
-                <span class="text-sm">${s.label}</span>
-                ${selectedSemValue === s.value ? '<i class="fa-solid fa-circle-check"></i>' : ''}
-            </button>
-        `).join('');
-    }
-
-    function applyPremiumFilter(val, label) {
-        selectedSemValue = val;
-        document.getElementById('currentSemesterText').innerText = label;
-        toggleSemModal(false);
-        const query = document.getElementById('mainSearch').value.toLowerCase();
-        const filtered = courseData.filter(c => 
-            (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
-            (selectedSemValue === "all" || c.semester === selectedSemValue)
-        );
-        renderCourses(filtered);
-    }
-
-    async function init() {
-        try {
-            const res = await fetch('data.json?t=' + Date.now()); 
-            courseData = await res.json();
-            renderCourses(courseData);
-            document.getElementById('mainSearch').addEventListener('input', () => {
-                applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);
-            });
-        } catch (err) { console.error("Data load failed", err); }
-    }
-
-    function renderCourses(data) {
-        const container = document.getElementById('courseContainer');
-        container.innerHTML = data.map((course) => {
-            const hasNotes = course.notes && course.notes.length > 0;
-            return `
-                <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
-                    <div class="flex flex-col gap-3">
-                        <div>
-                            <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
-                            <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
-                        </div>
-                        <div class="scroll-container">
-                            <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
-                                    class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
-                                <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
-                                <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
-                            </button>
-                            ${batches.map(batch => {
-                                const link = course.links[batch];
-                                const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
-                                const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;
-                                return `
-                                    <button onclick="${clickAction}" 
-                                            class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
-                                        <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
-                                        <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
-                                    </button>
-                                `;
-                            }).join('')}
-                        </div>
-                    </div>
-                </div>
-            `}).join('');
-    }
-
-    function confirmDownload(url, fileName) {
-        if (document.getElementById('customAlert')) return;
-        const alertHTML = `
-            <div id="customAlert" class="premium-alert-overlay">
-                <div class="premium-alert-card">
-                    <div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                    <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
-                    <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>
-                    <div class="alert-btn-group">
-                        <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
-                        <button class="alert-btn btn-confirm" id="startDownload">Download</button>
-                    </div>
-                </div>
-            </div>
-        `;
-        document.body.insertAdjacentHTML('beforeend', alertHTML);
-        const alertEl = document.getElementById('customAlert');
-        setTimeout(() => alertEl.classList.add('active'), 10);
-        document.getElementById('startDownload').onclick = () => {
-            const a = document.createElement('a');
-            a.href = url; a.download = fileName; a.target = '_blank';
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-            closeAlert();
-        };
-    }
-
-    function closeAlert() {
-        const alertEl = document.getElementById('customAlert');
-        if (alertEl) { alertEl.classList.remove('active'); setTimeout(() => alertEl.remove(), 300); }
-    }
-
-    let touchStartLine = 0;
-    function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }
-    function handleTouchMove(e) {
-        const list = document.getElementById('notesList');
-        const touchCurrent = e.touches[0].pageY;
-        if (list && list.scrollTop <= 0 && touchCurrent > touchStartLine) { if (e.cancelable) e.preventDefault(); }
-    }
-
-    function openNotes(code) {
-        const course = courseData.find(c => c.code === code);
-        const list = document.getElementById('notesList');
-        const modal = document.getElementById('notesModal');
-        document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
-        list.innerHTML = course.notes.map(note => `
-            <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
-                <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
-                <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
-                <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
-            </div>
-        `).join('');
-        modal.classList.remove('hidden');
-        window.addEventListener('touchstart', handleTouchStart, { passive: false });
-        window.addEventListener('touchmove', handleTouchMove, { passive: false });
-        requestAnimationFrame(() => { modal.classList.add('active-sheet'); document.body.style.overflow = 'hidden'; });
-    }
-
-    function closeNotes() {
-        const modal = document.getElementById('notesModal');
-        modal.classList.remove('active-sheet');
-        document.body.style.overflow = 'auto';
-        window.removeEventListener('touchstart', handleTouchStart);
-        window.removeEventListener('touchmove', handleTouchMove);
-        setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500); 
-    }
 
     function openPaperByCode(code, batch) {
         const course = courseData.find(c => c.code === code);
-        if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`);
+        if (course) {
+            const links = course.links[batch];
+            viewPaper(links, `${course.title} - ${batch}`);
+        }
     }
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const index = Array.from(entry.target.parentNode.children).indexOf(entry.target);
-                document.getElementById('pageCounter').innerText = `PAGE ${index + 1} OF ${currentPages.length}`;
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const index = Array.from(entry.target.parentNode.children).indexOf(entry.target);
+            document.getElementById('pageCounter').innerText = `PAGE ${index + 1} OF ${currentPages.length}`;
+        }
+    });
+}, { threshold: 0.5 });
+
+
+function viewPaper(links, title) {
+    currentPages = Array.isArray(links) ? links : [links];
+    document.getElementById('viewingTitle').innerText = title;
+
+    const filmstrip = document.getElementById('paperFilmstrip');
+  filmstrip.innerHTML = currentPages.map((url, index) => `
+    <div class="viewer-page">
+        <div class="zoom-wrapper" data-scale="1">
+            <img src="${url}" loading="lazy">
+        </div>
+    </div>
+`).join('');
+	enableImageZoom();
+document.querySelectorAll('.viewer-page').forEach(page => observer.observe(page));
+    // Update counter based on scroll position
+    filmstrip.onscroll = () => {
+        const pageHeight = filmstrip.scrollHeight / currentPages.length;
+        const currentPage = Math.round(filmstrip.scrollTop / pageHeight) + 1;
+        document.getElementById('pageCounter').innerText = `PAGE ${currentPage} OF ${currentPages.length}`;
+    };
+
+    filmstrip.scrollTop = 0;
+    document.getElementById('pageCounter').innerText = `PAGE 1 OF ${currentPages.length}`;
+
+    const modal = document.getElementById('viewerModal');
+   modal.classList.remove('hidden');
+setTimeout(() => {
+    modal.classList.add('viewer-active');
+}, 10);
+}
+
+function updatePageCounter() {
+    document.getElementById('pageCounter').innerText = `PAGE ${currentPageIndex + 1} OF ${currentPages.length}`;
+}
+
+
+
+
+	
+	function closeViewer() {
+    const modal = document.getElementById('viewerModal');
+    modal.classList.remove('viewer-active');
+    document.body.style.overflow = 'auto';
+
+   document.querySelectorAll('.viewer-page').forEach(el => observer.observe(el));
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.getElementById('paperFilmstrip').innerHTML = "";
+    }, 550);
+}
+function enableImageZoom() {
+    const wrappers = document.querySelectorAll('.zoom-wrapper');
+
+    wrappers.forEach(wrapper => {
+        let scale = 1;
+        let lastScale = 1;
+
+        let startDist = 0;
+        let startX = 0;
+        let startY = 0;
+
+        let panX = 0;
+        let panY = 0;
+
+        let isPanning = false;
+
+        // DOUBLE TAP
+        let lastTap = 0;
+
+        const img = wrapper.querySelector('img');
+
+        function setTransform() {
+            img.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+        }
+
+        // DOUBLE TAP ZOOM
+        wrapper.addEventListener('touchend', (e) => {
+            const now = Date.now();
+            if (now - lastTap < 300) {
+                if (scale > 1) {
+                    scale = 1;
+                    panX = 0;
+                    panY = 0;
+                } else {
+                    scale = 2;
+                }
+                setTransform();
             }
-        });
-    }, { threshold: 0.5 });
-
-    function viewPaper(links, title) {
-        currentPages = Array.isArray(links) ? links : [links];
-        document.getElementById('viewingTitle').innerText = title;
-        const filmstrip = document.getElementById('paperFilmstrip');
-        
-        filmstrip.innerHTML = currentPages.map(url => `
-            <div class="viewer-page">
-                <div class="zoom-wrapper">
-                    <img src="${url}" loading="lazy">
-                </div>
-            </div>
-        `).join('');
-
-        // Apply isolated zoom to each page
-        document.querySelectorAll('.zoom-wrapper').forEach(el => {
-            new PinchZoom(el, { draggableUnzoomed: false, minZoom: 1, maxZoom: 4 });
+            lastTap = now;
         });
 
-        document.querySelectorAll('.viewer-page').forEach(page => observer.observe(page));
+        // TOUCH START
+        wrapper.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2) {
+    startDist = getDistance(e.touches);
+    lastScale = scale;
 
-        filmstrip.onscroll = () => {
-            const pageHeight = filmstrip.scrollHeight / currentPages.length;
-            const currentPage = Math.round(filmstrip.scrollTop / pageHeight) + 1;
-            document.getElementById('pageCounter').innerText = `PAGE ${currentPage} OF ${currentPages.length}`;
-        };
+    isPanning = false; // reset pan state
+}
+            if (e.touches.length === 1 && scale > 1) {
+                isPanning = true;
+                startX = e.touches[0].clientX - panX;
+                startY = e.touches[0].clientY - panY;
+            }
+        }, { passive: true });
 
-        filmstrip.scrollTop = 0;
-        document.getElementById('pageCounter').innerText = `PAGE 1 OF ${currentPages.length}`;
-        const modal = document.getElementById('viewerModal');
-        modal.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-        requestAnimationFrame(() => modal.classList.add('viewer-active'));
-    }
+        // TOUCH MOVE
+        wrapper.addEventListener('touchmove', (e) => {
 
-    function closeViewer() {
-        const modal = document.getElementById('viewerModal');
-        modal.classList.remove('viewer-active');
-        document.body.style.overflow = 'auto';
-        setTimeout(() => { modal.classList.add('hidden'); document.getElementById('paperFilmstrip').innerHTML = ""; }, 550);
-    }
+            // PINCH ZOOM
+            if (e.touches.length === 2) {
+                e.preventDefault();
+
+                const newDist = getDistance(e.touches);
+                scale = lastScale * (newDist / startDist);
+
+                scale = Math.max(1, Math.min(scale, 4));
+
+                setTransform();
+            }
+
+            // PAN WHEN ZOOMED
+            if (e.touches.length === 1 && isPanning && scale > 1) {
+                e.preventDefault();
+
+                panX = e.touches[0].clientX - startX;
+                panY = e.touches[0].clientY - startY;
+
+                setTransform();
+            }
+
+        }, { passive: false });
+
+        wrapper.addEventListener('touchend', () => {
+            isPanning = false;
+        });
+
+    });
+}
+function getDistance(touches) {
+    const dx = touches[0].pageX - touches[1].pageX;
+    const dy = touches[0].pageY - touches[1].pageY;
+    return Math.sqrt(dx * dx + dy * dy);
+}
+   
 
     function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
     function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
@@ -576,4 +810,6 @@
     init();
 </script>
 </body>
-</html>
+</html>    
+
+   
