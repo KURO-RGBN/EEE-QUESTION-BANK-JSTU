@@ -391,468 +391,312 @@ transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
     </button>  
 </div>
 
-</div>  <script>  
-// 1. Semester Data (Replaces your <option> tags)  
-const semesters = [  
-    { label: "All Semesters", value: "all" },  
-    { label: "1st Year 1st Sem", value: "1st Year 1st Semester" },  
-    { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" },  
-    { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" },  
-    { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" },  
-    { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" },  
-    { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" },  
-    { label: "4th Year 1st Sem", value: "4th Year 1st Semester" },  
-    { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" }  
-];  
-  
-let selectedSemValue = "all";  
-  
-// 2. Open/Close Modal with Animation  
-function toggleSemModal(show) {  
-    const modal = document.getElementById('semModal');  
-      
-    if (show) {  
-        renderSemOptions();  
-        modal.classList.remove('hidden');  
-        modal.offsetHeight; // Forces immediate execution  
-        modal.classList.add('active-sheet');  
-    } else {  
-        modal.classList.remove('active-sheet');  
-          
-        // Match the 0.2s (200ms) CSS transition  
-        setTimeout(() => {  
-            if (!modal.classList.contains('active-sheet')) {  
-                modal.classList.add('hidden');  
-            }  
-        }, 200);   
-    }  
-}  
-// 3. Render the list of buttons (The UI for your options)  
-function renderSemOptions() {  
-    const container = document.getElementById('semOptionsList');  
-    container.innerHTML = semesters.map(s => `  
-        <button onclick="applyPremiumFilter('${s.value}', '${s.label}')"   
-            class="w-full flex items-center justify-between p-4 mb-2 rounded-2xl transition-all ${selectedSemValue === s.value ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-slate-50 text-slate-600 font-bold'}">  
-            <span class="text-sm">${s.label}</span>  
-            ${selectedSemValue === s.value ? '<i class="fa-solid fa-circle-check"></i>' : ''}  
-        </button>  
-    `).join('');  
-}  
-  
-// 4. Filter Logic (Integrated with your existing renderCourses function)  
-function applyPremiumFilter(val, label) {  
-    selectedSemValue = val;  
-    document.getElementById('currentSemesterText').innerText = label;  
-    toggleSemModal(false);  
-      
-    const query = document.getElementById('mainSearch').value.toLowerCase();  
-    const filtered = courseData.filter(c =>   
-        (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&  
-        (selectedSemValue === "all" || c.semester === selectedSemValue)  
-    );  
-    renderCourses(filtered);  
-}  
-  
-// 5. Update Search Listener (Replace your old one)  
-document.getElementById('mainSearch').addEventListener('input', () => {  
-    applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);  
-});  
-  
-  
-	  
-    let courseData = [];  
-    const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];  
-    let currentPages = [];   
-    let currentPageIndex = 0;  
-	async function init() {  
-    try {  
-        // Cache Buster added here to force automatic refresh on every open  
-        const res = await fetch('data.json?t=' + Date.now());   
-        courseData = await res.json();  
-        renderCourses(courseData);  
-          
-        // Listeners for your search and semester dropdown  
-     document.getElementById('mainSearch').addEventListener('input', () => {  
-    applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);  
-});  
-         
-    } catch (err) {   
-        console.error("Data load failed", err);   
-    }  
-}  
-  
-function renderCourses(data) {  
-    const container = document.getElementById('courseContainer');  
-    // Using your full original logic to ensure no features are lost  
-    container.innerHTML = data.map((course) => {  
-        const hasNotes = course.notes && course.notes.length > 0;  
-        return `  
-            <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">  
-                <div class="flex flex-col gap-3">  
-                    <div>  
-                        <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>  
-                        <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>  
-                    </div>  
-                    <div class="scroll-container">  
-                        <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}"   
-                                class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">  
-                            <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>  
-                            <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>  
-                        </button>  
-                        ${batches.map(batch => {  
-                            const link = course.links[batch];  
-                            const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);  
-                            const clickAction = isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`;  
-                            return `  
-                                <button onclick="${clickAction}"   
-                                        class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">  
-                                    <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>  
-                                    <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>  
-                                </button>  
-                            `;  
-                        }).join('')}  
-                    </div>  
-                </div>  
-            </div>  
-        `}).join('');  
-}  
-  
-  
-      
-// --- PREMIUM DOWNLOAD & MODAL SYSTEM ---  
-function confirmDownload(url, fileName) {  
-    // 1. Check if an alert already exists to prevent duplicates  
-    if (document.getElementById('customAlert')) return;  
-  
-    const alertHTML = `  
-        <div id="customAlert" class="premium-alert-overlay">  
-            <div class="premium-alert-card">  
-                <div class="alert-icon-circle">  
-                    <i class="fa-solid fa-cloud-arrow-down"></i>  
-                </div>  
-                <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>  
-                <p style="color: #64748b; font-size: 12px; line-height: 1.5; word-break: break-word;">${fileName}</p>  
-                <div class="alert-btn-group">  
-                    <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>  
-                    <button class="alert-btn btn-confirm" id="startDownload">Download</button>  
-                </div>  
-            </div>  
-        </div>  
-    `;  
-  
-    document.body.insertAdjacentHTML('beforeend', alertHTML);  
-    const alertEl = document.getElementById('customAlert');  
-    setTimeout(() => alertEl.classList.add('active'), 10);  
-  
-    document.getElementById('startDownload').onclick = () => {  
-    const a = document.createElement('a');  
-    a.href = url;  
-    a.download = fileName;  
-    a.target = '_blank';  
-    document.body.appendChild(a);  
-    a.click();  
-    document.body.removeChild(a);  
-    closeAlert();  
-};  
-}  
-  
-  
-  
-  
-function closeAlert() {  
-    const alertEl = document.getElementById('customAlert');  
-    if (alertEl) {  
-        alertEl.classList.remove('active');  
-        setTimeout(() => alertEl.remove(), 300);  
-    }  
-}  
-  
-// Smart APK Refresh Blocker variables  
-let touchStartLine = 0;  
-function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }  
-function handleTouchMove(e) {  
-    const list = document.getElementById('notesList');  
-    const touchCurrent = e.touches[0].pageY;  
-    if (list.scrollTop <= 0 && touchCurrent > touchStartLine) {  
-        if (e.cancelable) e.preventDefault();   
-    }  
-}  
-  
-function openNotes(code) {  
-    // Find the course in your data.json  
-    const course = courseData.find(c => c.code === code);  
-    const list = document.getElementById('notesList');  
-    const modal = document.getElementById('notesModal');  
-    const main = document.getElementById('appBody'); // Ensure your main content has this ID  
-      
-    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;  
-      
-    // Generate the notes grid  
-    // Note: We add .pdf automatically here to the filename  
-    list.innerHTML = course.notes.map(note => `  
-        <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">  
-            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>  
-            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>  
-            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>  
-        </div>  
-    `).join('');  
-      
-    modal.classList.remove('hidden');  
-  
-    // Block APK pull-to-refresh  
-    window.addEventListener('touchstart', handleTouchStart, { passive: false });  
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });  
-  
-    requestAnimationFrame(() => {  
-        requestAnimationFrame(() => {  
-            modal.classList.add('active-sheet');  
-            // Move main content off-screen to prevent text "ghosting" through the modal  
-              
-            document.body.classList.add('modal-open');  
-        });  
-    });  
-}  
-  
-function closeNotes() {  
-    const modal = document.getElementById('notesModal');  
-    const main = document.getElementById('appBody');  
-      
-    modal.classList.remove('active-sheet');  
-      
-    document.body.classList.remove('modal-open');  
-  
-    window.removeEventListener('touchstart', handleTouchStart);  
-    window.removeEventListener('touchmove', handleTouchMove);  
-  
-    setTimeout(() => {  
-        if (!modal.classList.contains('active-sheet')) {  
-            modal.classList.add('hidden');  
-        }  
-    }, 500);   
-}  
-  
-  
-    function openPaperByCode(code, batch) {  
-        const course = courseData.find(c => c.code === code);  
-        if (course) {  
-            const links = course.links[batch];  
-            viewPaper(links, `${course.title} - ${batch}`);  
-        }  
-    }  
+</div>  
+	<script>
+    // 1. DATA & STATE
+    const semesters = [
+        { label: "All Semesters", value: "all" },
+        { label: "1st Year 1st Sem", value: "1st Year 1st Semester" },
+        { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" },
+        { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" },
+        { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" },
+        { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" },
+        { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" },
+        { label: "4th Year 1st Sem", value: "4th Year 1st Semester" },
+        { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" }
+    ];
 
-  
-  
-function viewPaper(links, title) {  
-    currentPages = Array.isArray(links) ? links : [links];  
-    document.getElementById('viewingTitle').innerText = title;  
-	
-  
-    const filmstrip = document.getElementById('paperFilmstrip');  
-  
-    filmstrip.innerHTML = currentPages.map((url) => `  
-        <div class="viewer-page">  
-            <div class="zoom-wrapper">  
-                <img src="${url}" loading="lazy">  
-            </div>  
-        </div>  
-    `).join('');  
-  
-    enableImageZoom();  
-  
-    const modal = document.getElementById('viewerModal');  
-    modal.classList.remove('hidden');  
-  
-    requestAnimationFrame(() => {  
-        modal.classList.add('viewer-active');  
-    });  
-  
-    filmstrip.scrollTop = 0;  
-	document.body.classList.add('modal-open');
-}  
-  
+    let selectedSemValue = "all";
+    let courseData = [];
+    const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
+    let currentPages = [];
+    let touchStartLine = 0;
 
-  
-  
-  
-  
-	  
-	function closeViewer() {
-    const modal = document.getElementById('viewerModal');
-    modal.classList.remove('viewer-active');
-
-    document.body.classList.remove('modal-open'); // ✅ IMPORTANT
-
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        document.getElementById('paperFilmstrip').innerHTML = "";
-    }, 550);
-}
-	function enableImageZoom() {  
-    const wrappers = document.querySelectorAll('.zoom-wrapper');  
-		let originX = 0;
-let originY = 0;
-let rect = null; 
-		function getMidPoint(touches) {
-    return {
-        x: (touches[0].clientX + touches[1].clientX) / 2,
-        y: (touches[0].clientY + touches[1].clientY) / 2
-    };
-}
-  
-    wrappers.forEach(wrapper => {  
-        const img = wrapper.querySelector('img');  
-  
-        let scale = 1;  
-        let lastScale = 1;  
-  
-        let panX = 0;  
-        let panY = 0;  
-  
-        let startX = 0;  
-        let startY = 0;  
-  
-        let startDist = 0;  
-        let isPanning = false;  
-        let lastTap = 0;  
-  
-        const MIN_SCALE = 1;  
-        const MAX_SCALE = 4;  
-  
-        function update(mode = "instant") {
-    if (mode === "animate") {
-        img.style.transition = "transform 0.18s cubic-bezier(0.22, 1, 0.36, 1)";
-    } 
-    else {
-        img.style.transition = "transform 0s";
+    // 2. INITIALIZATION
+    async function init() {
+        try {
+            const res = await fetch('data.json?t=' + Date.now());
+            courseData = await res.json();
+            renderCourses(courseData);
+        } catch (err) {
+            console.error("Data load failed", err);
+        }
     }
 
-    img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
-}
-  
-        function clampPan() {
+    // 3. UI RENDERING & FILTERING
+    function renderCourses(data) {
+        const container = document.getElementById('courseContainer');
+        container.innerHTML = data.map((course) => {
+            const hasNotes = course.notes && course.notes.length > 0;
+            return `
+                <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
+                    <div class="flex flex-col gap-3">
+                        <div>
+                            <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
+                            <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
+                        </div>
+                        <div class="scroll-container">
+                            <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
+                                    class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
+                                <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
+                                <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
+                            </button>
+                            ${batches.map(batch => {
+                                const link = course.links[batch];
+                                const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
+                                return `
+                                    <button onclick="${isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`}" 
+                                            class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                                        <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
+                                        <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
+                                    </button>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>`;
+        }).join('');
+    }
+
+    function toggleSemModal(show) {
+        const modal = document.getElementById('semModal');
+        if (show) {
+            renderSemOptions();
+            modal.classList.remove('hidden');
+            modal.offsetHeight;
+            modal.classList.add('active-sheet');
+        } else {
+            modal.classList.remove('active-sheet');
+            setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 200);
+        }
+    }
+
+    function renderSemOptions() {
+        const container = document.getElementById('semOptionsList');
+        container.innerHTML = semesters.map(s => `
+            <button onclick="applyPremiumFilter('${s.value}', '${s.label}')" 
+                class="w-full flex items-center justify-between p-4 mb-2 rounded-2xl transition-all ${selectedSemValue === s.value ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-slate-50 text-slate-600 font-bold'}">
+                <span class="text-sm">${s.label}</span>
+                ${selectedSemValue === s.value ? '<i class="fa-solid fa-circle-check"></i>' : ''}
+            </button>`).join('');
+    }
+
+    function applyPremiumFilter(val, label) {
+        selectedSemValue = val;
+        document.getElementById('currentSemesterText').innerText = label;
+        toggleSemModal(false);
+        const query = document.getElementById('mainSearch').value.toLowerCase();
+        const filtered = courseData.filter(c => 
+            (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
+            (selectedSemValue === "all" || c.semester === selectedSemValue)
+        );
+        renderCourses(filtered);
+    }
+
+    document.getElementById('mainSearch').addEventListener('input', () => {
+        applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);
+    });
+
+    // 4. VIEWER & ZOOM SYSTEM
+    function openPaperByCode(code, batch) {
+        const course = courseData.find(c => c.code === code);
+        if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`);
+    }
+
+    function viewPaper(links, title) {
+        currentPages = Array.isArray(links) ? links : [links];
+        document.getElementById('viewingTitle').innerText = title;
+        const filmstrip = document.getElementById('paperFilmstrip');
+        filmstrip.innerHTML = currentPages.map(url => `
+            <div class="viewer-page">
+                <div class="zoom-wrapper"><img src="${url}" loading="lazy"></div>
+            </div>`).join('');
+        
+        enableImageZoom();
+        const modal = document.getElementById('viewerModal');
+        modal.classList.remove('hidden');
+        document.body.classList.add('modal-open');
+        requestAnimationFrame(() => modal.classList.add('viewer-active'));
+        filmstrip.scrollTop = 0;
+    }
+
+    function closeViewer() {
+        const modal = document.getElementById('viewerModal');
+        modal.classList.remove('viewer-active');
+        document.body.classList.remove('modal-open');
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            document.getElementById('paperFilmstrip').innerHTML = "";
+        }, 550);
+    }
+
+    function enableImageZoom() {
+        const wrappers = document.querySelectorAll('.zoom-wrapper');
+        wrappers.forEach(wrapper => {
+            const img = wrapper.querySelector('img');
+            let scale = 1, lastScale = 1, panX = 0, panY = 0, startX = 0, startY = 0;
+            let startDist = 0, isPanning = false, lastTap = 0, originX = 0, originY = 0;
+            const MIN_SCALE = 1, MAX_SCALE = 5;
+
+            function update(mode = "instant") {
+                img.style.transition = mode === "animate" ? "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
+                img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
+            }
+
+            function clampPan() {
+    const wrapperRect = wrapper.getBoundingClientRect();
     const imgRect = img.getBoundingClientRect();
 
-    const limitX = Math.max(0, (imgRect.width * (scale - 1)) / 2);
-    const limitY = Math.max(0, (imgRect.height * (scale - 1)) / 2);
+    const limitX = Math.max(0, (imgRect.width - wrapperRect.width) / 2);
+    const limitY = Math.max(0, (imgRect.height - wrapperRect.height) / 2);
 
     panX = Math.max(-limitX, Math.min(limitX, panX));
     panY = Math.max(-limitY, Math.min(limitY, panY));
 }
-  
-        // DOUBLE TAP  
-        wrapper.addEventListener('touchend', (e) => {
-    const now = Date.now();
 
-    if (now - lastTap < 280) {
+            wrapper.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 2) {
+                    isPanning = false;
+                    startDist = getDistance(e.touches);
+                    lastScale = scale;
+                    const rect = wrapper.getBoundingClientRect();
+                    const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+                    const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+                    originX = (midX - panX) / scale;
+                    originY = (midY - panY) / scale;
+                } else if (e.touches.length === 1) {
+                    isPanning = true;
+                    startX = e.touches[0].clientX - panX;
+                    startY = e.touches[0].clientY - panY;
+                }
+            }, { passive: false });
 
-        const rect = img.getBoundingClientRect();
+            wrapper.addEventListener('touchmove', (e) => {
+                if (e.touches.length === 2) {
+                    e.preventDefault();
+                    const dist = getDistance(e.touches);
+                    scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, lastScale * (dist / startDist)));
+                    const rect = wrapper.getBoundingClientRect();
+                    const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+                    const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+                    panX = midX - originX * scale;
+                    panY = midY - originY * scale;
+                    clampPan();
+                    update("instant");
+                } else if (e.touches.length === 1 && isPanning && scale > 1) {
+                    e.preventDefault();
+                    panX = e.touches[0].clientX - startX;
+                    panY = e.touches[0].clientY - startY;
+                    clampPan();
+                    update("instant");
+                }
+            }, { passive: false });
 
-        const x = e.changedTouches[0].clientX - rect.left;
-        const y = e.changedTouches[0].clientY - rect.top;
+            wrapper.addEventListener('touchend', (e) => {
+                const now = Date.now();
+                if (now - lastTap < 300 && e.changedTouches.length === 1) {
+                    if (scale > 1) {
+                        scale = 1; panX = 0; panY = 0;
+                    } else {
+                        scale = 2.5;
+                        const rect = wrapper.getBoundingClientRect();
+const touch = e.changedTouches[0];
 
-        if (scale > 1) {
-            scale = 1;
-            panX = 0;
-            panY = 0;
-            wrapper.style.touchAction = "pan-y";
-        } else {
-            scale = 2.2;
+const x = touch.clientX - rect.left;
+const y = touch.clientY - rect.top;
 
-            panX = (rect.width / 2 - x) * 1.2;
-            panY = (rect.height / 2 - y) * 1.2;
+panX = (rect.width / 2 - x) * (scale - 1);
+panY = (rect.height / 2 - y) * (scale - 1);
+const x = touch.clientX - rect.left;
+const y = touch.clientY - rect.top;
 
-            wrapper.style.touchAction = "none";
-        }
-
-        update("animate");
+panX = (rect.width / 2 - x) * (scale - 1);
+panY = (rect.height / 2 - y) * (scale - 1);
+                    }
+                    clampPan();
+                    update("animate");
+                }
+                lastTap = now;
+                isPanning = false;
+            });
+        });
     }
 
-    lastTap = now;
-});
-        // TOUCH START  
-        wrapper.addEventListener('touchstart', (e) => {  
-            if (e.touches.length === 2) {
-    startDist = getDistance(e.touches);
-    lastScale = scale;
+    function getDistance(touches) {
+        const dx = touches[0].pageX - touches[1].pageX;
+        const dy = touches[0].pageY - touches[1].pageY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
 
-    rect = wrapper.getBoundingClientRect();
+    // 5. NOTES & DOWNLOADS
+    function openNotes(code) {
+        const course = courseData.find(c => c.code === code);
+        const list = document.getElementById('notesList');
+        const modal = document.getElementById('notesModal');
+        document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+        list.innerHTML = course.notes.map(note => `
+            <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
+                <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+                <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
+                <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
+            </div>`).join('');
+        modal.classList.remove('hidden');
+        window.addEventListener('touchstart', handleTouchStart, { passive: false });
+        window.addEventListener('touchmove', handleTouchMove, { passive: false });
+        requestAnimationFrame(() => { modal.classList.add('active-sheet'); document.body.classList.add('modal-open'); });
+    }
 
-    const mid = getMidPoint(e.touches);
+    function closeNotes() {
+        const modal = document.getElementById('notesModal');
+        modal.classList.remove('active-sheet');
+        document.body.classList.remove('modal-open');
+        window.removeEventListener('touchstart', handleTouchStart);
+        window.removeEventListener('touchmove', handleTouchMove);
+        setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500);
+    }
 
-    const prevScale = scale;
+    function confirmDownload(url, fileName) {
+        if (document.getElementById('customAlert')) return;
+        const alertHTML = `
+            <div id="customAlert" class="premium-alert-overlay">
+                <div class="premium-alert-card">
+                    <div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div>
+                    <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
+                    <p style="color: #64748b; font-size: 12px; line-height: 1.5;">${fileName}</p>
+                    <div class="alert-btn-group">
+                        <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
+                        <button class="alert-btn btn-confirm" onclick="executeDownload('${url}', '${fileName}')">Download</button>
+                    </div>
+                </div>
+            </div>`;
+        document.body.insertAdjacentHTML('beforeend', alertHTML);
+        setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
+    }
 
-originX = (mid.x - rect.left - panX) / prevScale;
-originY = (mid.y - rect.top - panY) / prevScale;
+    function executeDownload(url, fileName) {
+        const a = document.createElement('a');
+        a.href = url; a.download = fileName; a.target = '_blank';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        closeAlert();
+    }
 
-    isPanning = false;
-    wrapper.style.touchAction = "none";
-}
-  
-            if (e.touches.length === 1 && scale > 1) {  
-                isPanning = true;  
-                startX = e.touches[0].clientX - panX;  
-                startY = e.touches[0].clientY - panY;  
-            }  
-        }, { passive: false });  
-  
-        // TOUCH MOVE  
-        wrapper.addEventListener('touchmove', (e) => {  
-  
-            // PINCH  
-            // PINCH (ANCHOR-BASED ZOOM)
-if (e.touches.length === 2) {
-    e.preventDefault();
+    function closeAlert() {
+        const el = document.getElementById('customAlert');
+        if (el) { el.classList.remove('active'); setTimeout(() => el.remove(), 300); }
+    }
 
-    const newDist = getDistance(e.touches);
-    const newScale = lastScale * (newDist / startDist);
+    function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }
+    function handleTouchMove(e) {
+        const list = document.getElementById('notesList');
+        if (list.scrollTop <= 0 && e.touches[0].pageY > touchStartLine) if (e.cancelable) e.preventDefault();
+    }
 
-    scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+    function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
+    function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
 
-    const mid = getMidPoint(e.touches);
+    init();
+</script>
 
-    const dx = mid.x - rect.left;
-    const dy = mid.y - rect.top;
-
-    panX = dx - originX * scale;
-    panY = dy - originY * scale;
-requestAnimationFrame(() => update("instant"));
-    clampPan();
-    update("instant");
-} 
-  
-            // PAN ONLY IF ZOOMED  
-            if (e.touches.length === 1 && isPanning && scale > 1) {  
-                e.preventDefault();  
-  
-                panX = e.touches[0].clientX - startX;  
-                panY = e.touches[0].clientY - startY;  
-  
-                clampPan();  
-                update();  
-            }  
-  
-        }, { passive: false });  
-  
-        wrapper.addEventListener('touchend', () => {  
-            isPanning = false;  
-  
-            if (scale <= 1) {  
-                wrapper.style.touchAction = "pan-y"; // restore scroll  
-            }  
-        });  
-    });  
-}  
-  
-function getDistance(touches) {  
-    const dx = touches[0].pageX - touches[1].pageX;  
-    const dy = touches[0].pageY - touches[1].pageY;  
-    return Math.sqrt(dx * dx + dy * dy);  
-}  
-     
-  
-    function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }  
-    function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }  
-  
-    init();  
-</script>  </body>  
+          
+</body>  
 </html>
