@@ -421,7 +421,7 @@
     "semester": "4th Year 2nd Semester",
     "title": "VLSI Circuits and Design",
     "code": "EEE 4231",
-    "links": { "20-21": "missing",
+    "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/CamScanner%2003-05-2026%2016.39_1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/CamScanner%2003-05-2026%2016.39_2.jpg"]
       "21-22": "missing",
       "22-23": "missing",
       "23-24": "missing",
