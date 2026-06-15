@@ -37,11 +37,6 @@
             touch-action: none;
             cursor: none;
         }
-        #gameArea {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
         #gameHUD {
             width: 100%;
             display: flex;
@@ -121,6 +116,7 @@
             background: #27272a;
             color: #a1a1aa;
             border: 1px solid rgba(255,255,255,0.08);
+            margin-top: 6px;
         }
         /* Instructions modal */
         #instructionModal {
@@ -202,7 +198,6 @@
 
         <div class="relative w-full mb-5 flex flex-col items-center justify-center">
 
-            <!-- SHOOTER GAME AREA (hidden until activated) -->
             <div id="gameArea" class="hidden w-full flex-col items-center">
                 <div id="gameHUD">
                     <button id="howToPlayBtn" onclick="showInstructions()">
@@ -220,12 +215,12 @@
                         <div class="ov-score" id="overlayBody">
                             Defend against quizzes,<br>assignments &amp; lab reports.<br>Survive the Semester Final!
                         </div>
-                        <button class="ov-btn" onclick="startGame()">Launch Mission</button>
+                        <button id="overlayBtnMain" class="ov-btn" onclick="startGame()">Launch Mission</button>
+                        <button id="overlayBtnSec" class="ov-btn secondary" style="display:none;" onclick="returnToOffline()">Return to Offline Screen</button>
                     </div>
                 </div>
             </div>
 
-            <!-- OFFLINE DIAGNOSTIC (visible by default) -->
             <div id="diagnosticBox" class="w-full bg-black/20 border border-white/5 rounded-xl p-3.5 text-left space-y-2">
                 <div class="flex items-center gap-2.5 text-[11px] text-zinc-400">
                     <span class="w-1.5 h-1.5 bg-zinc-600 rounded-full"></span>
@@ -244,7 +239,6 @@
         </a>
     </div>
 
-    <!-- Instructions Modal -->
     <div id="instructionModal">
         <div class="modal-box">
             <h3>EEE Vault Offline Mission</h3>
@@ -260,7 +254,7 @@
 
     <script>
     // === GLOBAL PULL-TO-REFRESH BLOCK ===
-    window.addEventListener('touchmove', function(e) { e.preventDefault(); }, { passive: false });
+    window.addEventListener('touchmove', function(e) { if(e.cancelable) e.preventDefault(); }, { passive: false });
 
     // === TOGGLE GAME VIEW ===
     let gameActive = false;
@@ -285,7 +279,6 @@
     let canvas, ctx, W, H;
     function initCanvas() {
         canvas = document.getElementById('shooterCanvas');
-        // Size canvas to fit card (card is max 300px wide, leave room for padding)
         W = 290; H = 300;
         canvas.width = W;
         canvas.height = H;
@@ -294,34 +287,14 @@
     }
 
     // === GAME STATE ===
-    let gs; // game state object
+    let gs;
 
     function freshState() {
         return {
-            running: false,
-            won: false,
-            dead: false,
-            score: 0,
-            wave: 0,
-            bossWave: false,
-            frameCount: 0,
-            shakeFrames: 0,
-            stars: [],
-            player: null,
-            bullets: [],
-            enemies: [],
-            boss: null,
-            bossHP: 0,
-            bossMaxHP: 0,
-            bossProjectiles: [],
-            particles: [],
-            trails: [],
-            autoFireTimer: 0,
-            spawnTimer: 0,
-            waveEnemiesLeft: 0,
-            waveCleared: false,
-            wavePause: 0,
-            touchX: null,
+            running: false, won: false, dead: false, score: 0, wave: 0, bossWave: false, frameCount: 0,
+            shakeFrames: 0, stars: [], player: null, bullets: [], enemies: [], boss: null, bossHP: 0, bossMaxHP: 0,
+            bossProjectiles: [], particles: [], trails: [], autoFireTimer: 0, spawnTimer: 0, waveEnemiesLeft: 0,
+            waveCleared: false, wavePause: 0
         };
     }
 
@@ -347,7 +320,7 @@
     }
 
     // === WAVE / BOSS DEFINITIONS ===
-    const BOSS_WAVES = [4, 8, 12, 16]; // wave numbers that trigger bosses
+    const BOSS_WAVES = [4, 8, 12, 16];
     const BOSS_DEFS = [
         { name: 'QUIZ BARRAGE', hp: 120, color: '#ff3040', sz: 42, spd: 1.1, fireRate: 70, score: 500 },
         { name: 'ASSIGNMENT OVERLORD', hp: 200, color: '#e85d04', sz: 52, spd: 0.9, fireRate: 55, score: 1000 },
@@ -355,7 +328,6 @@
         { name: 'SEMESTER FINAL', hp: 500, color: '#6a0572', sz: 66, spd: 0.6, fireRate: 35, score: 5000 },
     ];
 
-    // Enemy type definitions
     const ENEMY_TYPES = [
         { name: 'Quiz Paper',       hp: 1, score: 10,  w: 22, h: 22, color: '#52525b', accent: '#a1a1aa', spd: 0.9 },
         { name: 'Assignment Sheet', hp: 2, score: 25,  w: 28, h: 26, color: '#3f3f46', accent: '#ff3040', spd: 0.7 },
@@ -369,11 +341,8 @@
         gs.waveCleared = false;
         gs.wavePause = 0;
 
-        if (gs.bossWave) {
-            spawnBoss();
-        } else {
-            spawnEnemyWave();
-        }
+        if (gs.bossWave) spawnBoss();
+        else spawnEnemyWave();
     }
 
     function spawnBoss() {
@@ -382,16 +351,9 @@
         gs.bossMaxHP = def.hp + gs.wave * 8;
         gs.bossHP = gs.bossMaxHP;
         gs.boss = {
-            x: W / 2, y: def.sz / 2 + 18,
-            vx: def.spd, vy: 0,
-            w: def.sz, h: def.sz,
-            color: def.color,
-            name: def.name,
-            fireRate: def.fireRate,
-            fireTimer: 0,
-            score: def.score,
-            idx: idx,
-            wobble: 0,
+            x: W / 2, y: def.sz / 2 + 18, vx: def.spd, vy: 0, w: def.sz, h: def.sz,
+            color: def.color, name: def.name, fireRate: def.fireRate, fireTimer: 0,
+            score: def.score, idx: idx, wobble: 0
         };
         gs.bossProjectiles = [];
         gs.enemies = [];
@@ -399,15 +361,13 @@
 
     function spawnEnemyWave() {
         gs.enemies = [];
-        let count = 5 + gs.wave * 2;
-        if (count > 24) count = 24;
+        let count = Math.min(5 + gs.wave * 2, 24);
         let diff = Math.min(gs.wave - 1, 3);
-        // Weight enemy types by wave difficulty
         let typeWeights = [
-            Math.max(0, 10 - gs.wave),     // Quiz Paper
-            Math.min(gs.wave * 2, 8),      // Assignment Sheet
-            Math.min(Math.max(gs.wave - 2, 0) * 2, 6), // Lab Report
-            Math.min(Math.max(gs.wave - 4, 0), 3),     // Backlog Monster
+            Math.max(0, 10 - gs.wave), 
+            Math.min(gs.wave * 2, 8),  
+            Math.min(Math.max(gs.wave - 2, 0) * 2, 6),
+            Math.min(Math.max(gs.wave - 4, 0), 3) 
         ];
         let totalW = typeWeights.reduce((a, b) => a + b, 0);
         if (totalW === 0) { typeWeights[0] = 1; totalW = 1; }
@@ -429,53 +389,46 @@
                 x: ex, y: ey,
                 vx: (Math.random() < 0.5 ? 1 : -1) * def.spd * (1 + gs.wave * 0.04),
                 vy: def.spd * 0.3 * (1 + gs.wave * 0.03),
-                w: def.w, h: def.h,
-                hp: def.hp, maxHp: def.hp,
-                score: def.score,
-                color: def.color,
-                accent: def.accent,
-                ti: ti,
-                type: def.name,
+                w: def.w, h: def.h, hp: def.hp, maxHp: def.hp, score: def.score,
+                color: def.color, accent: def.accent, ti: ti, type: def.name
             });
         }
         gs.waveEnemiesLeft = gs.enemies.length;
     }
 
-    // === INPUT ===
+    // === INPUT SYSTEM ===
     let inputX = null;
+    let inputSetup = false;
     function setupInput() {
+        if (inputSetup) return;
         canvas.addEventListener('touchstart', onTouchStart, { passive: false });
         canvas.addEventListener('touchmove', onTouchMove, { passive: false });
         canvas.addEventListener('touchend', onTouchEnd, { passive: false });
         canvas.addEventListener('mousemove', onMouseMove);
         canvas.addEventListener('mouseleave', () => { inputX = null; });
         window.addEventListener('keydown', onKey);
+        window.addEventListener('keyup', e => {
+            if (e.key === 'ArrowLeft') leftKey = false;
+            if (e.key === 'ArrowRight') rightKey = false;
+        });
+        inputSetup = true;
     }
     function onTouchStart(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         inputX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
     }
     function onTouchMove(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         inputX = e.touches[0].clientX - canvas.getBoundingClientRect().left;
     }
-    function onTouchEnd(e) {
-        e.preventDefault();
-    }
-    function onMouseMove(e) {
-        inputX = e.offsetX;
-    }
+    function onTouchEnd(e) { e.preventDefault(); }
+    function onMouseMove(e) { inputX = e.offsetX; }
+    
     let leftKey = false, rightKey = false;
     function onKey(e) {
         if (e.key === 'ArrowLeft') leftKey = true;
         if (e.key === 'ArrowRight') rightKey = true;
     }
-    window.addEventListener('keyup', e => {
-        if (e.key === 'ArrowLeft') leftKey = false;
-        if (e.key === 'ArrowRight') rightKey = false;
-    });
 
     // === MAIN LOOP ===
     let raf;
@@ -490,13 +443,11 @@
         gs.frameCount++;
         if (gs.dead || gs.won) return;
 
-        // Move stars
         for (let s of gs.stars) {
             s.y += s.spd;
             if (s.y > H) { s.y = 0; s.x = Math.random() * W; }
         }
 
-        // Move player
         let p = gs.player;
         if (inputX !== null) {
             let dx = inputX - p.x;
@@ -507,40 +458,33 @@
         p.x = Math.max(p.w / 2, Math.min(W - p.w / 2, p.x));
         if (p.iframes > 0) p.iframes--;
 
-        // Auto-fire
         gs.autoFireTimer++;
         let fireInterval = Math.max(10, 22 - Math.floor(gs.wave * 0.5));
         if (gs.autoFireTimer >= fireInterval) {
             gs.autoFireTimer = 0;
             gs.bullets.push({ x: p.x, y: p.y - p.h / 2, vy: -8, w: 3, h: 10 });
-            // Add trail particle
             gs.trails.push({ x: p.x, y: p.y - p.h / 2, life: 6, maxLife: 6 });
         }
 
-        // Move bullets
         gs.bullets = gs.bullets.filter(b => {
             b.y += b.vy;
             return b.y > -20;
         });
 
-        // Boss logic
         if (gs.bossWave && gs.boss) {
             let boss = gs.boss;
             boss.wobble += 0.04;
             boss.x += boss.vx + Math.sin(boss.wobble) * 0.6;
             if (boss.x < boss.w / 2 + 8 || boss.x > W - boss.w / 2 - 8) boss.vx *= -1;
 
-            // Boss fires
             boss.fireTimer++;
             if (boss.fireTimer >= boss.fireRate) {
                 boss.fireTimer = 0;
                 fireBossProjectile(boss);
             }
 
-            // Boss bullets vs player
             gs.bossProjectiles = gs.bossProjectiles.filter(bp => {
-                bp.x += bp.vx;
-                bp.y += bp.vy;
+                bp.x += bp.vx; bp.y += bp.vy;
                 if (bp.y > H + 10) return false;
                 if (p.iframes === 0 && rectsOverlap(bp.x - 4, bp.y - 4, 8, 8, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
                     hitPlayer();
@@ -549,7 +493,6 @@
                 return true;
             });
 
-            // Player bullets vs boss
             gs.bullets = gs.bullets.filter(b => {
                 if (rectsOverlap(b.x - b.w/2, b.y - b.h/2, b.w, b.h, boss.x - boss.w/2, boss.y - boss.h/2, boss.w, boss.h)) {
                     gs.bossHP -= 1;
@@ -560,9 +503,8 @@
                         spawnParticles(boss.x, boss.y, 30, boss.color);
                         spawnParticles(boss.x, boss.y, 20, '#ff3040');
                         gs.shakeFrames = 12;
-                        if (boss.idx === 3) {
-                            triggerWin();
-                        } else {
+                        if (boss.idx === 3) { triggerWin(); } 
+                        else {
                             gs.boss = null;
                             gs.bossWave = false;
                             gs.wavePause = 90;
@@ -574,19 +516,15 @@
                 return true;
             });
         } else {
-            // Enemy movement & collision
             for (let e of gs.enemies) {
-                e.x += e.vx;
-                e.y += e.vy * 0.3;
+                e.x += e.vx; e.y += e.vy * 0.3;
                 if (e.x < e.w / 2 + 4 || e.x > W - e.w / 2 - 4) e.vx *= -1;
 
-                // Enemy vs player
                 if (p.iframes === 0 && rectsOverlap(e.x - e.w/2, e.y - e.h/2, e.w, e.h, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
                     hitPlayer();
                 }
             }
 
-            // Bullets vs enemies
             gs.bullets = gs.bullets.filter(b => {
                 let hit = false;
                 gs.enemies = gs.enemies.filter(e => {
@@ -606,38 +544,28 @@
                 return !hit;
             });
 
-            // Wave clear check
             if (!gs.waveCleared && gs.enemies.length === 0) {
                 gs.waveCleared = true;
                 gs.wavePause = 80;
             }
         }
 
-        // Wave transition
         if (gs.waveCleared && gs.wavePause > 0) {
             gs.wavePause--;
             if (gs.wavePause === 0) startWave();
         }
 
-        // Particles
         gs.particles = gs.particles.filter(p => {
-            p.x += p.vx;
-            p.y += p.vy;
-            p.vy += 0.08;
-            p.life--;
+            p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life--;
             return p.life > 0;
         });
         gs.trails = gs.trails.filter(t => { t.life--; return t.life > 0; });
 
-        // Shake
         if (gs.shakeFrames > 0) gs.shakeFrames--;
-
-        // Update score display
         document.getElementById('scoreLabel').innerText = gs.score;
     }
 
     function fireBossProjectile(boss) {
-        // Fire spread pattern based on boss index
         let patterns = [
             [{ vx: 0, vy: 3 }],
             [{ vx: -1, vy: 2.8 }, { vx: 1, vy: 2.8 }],
@@ -659,6 +587,7 @@
         if (gs.player.hp <= 0) triggerDeath();
     }
 
+    // === END SCREEN FIX ===
     function triggerDeath() {
         gs.dead = true;
         gs.running = false;
@@ -679,36 +608,16 @@
         let overlay = document.getElementById('gameOverlay');
         let ot = document.getElementById('overlayTitle');
         let ob = document.getElementById('overlayBody');
+        let mainBtn = document.getElementById('overlayBtnMain');
+        let secBtn = document.getElementById('overlayBtnSec');
+
         ot.innerText = title;
         ot.style.color = win ? '#34d399' : '#ff3040';
         ob.innerHTML = `Score: <span style="color:#ff3040;font-weight:900">${score}</span><br>Best: <span style="color:#ff3040;font-weight:900">${best}</span>`;
-        overlay.innerHTML = '';
+        mainBtn.innerText = win ? 'Endless Mode' : 'Play Again';
+        secBtn.style.display = 'block';
+        
         overlay.style.display = 'flex';
-
-        // Rebuild overlay content
-        let h = document.createElement('h3');
-        h.innerText = title;
-        h.style.color = win ? '#34d399' : '#ff3040';
-        h.style.fontSize = '13px'; h.style.fontWeight = '900'; h.style.letterSpacing = '0.12em';
-        h.style.textTransform = 'uppercase'; h.style.marginBottom = '4px';
-        overlay.appendChild(h);
-
-        let d = document.createElement('div');
-        d.className = 'ov-score';
-        d.innerHTML = `Score: <span>${score}</span><br>Best: <span>${best}</span>`;
-        overlay.appendChild(d);
-
-        let b1 = document.createElement('button');
-        b1.className = 'ov-btn';
-        b1.innerText = win ? 'Endless Mode' : 'Play Again';
-        b1.onclick = startGame;
-        overlay.appendChild(b1);
-
-        let b2 = document.createElement('button');
-        b2.className = 'ov-btn secondary';
-        b2.innerText = 'Return to Offline Screen';
-        b2.onclick = returnToOffline;
-        overlay.appendChild(b2);
     }
 
     function returnToOffline() {
@@ -723,6 +632,13 @@
         document.getElementById('mainHeading').innerHTML = 'CONNECTION <span class="text-[#ff3040]">LOST</span>';
         document.getElementById('subHeading').innerText = 'EEE Vault is offline. Tap the controller insignia above to launch the offline mission.';
         gameActive = false;
+        
+        // Reset overlay cleanly so the next session doesn't glitch
+        document.getElementById('overlayTitle').innerText = 'EEE VAULT';
+        document.getElementById('overlayTitle').style.color = '#ff3040';
+        document.getElementById('overlayBody').innerHTML = 'Defend against quizzes,<br>assignments &amp; lab reports.<br>Survive the Semester Final!';
+        document.getElementById('overlayBtnMain').innerText = 'Launch Mission';
+        document.getElementById('overlayBtnSec').style.display = 'none';
     }
 
     function getBest() { try { return parseInt(localStorage.getItem('eee_best') || '0'); } catch(e) { return 0; } }
@@ -737,44 +653,33 @@
             let angle = Math.random() * Math.PI * 2;
             let spd = Math.random() * 3 + 1;
             gs.particles.push({
-                x, y,
-                vx: Math.cos(angle) * spd,
-                vy: Math.sin(angle) * spd - 1,
-                life: Math.floor(Math.random() * 18) + 8,
-                maxLife: 26,
-                color,
-                r: Math.random() * 2.5 + 0.8,
+                x, y, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd - 1,
+                life: Math.floor(Math.random() * 18) + 8, maxLife: 26, color, r: Math.random() * 2.5 + 0.8,
             });
         }
     }
 
-    // === RENDER ===
+    // === RENDER ENGINE ===
     function render() {
         if (!canvas || !ctx) { ctx = canvas.getContext('2d'); }
         let c = ctx;
         let shakeX = 0, shakeY = 0;
         if (gs.shakeFrames > 0) {
-            shakeX = (Math.random() - 0.5) * 5;
-            shakeY = (Math.random() - 0.5) * 5;
+            shakeX = (Math.random() - 0.5) * 5; shakeY = (Math.random() - 0.5) * 5;
         }
         c.save();
         c.translate(shakeX, shakeY);
 
-        // Background
         c.fillStyle = '#09090b';
         c.fillRect(-4, -4, W + 8, H + 8);
 
-        // Stars
         for (let s of gs.stars) {
             c.globalAlpha = 0.3 + s.b * 0.5;
             c.fillStyle = '#fff';
-            c.beginPath();
-            c.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-            c.fill();
+            c.beginPath(); c.arc(s.x, s.y, s.r, 0, Math.PI * 2); c.fill();
         }
         c.globalAlpha = 1;
 
-        // Trails
         for (let t of gs.trails) {
             c.globalAlpha = (t.life / t.maxLife) * 0.5;
             c.fillStyle = '#ff3040';
@@ -782,267 +687,133 @@
         }
         c.globalAlpha = 1;
 
-        // Particles
         for (let p of gs.particles) {
             c.globalAlpha = p.life / p.maxLife;
             c.fillStyle = p.color;
-            c.beginPath();
-            c.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-            c.fill();
+            c.beginPath(); c.arc(p.x, p.y, p.r, 0, Math.PI * 2); c.fill();
         }
         c.globalAlpha = 1;
 
-        // Draw enemies
-        for (let e of gs.enemies) {
-            drawEnemy(c, e);
-        }
+        for (let e of gs.enemies) drawEnemy(c, e);
 
-        // Draw boss
         if (gs.bossWave && gs.boss) {
-            drawBoss(c, gs.boss);
-            drawBossHP(c);
+            drawBoss(c, gs.boss); drawBossHP(c);
         }
 
-        // Draw boss projectiles
         for (let bp of gs.bossProjectiles) {
-            c.fillStyle = '#ff3040';
-            c.shadowColor = '#ff3040';
-            c.shadowBlur = 6;
-            c.beginPath();
-            c.arc(bp.x, bp.y, 4, 0, Math.PI * 2);
-            c.fill();
+            c.fillStyle = '#ff3040'; c.shadowColor = '#ff3040'; c.shadowBlur = 6;
+            c.beginPath(); c.arc(bp.x, bp.y, 4, 0, Math.PI * 2); c.fill();
             c.shadowBlur = 0;
         }
 
-        // Draw player bullets
         for (let b of gs.bullets) {
-            c.fillStyle = '#ff3040';
-            c.shadowColor = '#ff3040';
-            c.shadowBlur = 8;
+            c.fillStyle = '#ff3040'; c.shadowColor = '#ff3040'; c.shadowBlur = 8;
             c.fillRect(b.x - b.w / 2, b.y - b.h / 2, b.w, b.h);
             c.shadowBlur = 0;
         }
 
-        // Draw player
         if (!gs.dead) drawPlayer(c, gs.player);
 
-        // Wave label
         if (gs.waveCleared && gs.wavePause > 30 && !gs.bossWave) {
             c.globalAlpha = Math.min(1, (gs.wavePause - 30) / 30);
-            c.fillStyle = '#ff3040';
-            c.font = 'bold 13px monospace';
+            c.fillStyle = '#ff3040'; c.font = 'bold 13px monospace';
             c.textAlign = 'center';
             c.fillText('WAVE ' + gs.wave + ' CLEARED!', W / 2, H / 2);
             c.globalAlpha = 1;
         }
 
-        // Incoming boss warning
         if (gs.bossWave && gs.boss && gs.frameCount < 80) {
             let alpha = Math.sin(gs.frameCount * 0.15) * 0.5 + 0.5;
-            c.globalAlpha = alpha;
-            c.fillStyle = '#ff3040';
-            c.font = 'bold 11px monospace';
-            c.textAlign = 'center';
+            c.globalAlpha = alpha; c.fillStyle = '#ff3040';
+            c.font = 'bold 11px monospace'; c.textAlign = 'center';
             c.fillText('⚠ BOSS: ' + gs.boss.name, W / 2, H - 14);
             c.globalAlpha = 1;
         }
 
-        // Player HP pips
         drawPlayerHP(c);
-
         c.restore();
     }
 
     function drawPlayer(c, p) {
-        if (p.iframes > 0 && Math.floor(gs.frameCount / 4) % 2 === 0) return; // flicker
+        if (p.iframes > 0 && Math.floor(gs.frameCount / 4) % 2 === 0) return;
         let x = p.x, y = p.y;
-        // Glow
-        c.shadowColor = '#ff3040';
-        c.shadowBlur = 14;
-        // Triangle ship body
+        c.shadowColor = '#ff3040'; c.shadowBlur = 14;
         c.fillStyle = '#ff3040';
-        c.beginPath();
-        c.moveTo(x, y - p.h / 2);
-        c.lineTo(x - p.w / 2, y + p.h / 2);
-        c.lineTo(x, y + p.h / 2 - 6);
-        c.lineTo(x + p.w / 2, y + p.h / 2);
-        c.closePath();
-        c.fill();
-        // Center stripe
-        c.fillStyle = '#fff';
-        c.globalAlpha = 0.5;
-        c.beginPath();
-        c.moveTo(x, y - p.h / 2 + 4);
-        c.lineTo(x - 3, y + p.h / 2 - 8);
-        c.lineTo(x + 3, y + p.h / 2 - 8);
-        c.closePath();
-        c.fill();
-        c.globalAlpha = 1;
-        // Engine glow
-        c.fillStyle = '#ff8040';
-        c.shadowBlur = 10;
-        c.beginPath();
-        c.arc(x, y + p.h / 2 - 4, 3 + Math.sin(gs.frameCount * 0.3) * 1.5, 0, Math.PI * 2);
-        c.fill();
+        c.beginPath(); c.moveTo(x, y - p.h / 2); c.lineTo(x - p.w / 2, y + p.h / 2);
+        c.lineTo(x, y + p.h / 2 - 6); c.lineTo(x + p.w / 2, y + p.h / 2); c.closePath(); c.fill();
+        c.fillStyle = '#fff'; c.globalAlpha = 0.5;
+        c.beginPath(); c.moveTo(x, y - p.h / 2 + 4); c.lineTo(x - 3, y + p.h / 2 - 8);
+        c.lineTo(x + 3, y + p.h / 2 - 8); c.closePath(); c.fill(); c.globalAlpha = 1;
+        c.fillStyle = '#ff8040'; c.shadowBlur = 10;
+        c.beginPath(); c.arc(x, y + p.h / 2 - 4, 3 + Math.sin(gs.frameCount * 0.3) * 1.5, 0, Math.PI * 2); c.fill();
         c.shadowBlur = 0;
     }
 
     function drawEnemy(c, e) {
         let x = e.x, y = e.y;
-        c.save();
-        // Shadow glow
-        c.shadowColor = e.accent;
-        c.shadowBlur = 6;
-        c.fillStyle = e.color;
-        // Enemy shape by type
+        c.save(); c.shadowColor = e.accent; c.shadowBlur = 6; c.fillStyle = e.color;
         if (e.ti === 0) {
-            // Quiz Paper: square with lines
-            c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h);
-            c.fillStyle = e.accent;
-            c.globalAlpha = 0.6;
-            for (let l = 0; l < 3; l++) {
-                c.fillRect(x - e.w/2 + 3, y - e.h/2 + 4 + l*5, e.w - 6, 2);
-            }
+            c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h); c.fillStyle = e.accent; c.globalAlpha = 0.6;
+            for (let l = 0; l < 3; l++) c.fillRect(x - e.w/2 + 3, y - e.h/2 + 4 + l*5, e.w - 6, 2);
         } else if (e.ti === 1) {
-            // Assignment Sheet: slightly larger with corner fold
-            c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h);
-            c.fillStyle = e.accent;
-            c.globalAlpha = 0.5;
-            c.beginPath();
-            c.moveTo(x + e.w/2 - 7, y - e.h/2);
-            c.lineTo(x + e.w/2, y - e.h/2 + 7);
-            c.lineTo(x + e.w/2 - 7, y - e.h/2 + 7);
-            c.closePath();
-            c.fill();
-            c.globalAlpha = 0.4;
-            c.fillStyle = e.accent;
-            for (let l = 0; l < 3; l++) {
-                c.fillRect(x - e.w/2 + 3, y - e.h/2 + 5 + l*6, e.w - 12, 2);
-            }
+            c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h); c.fillStyle = e.accent; c.globalAlpha = 0.5;
+            c.beginPath(); c.moveTo(x + e.w/2 - 7, y - e.h/2); c.lineTo(x + e.w/2, y - e.h/2 + 7);
+            c.lineTo(x + e.w/2 - 7, y - e.h/2 + 7); c.closePath(); c.fill(); c.globalAlpha = 0.4;
+            for (let l = 0; l < 3; l++) c.fillRect(x - e.w/2 + 3, y - e.h/2 + 5 + l*6, e.w - 12, 2);
         } else if (e.ti === 2) {
-            // Lab Report: taller with zigzag
-            c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h);
-            c.fillStyle = e.accent;
-            c.globalAlpha = 0.6;
-            c.beginPath();
-            let zigX = x - e.w/2 + 4;
-            c.moveTo(zigX, y - e.h/2 + 6);
-            for (let z = 0; z < 4; z++) {
-                c.lineTo(zigX + (z%2===0?e.w-8:4), y - e.h/2 + 6 + z * 5);
-            }
-            c.strokeStyle = e.accent;
-            c.lineWidth = 1.5;
-            c.globalAlpha = 0.5;
-            c.stroke();
+            c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h); c.fillStyle = e.accent; c.globalAlpha = 0.6;
+            c.beginPath(); let zigX = x - e.w/2 + 4; c.moveTo(zigX, y - e.h/2 + 6);
+            for (let z = 0; z < 4; z++) c.lineTo(zigX + (z%2===0?e.w-8:4), y - e.h/2 + 6 + z * 5);
+            c.strokeStyle = e.accent; c.lineWidth = 1.5; c.globalAlpha = 0.5; c.stroke();
         } else {
-            // Backlog Monster: jagged blob
-            c.globalAlpha = 1;
-            c.fillStyle = e.color;
-            c.beginPath();
-            let pts = 8;
+            c.globalAlpha = 1; c.beginPath(); let pts = 8;
             for (let i = 0; i < pts; i++) {
                 let angle = (i / pts) * Math.PI * 2 - Math.PI/2;
                 let r = (i % 2 === 0 ? e.w/2 : e.w/2 - 5) + Math.sin(gs.frameCount * 0.05 + i) * 2;
-                let px2 = x + Math.cos(angle) * r;
-                let py2 = y + Math.sin(angle) * (e.h/2 / (e.w/2)) * r;
+                let px2 = x + Math.cos(angle) * r; let py2 = y + Math.sin(angle) * (e.h/2 / (e.w/2)) * r;
                 if (i === 0) c.moveTo(px2, py2); else c.lineTo(px2, py2);
             }
-            c.closePath();
-            c.fill();
-            c.strokeStyle = e.accent;
-            c.lineWidth = 2;
-            c.stroke();
-            // Eyes
-            c.fillStyle = e.accent;
-            c.globalAlpha = 0.9;
+            c.closePath(); c.fill(); c.strokeStyle = e.accent; c.lineWidth = 2; c.stroke();
+            c.fillStyle = e.accent; c.globalAlpha = 0.9;
             c.beginPath(); c.arc(x - 5, y - 4, 3, 0, Math.PI * 2); c.fill();
             c.beginPath(); c.arc(x + 5, y - 4, 3, 0, Math.PI * 2); c.fill();
             c.fillStyle = '#000';
             c.beginPath(); c.arc(x - 5, y - 4, 1.5, 0, Math.PI * 2); c.fill();
             c.beginPath(); c.arc(x + 5, y - 4, 1.5, 0, Math.PI * 2); c.fill();
         }
-        // HP bar for tougher enemies
         if (e.maxHp > 1) {
-            c.globalAlpha = 0.7;
-            c.fillStyle = '#1c1c1e';
-            c.fillRect(x - e.w/2, y + e.h/2 + 2, e.w, 3);
-            c.fillStyle = e.accent;
-            c.fillRect(x - e.w/2, y + e.h/2 + 2, e.w * (e.hp / e.maxHp), 3);
+            c.globalAlpha = 0.7; c.fillStyle = '#1c1c1e'; c.fillRect(x - e.w/2, y + e.h/2 + 2, e.w, 3);
+            c.fillStyle = e.accent; c.fillRect(x - e.w/2, y + e.h/2 + 2, e.w * (e.hp / e.maxHp), 3);
         }
         c.restore();
     }
 
     function drawBoss(c, boss) {
-        let x = boss.x, y = boss.y;
-        let pulse = Math.sin(gs.frameCount * 0.08) * 3;
-        c.save();
-        c.shadowColor = boss.color;
-        c.shadowBlur = 22 + pulse;
-
-        // Outer ring
-        c.strokeStyle = boss.color;
-        c.lineWidth = 2;
-        c.globalAlpha = 0.4 + Math.sin(gs.frameCount * 0.1) * 0.2;
-        c.beginPath();
-        c.arc(x, y, boss.w/2 + 8 + pulse, 0, Math.PI * 2);
-        c.stroke();
-        c.globalAlpha = 1;
-
-        // Body hex
-        c.fillStyle = boss.color;
-        let sides = 6;
-        c.beginPath();
+        let x = boss.x, y = boss.y, pulse = Math.sin(gs.frameCount * 0.08) * 3;
+        c.save(); c.shadowColor = boss.color; c.shadowBlur = 22 + pulse;
+        c.strokeStyle = boss.color; c.lineWidth = 2; c.globalAlpha = 0.4 + Math.sin(gs.frameCount * 0.1) * 0.2;
+        c.beginPath(); c.arc(x, y, boss.w/2 + 8 + pulse, 0, Math.PI * 2); c.stroke(); c.globalAlpha = 1;
+        c.fillStyle = boss.color; let sides = 6; c.beginPath();
         for (let i = 0; i < sides; i++) {
             let angle = (i / sides) * Math.PI * 2 - Math.PI/2 + gs.frameCount * 0.012;
-            let bx = x + Math.cos(angle) * boss.w/2;
-            let by = y + Math.sin(angle) * boss.h/2;
+            let bx = x + Math.cos(angle) * boss.w/2; let by = y + Math.sin(angle) * boss.h/2;
             if (i === 0) c.moveTo(bx, by); else c.lineTo(bx, by);
         }
-        c.closePath();
-        c.fill();
-
-        // Core
-        c.fillStyle = '#09090b';
-        c.beginPath();
-        c.arc(x, y, boss.w/4, 0, Math.PI * 2);
-        c.fill();
-        c.fillStyle = boss.color;
-        c.globalAlpha = 0.8;
-        c.beginPath();
-        c.arc(x, y, boss.w/6 + Math.sin(gs.frameCount * 0.15) * 2, 0, Math.PI * 2);
-        c.fill();
-        c.globalAlpha = 1;
-
-        c.restore();
+        c.closePath(); c.fill(); c.fillStyle = '#09090b'; c.beginPath(); c.arc(x, y, boss.w/4, 0, Math.PI * 2); c.fill();
+        c.fillStyle = boss.color; c.globalAlpha = 0.8;
+        c.beginPath(); c.arc(x, y, boss.w/6 + Math.sin(gs.frameCount * 0.15) * 2, 0, Math.PI * 2); c.fill();
+        c.globalAlpha = 1; c.restore();
     }
 
     function drawBossHP(c) {
-        let bw = W - 20;
-        let bh = 6;
-        let bx = 10, by = 8;
-        let ratio = Math.max(0, gs.bossHP / gs.bossMaxHP);
-        // Background
-        c.fillStyle = '#27272a';
-        c.beginPath();
-        c.roundRect ? c.roundRect(bx, by, bw, bh, 3) : c.fillRect(bx, by, bw, bh);
-        c.fill();
-        // Fill
+        let bw = W - 20, bh = 6, bx = 10, by = 8, ratio = Math.max(0, gs.bossHP / gs.bossMaxHP);
+        c.fillStyle = '#27272a'; c.beginPath(); c.roundRect ? c.roundRect(bx, by, bw, bh, 3) : c.fillRect(bx, by, bw, bh); c.fill();
         let bossColor = gs.boss ? gs.boss.color : '#ff3040';
-        c.fillStyle = bossColor;
-        c.shadowColor = bossColor;
-        c.shadowBlur = 8;
+        c.fillStyle = bossColor; c.shadowColor = bossColor; c.shadowBlur = 8;
         let fw = bw * ratio;
-        if (fw > 0) {
-            c.beginPath();
-            c.roundRect ? c.roundRect(bx, by, fw, bh, 3) : c.fillRect(bx, by, fw, bh);
-            c.fill();
-        }
-        c.shadowBlur = 0;
-        // Label
-        c.fillStyle = '#f8f8f8';
-        c.font = 'bold 8px monospace';
-        c.textAlign = 'center';
-        c.fillText(gs.boss ? gs.boss.name : '', W/2, by - 2);
+        if (fw > 0) { c.beginPath(); c.roundRect ? c.roundRect(bx, by, fw, bh, 3) : c.fillRect(bx, by, fw, bh); c.fill(); }
+        c.shadowBlur = 0; c.fillStyle = '#f8f8f8'; c.font = 'bold 8px monospace';
+        c.textAlign = 'center'; c.fillText(gs.boss ? gs.boss.name : '', W/2, by - 2);
     }
 
     function drawPlayerHP(c) {
@@ -1051,15 +822,10 @@
             c.fillStyle = i < gs.player.hp ? '#ff3040' : '#27272a';
             c.shadowColor = i < gs.player.hp ? '#ff3040' : 'transparent';
             c.shadowBlur = i < gs.player.hp ? 6 : 0;
-            c.beginPath();
-            c.arc(W - 14 - i * 14, H - 10, 4, 0, Math.PI * 2);
-            c.fill();
+            c.beginPath(); c.arc(W - 14 - i * 14, H - 10, 4, 0, Math.PI * 2); c.fill();
         }
         c.shadowBlur = 0;
     }
-
     </script>
 </body>
 </html>
-
-
