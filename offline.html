@@ -179,11 +179,11 @@
 
     <div class="relative w-full max-w-[340px] mx-auto bg-zinc-900/90 rounded-[32px] premium-border p-5 text-center backdrop-blur-md shadow-[0_30px_80px_rgba(255,48,64,0.1)]">
 
-        <div id="iconWrapper" onclick="toggleGameView()" class="relative inline-flex items-center justify-center w-16 h-16 bg-zinc-800/80 rounded-full border border-white/5 mb-4 cursor-pointer active:scale-95 transition-transform">
+        <div id="iconWrapper" onclick="toggleGameView()" class="relative inline-flex items-center justify-center w-16 h-16 bg-zinc-800/80 rounded-full border border-white/5 mb-4 cursor-pointer active:[...]
             <div id="pulseRing" class="absolute inset-0 rounded-full border border-[#ff3040]/40 animate-custom-ping"></div>
 
             <svg id="gameConsoleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#ff3040" class="w-8 h-8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3h-9a3 3 0 0 0-3 3v8.25a3 3 0 0 0 3 3m9 0v-1.5a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1.5 0 0 0-1.5 1.5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3h-9a3 3 0 0 0-3 3v8.25a3 3 0 0 0 3 3m9 0v-1.5a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1[...]
             </svg>
 
             <div id="gameIcon" class="hidden text-[#ff3040] font-black text-[9px] font-mono tracking-wider leading-tight">MISSION</div>
@@ -234,7 +234,7 @@
         </div>
 
         <a href="javascript:window.location.reload(true);"
-           class="inline-flex items-center justify-center gap-2 w-full bg-[#ff3040] hover:bg-[#e02635] text-white font-bold text-xs py-3.5 px-6 rounded-xl transition-all duration-200">
+           class="inline-flex items-center justify-center gap-2 w-full bg-[#ff3040] hover:bg-[#e02635] text-white font-bold text-xs py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-[...]
             <span class="tracking-wide text-[11px]">Retry Server Connection</span>
         </a>
     </div>
@@ -255,6 +255,31 @@
     <script>
     // === GLOBAL PULL-TO-REFRESH BLOCK ===
     window.addEventListener('touchmove', function(e) { if(e.cancelable) e.preventDefault(); }, { passive: false });
+
+    // === DELTA TIME SYSTEM ===
+    const TARGET_FRAME_TIME = 16.67; // milliseconds at 60 FPS
+    const MAX_DELTA_TIME = TARGET_FRAME_TIME * 2; // clamp to 2 frames max
+    let lastTimestamp = 0;
+    let deltaTime = 1; // normalized delta time (0-2 range)
+
+    function computeDeltaTime(timestamp) {
+        if (lastTimestamp === 0) {
+            lastTimestamp = timestamp;
+            deltaTime = 1; // assume 60 FPS for first frame
+            return deltaTime;
+        }
+        
+        const elapsedMs = timestamp - lastTimestamp;
+        lastTimestamp = timestamp;
+        
+        // Clamp to max delta to prevent physics spikes
+        const clampedMs = Math.min(elapsedMs, MAX_DELTA_TIME);
+        
+        // Normalize to 60 FPS baseline (16.67ms = dt of 1.0)
+        deltaTime = clampedMs / TARGET_FRAME_TIME;
+        
+        return deltaTime;
+    }
 
     // === TOGGLE GAME VIEW ===
     let gameActive = false;
@@ -293,8 +318,8 @@
         return {
             running: false, won: false, dead: false, score: 0, wave: 0, bossWave: false, frameCount: 0,
             shakeFrames: 0, player: null, bullets: [], enemies: [], boss: null, bossHP: 0, bossMaxHP: 0,
-            bossProjectiles: [], enemyProjectiles: [], particles: [], trails: [], autoFireTimer: 0, spawnTimer: 0, waveEnemiesLeft: 0,
-            waveCleared: false, wavePause: 0, waveMessage: '', scanLineOffset: 0
+            bossProjectiles: [], enemyProjectiles: [], particles: [], trails: [], autoFireCooldown: 0, spawnTimer: 0, waveEnemiesLeft: 0,
+            waveCleared: false, wavePauseTimer: 0, waveMessage: '', scanLineOffset: 0
         };
     }
 
@@ -304,7 +329,8 @@
         gs.running = true;
         gs.score = 0;
         gs.wave = 0;
-        gs.player = { x: W / 2, y: H - 36, w: 22, h: 28, speed: 4, hp: 3, maxHp: 3, iframes: 0 };
+        gs.player = { x: W / 2, y: H - 36, w: 22, h: 28, speed: 240, hp: 3, maxHp: 3, iframesTimer: 0 };
+        lastTimestamp = 0; // Reset timing
         setupInput();
         startWave();
         loop();
@@ -313,24 +339,24 @@
     // === WAVE / BOSS DEFINITIONS ===
     const BOSS_WAVES = [4, 8, 12, 16];
     const BOSS_DEFS = [
-        { name: 'QUIZ BARRAGE', hp: 60, color: '#ff3040', sz: 42, spd: 1.1, fireRate: 70, score: 500 },
-        { name: 'ASSIGNMENT OVERLORD', hp: 90, color: '#e85d04', sz: 52, spd: 0.9, fireRate: 55, score: 1000 },
-        { name: 'LAB REPORT TITAN', hp: 130, color: '#9b2226', sz: 58, spd: 0.75, fireRate: 45, score: 2000 },
-        { name: 'SEMESTER FINAL', hp: 180, color: '#6a0572', sz: 66, spd: 0.6, fireRate: 35, score: 5000 },
+        { name: 'QUIZ BARRAGE', hp: 60, color: '#ff3040', sz: 42, spd: 110, fireRate: 700, score: 500 },
+        { name: 'ASSIGNMENT OVERLORD', hp: 90, color: '#e85d04', sz: 52, spd: 90, fireRate: 550, score: 1000 },
+        { name: 'LAB REPORT TITAN', hp: 130, color: '#9b2226', sz: 58, spd: 75, fireRate: 450, score: 2000 },
+        { name: 'SEMESTER FINAL', hp: 180, color: '#6a0572', sz: 66, spd: 60, fireRate: 350, score: 5000 },
     ];
 
     const ENEMY_TYPES = [
-        { name: 'Quiz Paper',       hp: 1, score: 10,  w: 22, h: 22, color: '#52525b', accent: '#a1a1aa', spd: 0.9, fireRate: 180 },
-        { name: 'Assignment Sheet', hp: 2, score: 25,  w: 28, h: 26, color: '#3f3f46', accent: '#ff3040', spd: 0.7, fireRate: 140 },
-        { name: 'Lab Report',       hp: 4, score: 60,  w: 34, h: 30, color: '#27272a', accent: '#e85d04', spd: 0.55, fireRate: 110 },
-        { name: 'Backlog Monster',  hp: 7, score: 120, w: 40, h: 36, color: '#1c1c1e', accent: '#9b2226', spd: 0.4, fireRate: 90 },
+        { name: 'Quiz Paper',       hp: 1, score: 10,  w: 22, h: 22, color: '#52525b', accent: '#a1a1aa', spd: 90, fireRate: 1800 },
+        { name: 'Assignment Sheet', hp: 2, score: 25,  w: 28, h: 26, color: '#3f3f46', accent: '#ff3040', spd: 70, fireRate: 1400 },
+        { name: 'Lab Report',       hp: 4, score: 60,  w: 34, h: 30, color: '#27272a', accent: '#e85d04', spd: 55, fireRate: 1100 },
+        { name: 'Backlog Monster',  hp: 7, score: 120, w: 40, h: 36, color: '#1c1c1e', accent: '#9b2226', spd: 40, fireRate: 900 },
     ];
 
     function startWave() {
         gs.wave++;
         gs.bossWave = BOSS_WAVES.includes(gs.wave);
         gs.waveCleared = false;
-        gs.wavePause = 0;
+        gs.wavePauseTimer = 0;
         gs.waveMessage = '';
 
         if (gs.bossWave) spawnBoss();
@@ -426,8 +452,9 @@
 
     // === MAIN LOOP ===
     let raf;
-    function loop() {
+    function loop(timestamp) {
         if (!gs.running) return;
+        computeDeltaTime(timestamp);
         update();
         render();
         raf = requestAnimationFrame(loop);
@@ -438,46 +465,52 @@
         gs.scanLineOffset = (gs.scanLineOffset + 0.5) % 4;
         if (gs.dead || gs.won) return;
 
+        // === PLAYER MOVEMENT (TIME-BASED) ===
         let p = gs.player;
         if (inputX !== null) {
             let dx = inputX - p.x;
-            p.x += dx * 0.18;
+            p.x += dx * 0.18; // smoothing remains same
         }
-        if (leftKey) p.x -= p.speed;
-        if (rightKey) p.x += p.speed;
+        if (leftKey) p.x -= p.speed * deltaTime;
+        if (rightKey) p.x += p.speed * deltaTime;
         p.x = Math.max(p.w / 2, Math.min(W - p.w / 2, p.x));
-        if (p.iframes > 0) p.iframes--;
+        if (p.iframesTimer > 0) p.iframesTimer -= 1000 * deltaTime; // milliseconds
 
-        gs.autoFireTimer++;
-        let fireInterval = Math.max(10, 22 - Math.floor(gs.wave * 0.5));
-        if (gs.autoFireTimer >= fireInterval) {
-            gs.autoFireTimer = 0;
-            gs.bullets.push({ x: p.x, y: p.y - p.h / 2, vy: -8, w: 3, h: 10 });
-            gs.trails.push({ x: p.x, y: p.y - p.h / 2, life: 6, maxLife: 6 });
+        // === PLAYER AUTO FIRE (TIME-BASED) ===
+        const fireIntervalMs = Math.max(10, 22 - Math.floor(gs.wave * 0.5)) * (TARGET_FRAME_TIME / 16.67);
+        gs.autoFireCooldown -= 1000 * deltaTime; // convert to milliseconds
+        if (gs.autoFireCooldown <= 0) {
+            gs.autoFireCooldown = fireIntervalMs;
+            gs.bullets.push({ x: p.x, y: p.y - p.h / 2, vy: -480, w: 3, h: 10 });
+            gs.trails.push({ x: p.x, y: p.y - p.h / 2, life: 100, maxLife: 100 });
         }
 
+        // === BULLET MOVEMENT (TIME-BASED) ===
         gs.bullets = gs.bullets.filter(b => {
-            b.y += b.vy;
+            b.y += b.vy * deltaTime;
             return b.y > -20;
         });
 
+        // === BOSS WAVE UPDATE ===
         if (gs.bossWave && gs.boss) {
             let boss = gs.boss;
-            boss.wobble += 0.04;
-            boss.x += boss.vx + Math.sin(boss.wobble) * 0.6;
+            boss.wobble += 0.04 * 60 * deltaTime; // wobble speed normalized
+            boss.x += (boss.vx + Math.sin(boss.wobble) * 0.6) * deltaTime;
             if (boss.x < boss.w / 2 + 8 || boss.x > W - boss.w / 2 - 8) boss.vx *= -1;
 
-            boss.fireTimer++;
-            boss.patternTimer++;
-            if (boss.fireTimer >= boss.fireRate) {
-                boss.fireTimer = 0;
+            // === BOSS FIRE RATE (TIME-BASED - milliseconds) ===
+            boss.fireTimer -= 1000 * deltaTime;
+            if (boss.fireTimer <= 0) {
+                boss.fireTimer = boss.fireRate;
                 fireBossProjectile(boss);
             }
 
+            // === BOSS PROJECTILES (TIME-BASED) ===
             gs.bossProjectiles = gs.bossProjectiles.filter(bp => {
-                bp.x += bp.vx; bp.y += bp.vy;
+                bp.x += bp.vx * deltaTime;
+                bp.y += bp.vy * deltaTime;
                 if (bp.y > H + 10) return false;
-                if (p.iframes === 0 && rectsOverlap(bp.x - 4, bp.y - 4, 8, 8, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
+                if (p.iframesTimer <= 0 && rectsOverlap(bp.x - 4, bp.y - 4, 8, 8, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
                     hitPlayer();
                     return false;
                 }
@@ -498,7 +531,7 @@
                         else {
                             gs.boss = null;
                             gs.bossWave = false;
-                            gs.wavePause = 90;
+                            gs.wavePauseTimer = 1500; // milliseconds
                             gs.waveCleared = true;
                             gs.waveMessage = ['QUIZ', 'ASSIGNMENT', 'LAB', 'SEMESTER'][boss.idx] + ' CLEARED';
                         }
@@ -508,27 +541,31 @@
                 return true;
             });
         } else {
+            // === REGULAR ENEMY UPDATE (TIME-BASED) ===
             for (let e of gs.enemies) {
                 let driftAmount = Math.sin(gs.frameCount * 0.02 + e.driftPhase) * e.driftWave;
-                e.x += e.vx + driftAmount; 
-                e.y += e.vy * 0.3;
+                e.x += (e.vx + driftAmount) * deltaTime; 
+                e.y += e.vy * deltaTime * 0.3; // vertical dampening
                 if (e.x < e.w / 2 + 4 || e.x > W - e.w / 2 - 4) e.vx *= -1;
 
-                e.fireTimer++;
-                if (e.fireTimer >= e.fireRate) {
-                    e.fireTimer = 0;
+                // === ENEMY FIRE RATE (TIME-BASED - milliseconds) ===
+                e.fireTimer -= 1000 * deltaTime;
+                if (e.fireTimer <= 0) {
+                    e.fireTimer = e.fireRate;
                     fireEnemyProjectile(e);
                 }
 
-                if (p.iframes === 0 && rectsOverlap(e.x - e.w/2, e.y - e.h/2, e.w, e.h, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
+                if (p.iframesTimer <= 0 && rectsOverlap(e.x - e.w/2, e.y - e.h/2, e.w, e.h, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
                     hitPlayer();
                 }
             }
 
+            // === ENEMY PROJECTILES (TIME-BASED) ===
             gs.enemyProjectiles = gs.enemyProjectiles.filter(ep => {
-                ep.x += ep.vx; ep.y += ep.vy;
+                ep.x += ep.vx * deltaTime;
+                ep.y += ep.vy * deltaTime;
                 if (ep.y > H + 10) return false;
-                if (p.iframes === 0 && rectsOverlap(ep.x - 3, ep.y - 3, 6, 6, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
+                if (p.iframesTimer <= 0 && rectsOverlap(ep.x - 3, ep.y - 3, 6, 6, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
                     hitPlayer();
                     return false;
                 }
@@ -556,21 +593,29 @@
 
             if (!gs.waveCleared && gs.enemies.length === 0) {
                 gs.waveCleared = true;
-                gs.wavePause = 80;
+                gs.wavePauseTimer = 1333; // milliseconds
                 gs.waveMessage = 'WAVE ' + gs.wave + ' CLEARED';
             }
         }
 
-        if (gs.waveCleared && gs.wavePause > 0) {
-            gs.wavePause--;
-            if (gs.wavePause === 0) startWave();
+        // === WAVE PAUSE TIMER (TIME-BASED) ===
+        if (gs.waveCleared && gs.wavePauseTimer > 0) {
+            gs.wavePauseTimer -= 1000 * deltaTime;
+            if (gs.wavePauseTimer <= 0) startWave();
         }
 
+        // === PARTICLE/TRAIL UPDATES (TIME-BASED) ===
         gs.particles = gs.particles.filter(p => {
-            p.x += p.vx; p.y += p.vy; p.vy += 0.08; p.life--;
+            p.x += p.vx * deltaTime;
+            p.y += p.vy * deltaTime;
+            p.vy += 0.08 * 60 * deltaTime; // gravity normalized
+            p.life -= 1000 * deltaTime;
             return p.life > 0;
         });
-        gs.trails = gs.trails.filter(t => { t.life--; return t.life > 0; });
+        gs.trails = gs.trails.filter(t => {
+            t.life -= 1000 * deltaTime;
+            return t.life > 0;
+        });
 
         if (gs.shakeFrames > 0) gs.shakeFrames--;
         document.getElementById('scoreLabel').innerText = gs.score;
@@ -578,23 +623,23 @@
 
     function fireEnemyProjectile(enemy) {
         if (enemy.ti === 0) {
-            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.5, r: 2, color: '#71717a' });
+            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 250, r: 2, color: '#71717a' });
         } else if (enemy.ti === 1) {
-            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.5, r: 2.5, color: '#ff3040' });
+            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 250, r: 2.5, color: '#ff3040' });
         } else if (enemy.ti === 2) {
-            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.8, r: 3, color: '#e85d04' });
+            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 280, r: 3, color: '#e85d04' });
         } else if (enemy.ti === 3) {
-            gs.enemyProjectiles.push({ x: enemy.x - 6, y: enemy.y + enemy.h / 2, vx: -0.5, vy: 2.5, r: 3.5, color: '#9b2226' });
-            gs.enemyProjectiles.push({ x: enemy.x + 6, y: enemy.y + enemy.h / 2, vx: 0.5, vy: 2.5, r: 3.5, color: '#9b2226' });
+            gs.enemyProjectiles.push({ x: enemy.x - 6, y: enemy.y + enemy.h / 2, vx: -50, vy: 250, r: 3.5, color: '#9b2226' });
+            gs.enemyProjectiles.push({ x: enemy.x + 6, y: enemy.y + enemy.h / 2, vx: 50, vy: 250, r: 3.5, color: '#9b2226' });
         }
     }
 
     function fireBossProjectile(boss) {
         let patterns = [
-            [{ vx: 0, vy: 3 }],
-            [{ vx: -1, vy: 2.8 }, { vx: 1, vy: 2.8 }],
-            [{ vx: -1.5, vy: 2.5 }, { vx: 0, vy: 3 }, { vx: 1.5, vy: 2.5 }],
-            [{ vx: -2, vy: 2.2 }, { vx: -0.7, vy: 3 }, { vx: 0.7, vy: 3 }, { vx: 2, vy: 2.2 }],
+            [{ vx: 0, vy: 300 }],
+            [{ vx: -100, vy: 280 }, { vx: 100, vy: 280 }],
+            [{ vx: -150, vy: 250 }, { vx: 0, vy: 300 }, { vx: 150, vy: 250 }],
+            [{ vx: -200, vy: 220 }, { vx: -70, vy: 300 }, { vx: 70, vy: 300 }, { vx: 200, vy: 220 }],
         ];
         let pat = patterns[Math.min(boss.idx, 3)];
         for (let p of pat) {
@@ -603,15 +648,14 @@
     }
 
     function hitPlayer() {
-        if (gs.player.iframes > 0) return;
+        if (gs.player.iframesTimer > 0) return;
         gs.player.hp--;
-        gs.player.iframes = 55;
+        gs.player.iframesTimer = 550; // milliseconds
         gs.shakeFrames = 8;
         spawnParticles(gs.player.x, gs.player.y, 8, '#ff3040');
         if (gs.player.hp <= 0) triggerDeath();
     }
 
-    // === END SCREEN FIX ===
     function triggerDeath() {
         gs.dead = true;
         gs.running = false;
@@ -657,7 +701,6 @@
         document.getElementById('subHeading').innerText = 'EEE Vault is offline. Tap the controller insignia above to launch the offline mission.';
         gameActive = false;
         
-        // Reset overlay cleanly so the next session doesn't glitch
         document.getElementById('overlayTitle').innerText = 'EEE VAULT';
         document.getElementById('overlayTitle').style.color = '#ff3040';
         document.getElementById('overlayBody').innerHTML = 'Defend against quizzes,<br>assignments &amp; lab reports.<br>Survive the Semester Final!';
@@ -675,10 +718,12 @@
     function spawnParticles(x, y, count, color) {
         for (let i = 0; i < count; i++) {
             let angle = Math.random() * Math.PI * 2;
-            let spd = Math.random() * 2.5 + 0.5;
+            let spd = Math.random() * 300 + 100; // pixels per second
             gs.particles.push({
-                x, y, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd - 0.8,
-                life: Math.floor(Math.random() * 14) + 6, maxLife: 20, color, r: Math.random() * 1.8 + 0.6,
+                x, y, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd - 100,
+                life: (Math.floor(Math.random() * 14) + 6) * (TARGET_FRAME_TIME / 16.67), 
+                maxLife: 20 * (TARGET_FRAME_TIME / 16.67), 
+                color, r: Math.random() * 1.8 + 0.6,
             });
         }
     }
@@ -770,8 +815,8 @@
         if (!gs.dead) drawPlayer(c, gs.player);
 
         // Wave cleared message
-        if (gs.waveCleared && gs.wavePause > 30) {
-            c.globalAlpha = Math.min(1, (gs.wavePause - 30) / 30);
+        if (gs.waveCleared && gs.wavePauseTimer > 500) {
+            c.globalAlpha = Math.min(1, (gs.wavePauseTimer - 500) / 1000);
             c.fillStyle = '#ff3040'; c.font = 'bold 13px monospace';
             c.textAlign = 'center';
             c.fillText(gs.waveMessage, W / 2, H / 2);
@@ -792,7 +837,7 @@
     }
 
     function drawPlayer(c, p) {
-        if (p.iframes > 0 && Math.floor(gs.frameCount / 4) % 2 === 0) return;
+        if (p.iframesTimer > 0 && Math.floor(gs.frameCount / 4) % 2 === 0) return;
         let x = p.x, y = p.y;
         c.fillStyle = '#ff3040';
         c.beginPath(); c.moveTo(x, y - p.h / 2); c.lineTo(x - p.w / 2, y + p.h / 2);
@@ -808,23 +853,19 @@
         let x = e.x, y = e.y;
         c.save(); c.fillStyle = e.color;
         if (e.ti === 0) {
-            // Quiz Paper - rectangular
             c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h); c.fillStyle = e.accent; c.globalAlpha = 0.6;
             for (let l = 0; l < 3; l++) c.fillRect(x - e.w/2 + 3, y - e.h/2 + 4 + l*5, e.w - 6, 2);
         } else if (e.ti === 1) {
-            // Assignment Sheet - clipboard shape
             c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h); c.fillStyle = e.accent; c.globalAlpha = 0.5;
             c.beginPath(); c.moveTo(x + e.w/2 - 7, y - e.h/2); c.lineTo(x + e.w/2, y - e.h/2 + 7);
             c.lineTo(x + e.w/2 - 7, y - e.h/2 + 7); c.closePath(); c.fill(); c.globalAlpha = 0.4;
             for (let l = 0; l < 3; l++) c.fillRect(x - e.w/2 + 3, y - e.h/2 + 5 + l*6, e.w - 12, 2);
         } else if (e.ti === 2) {
-            // Lab Report - folder
             c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h); c.fillStyle = e.accent; c.globalAlpha = 0.6;
             c.beginPath(); let zigX = x - e.w/2 + 4; c.moveTo(zigX, y - e.h/2 + 6);
             for (let z = 0; z < 4; z++) c.lineTo(zigX + (z%2===0?e.w-8:4), y - e.h/2 + 6 + z * 5);
             c.strokeStyle = e.accent; c.lineWidth = 1.5; c.globalAlpha = 0.5; c.stroke();
         } else {
-            // Backlog Monster - star shape
             c.globalAlpha = 1; c.beginPath(); let pts = 8;
             for (let i = 0; i < pts; i++) {
                 let angle = (i / pts) * Math.PI * 2 - Math.PI/2;
@@ -853,7 +894,6 @@
         c.fillStyle = boss.color; 
         
         if (boss.idx === 0) {
-            // Quiz Barrage - stack of papers
             for (let i = 0; i < 3; i++) {
                 c.save();
                 c.globalAlpha = 0.8 - i * 0.1;
@@ -864,7 +904,6 @@
                 c.restore();
             }
         } else if (boss.idx === 1) {
-            // Assignment Overlord - clipboard
             c.beginPath();
             c.moveTo(x, y - boss.w/2);
             c.lineTo(x + boss.w/2, y - boss.w/4);
@@ -876,13 +915,11 @@
             c.fillStyle = '#27272a';
             c.fillRect(x - boss.w/3, y - boss.w/4, boss.w * 0.67, boss.h * 0.6);
         } else if (boss.idx === 2) {
-            // Lab Report Titan - folder/envelope
             c.fillRect(x - boss.w/2, y - boss.h/2, boss.w, boss.h);
             c.fillStyle = '#18181b';
             let foldSize = boss.w / 3;
             c.fillRect(x - boss.w/2, y - boss.h/2, foldSize, foldSize);
         } else if (boss.idx === 3) {
-            // Semester Final - hexagon emblem
             let sides = 6;
             c.beginPath();
             for (let i = 0; i < sides; i++) {
