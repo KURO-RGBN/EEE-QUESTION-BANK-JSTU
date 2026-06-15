@@ -25,104 +25,85 @@
         .animate-custom-ping {
             animation: custom-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
         }
-        /* Custom styling for 2048 tile colors matching your dark/red theme */
+        
+        /* 2048 Tile Themes matching your premium palette */
         .tile-empty { background: rgba(255, 255, 255, 0.05); }
         .tile-2 { background: #27272a; color: #f8f8f8; }
         .tile-4 { background: #3f3f46; color: #f8f8f8; }
-        .tile-8 { background: #71717a; color: #f8f8f8; }
-        .tile-16 { background: #a1a1aa; color: #1a1a1a; }
-        .tile-32 { background: rgba(255, 48, 64, 0.2); color: #ff3040; border: 1px solid rgba(255, 48, 64, 0.4); }
-        .tile-64 { background: rgba(255, 48, 64, 0.4); color: #fff; }
-        .tile-128 { background: rgba(255, 48, 64, 0.6); color: #fff; font-size: 14px !important; }
-        .tile-256 { background: rgba(255, 48, 64, 0.8); color: #fff; font-size: 14px !important; box-shadow: 0 0 10px rgba(255, 48, 64, 0.5); }
-        .tile-512 { background: #ff3040; color: #fff; font-size: 14px !important; box-shadow: 0 0 15px rgba(255, 48, 64, 0.6); }
-        .tile-1024 { background: #e02635; color: #fff; font-size: 12px !important; }
-        .tile-2048 { background: #b91c1c; color: #fff; font-size: 12px !important; box-shadow: 0 0 25px #ff3040; }
+        .tile-8 { background: #ff3040; color: #fff; font-weight: 900; }
+        .tile-16 { background: #e02635; color: #fff; font-weight: 900; }
+        .tile-32 { background: #b91c1c; color: #fff; font-weight: 900; }
+        .tile-64 { background: #991b1b; color: #fff; font-weight: 900; }
+        .tile-128 { background: #7f1d1d; color: #fff; font-size: 14px !important; box-shadow: 0 0 10px rgba(255,48,64,0.3); }
+        .tile-256 { background: #ffe4e6; color: #b91c1c; font-size: 14px !important; box-shadow: 0 0 12px rgba(255,48,64,0.5); }
+        .tile-512 { background: #fecdd3; color: #9f1239; font-size: 14px !important; }
+        .tile-1024 { background: #fda4af; color: #881337; font-size: 12px !important; }
+        .tile-2048 { background: #fff; color: #ff3040; font-size: 12px !important; box-shadow: 0 0 25px #ff3040; }
     </style>
 </head>
 <body class="w-full h-full flex items-center justify-center p-4 antialiased select-none">
 
-    <!-- Card Container -->
     <div class="relative w-full max-w-[340px] mx-auto bg-zinc-900/90 rounded-[32px] premium-border p-5 text-center backdrop-blur-md shadow-[0_30px_80px_rgba(255,48,64,0.1)]">
         
-        <!-- Interactive Ring Toggle -->
         <div id="iconWrapper" onclick="toggleGameView()" class="relative inline-flex items-center justify-center w-16 h-16 bg-zinc-800/80 rounded-full border border-white/5 mb-4 cursor-pointer active:scale-95 transition-transform duration-150 mx-auto">
             <div id="pulseRing" class="absolute inset-0 rounded-full border border-[#ff3040]/40 animate-custom-ping"></div>
             
-            <!-- SVG Wifi Icon (Hidden when game plays) -->
-            <svg id="wifiIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#ff3040" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.451 10.451 0 0 1 12 4.5c4.756 0 8.773 3.162 10.065 7.498a10.522 10.522 0 0 1-4.293 5.774M6.228 6.228 3 3m3.228 3.228 3.65 3.65m7.894 7.894L21 21m-3.228-3.228-3.65-3.65m0 0a3 3 0 1 0-4.243-4.243m4.242 4.242L9.88 9.88" />
+            <svg id="gameConsoleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#ff3040" class="w-8 h-8">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3h-9a3 3 0 0 0-3 3v8.25a3 3 0 0 0 3 3m9 0v-1.5a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1.5 0 0 0-1.5 1.5v1.5m6-7.5h.008v.008H16.5V9.75Zm-9 0h.008v.008H7.5V9.75Zm3 3h.008v.008h-.008v-.008Zm3 0h.008v.008h-.008v-.008Z" />
             </svg>
             
-            <!-- Active Game Block Icon -->
-            <div id="gameIcon" class="hidden text-[#ff3040] font-black text-lg font-mono">2048</div>
+            <div id="gameIcon" class="hidden text-[#ff3040] font-black text-sm font-mono tracking-wider">2048</div>
         </div>
 
         <h1 id="mainHeading" class="text-xl font-black tracking-tight mb-1 text-white uppercase">
             CONNECTION <span class="text-[#ff3040]">LOST</span>
         </h1>
         <p id="subHeading" class="text-zinc-400 text-[11px] px-2 leading-relaxed mb-4">
-            EEE Vault is offline. Tap the ring above to activate the 2048 mental sandbox puzzle.
+            EEE Vault is offline. Tap the controller insignia above to open the 2048 mental sandbox puzzle.
         </p>
 
-        <!-- Dynamic Content Sandbox Section -->
-        <div class="relative w-full mb-4 flex flex-col items-center justify-center">
+        <div class="relative w-full mb-5 flex flex-col items-center justify-center">
             
-            <!-- 2048 GAME BOARD AREA (Hidden by default) -->
             <div id="gameArea" class="hidden w-full flex flex-col items-center">
-                <!-- Score & Info Bar -->
-                <div class="w-full flex justify-between items-center mb-3 px-1">
-                    <button onclick="showInstructions()" class="text-[10px] bg-zinc-800 border border-white/5 text-zinc-400 px-2.5 py-1 rounded-md font-bold hover:text-white transition-colors">
+                <div class="w-full flex justify-between items-center mb-3.5 px-1">
+                    <button onclick="showInstructions()" class="text-[10px] bg-zinc-800 border border-white/5 text-zinc-400 px-2.5 py-1.5 rounded-md font-bold hover:text-white transition-colors">
                         <span class="text-[#ff3040]">?</span> How To Play
                     </button>
                     <div class="bg-black/30 px-3 py-1 rounded-md border border-white/5 text-right">
                         <div class="text-[9px] uppercase tracking-wider text-zinc-500 font-bold">Trial Score</div>
-                        <div id="scoreLabel" class="text-sm font-mono font-black text-[#ff3040]">0</div>
+                        <div id="scoreLabel" class="text-xs font-mono font-black text-[#ff3040]">0</div>
                     </div>
                 </div>
 
-                <!-- Grid Frame Wrapper (4x4) -->
-                <div id="gridContainer" class="relative bg-zinc-950 p-2 rounded-2xl grid grid-cols-4 gap-2 w-[240px] h-[240px] border border-white/5">
-                    <!-- Overlay Message Canvas Screen -->
+                <div id="gridContainer" style="touch-action: none;" class="relative bg-zinc-950 p-2 rounded-2xl grid grid-cols-4 gap-2 w-[240px] h-[240px] border border-white/5 mx-auto">
+                    
                     <div id="gameOverlay" class="absolute inset-0 bg-black/90 rounded-2xl flex flex-col items-center justify-center hidden z-10 p-4">
-                        <h3 id="overlayTitle" class="text-base font-black tracking-wider mb-1">TRIAL CONCLUDED</h3>
+                        <h3 id="overlayTitle" class="text-sm font-black tracking-wider mb-1">TRIAL CONCLUDED</h3>
                         <p id="overlayScoreDisplay" class="text-xs text-zinc-400 mb-4 font-mono">Final Score: <span class="text-[#ff3040] font-bold">0</span></p>
                         <button onclick="restartGame()" class="bg-[#ff3040] text-white text-[10px] font-black tracking-wide uppercase px-4 py-2 rounded-lg active:scale-95 transition-transform">
                             Try Again
                         </button>
                     </div>
 
-                    <!-- 16 Static Visual Tiles Matrix slots mapped by JS dynamically -->
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                    <div class="tile-empty rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square"></div>
-                </div>
-
-                <!-- On-screen directional pads for effortless tapping navigation alternatives to touch swipes -->
-                <div class="grid grid-cols-3 gap-1.5 w-[140px] mt-3">
-                    <div></div>
-                    <button onclick="move(0)" class="bg-zinc-800 border border-white/5 p-1.5 rounded-lg active:bg-zinc-700 text-xs text-zinc-300">▲</button>
-                    <div></div>
-                    <button onclick="move(3)" class="bg-zinc-800 border border-white/5 p-1.5 rounded-lg active:bg-zinc-700 text-xs text-zinc-300">◀</button>
-                    <button onclick="move(2)" class="bg-zinc-800 border border-white/5 p-1.5 rounded-lg active:bg-zinc-700 text-xs text-zinc-300">▼</button>
-                    <button onclick="move(1)" class="bg-zinc-800 border border-white/5 p-1.5 rounded-lg active:bg-zinc-700 text-xs text-zinc-300">▶</button>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
+                    <div class="tile-empty rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square"></div>
                 </div>
             </div>
 
-            <!-- STANDARD DIAGNOSTICS CHECKLIST BOX -->
             <div id="diagnosticBox" class="w-full bg-black/20 border border-white/5 rounded-xl p-3.5 text-left space-y-2">
                 <div class="flex items-center gap-2.5 text-[11px] text-zinc-400">
                     <span class="w-1.5 h-1.5 bg-zinc-600 rounded-full"></span>
@@ -135,31 +116,28 @@
             </div>
         </div>
 
-        <!-- Reload Target Button Frame -->
         <a href="javascript:window.location.reload(true);" 
-           class="inline-flex items-center justify-center gap-2 w-full bg-[#ff3040] hover:bg-[#e02635] text-white font-bold text-xs py-3 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-[#ff3040]/10">
+           class="inline-flex items-center justify-center gap-2 w-full bg-[#ff3040] hover:bg-[#e02635] text-white font-bold text-xs py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-[#ff3040]/10">
             <span class="tracking-wide text-[11px]">Retry Server Connection</span>
         </a>
     </div>
 
-    <!-- INSTRUCTIONS MODAL POPUP (Hidden by default) -->
     <div id="instructionModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm items-center justify-center p-4 hidden z-50">
         <div class="bg-zinc-900 border border-white/10 w-full max-w-[290px] rounded-2xl p-5 text-center shadow-2xl">
-            <h3 class="text-[#ff3040] font-black tracking-wide text-sm mb-3 uppercase">How To Play 2048</h3>
-            <ul class="text-left text-xs text-zinc-400 space-y-2.5 mb-5 list-none pl-0">
-                <li class="flex items-start gap-2"><span class="text-[#ff3040] font-bold">1.</span> <span>Swipe screen or use the arrow cluster pad to shift all the numeric blocks in that direction.</span></li>
-                <li class="flex items-start gap-2"><span class="text-[#ff3040] font-bold">2.</span> <span>When two squares carrying matching values touch each other, they **fuse into one containing their combined sum** (2+2=4, 4+4=8).</span></li>
-                <li class="flex items-start gap-2"><span class="text-[#ff3040] font-bold">3.</span> <span>Every move spawns a new block. Keep fusing blocks to achieve the ultimate goal: the **2048 tile**!</span></li>
+            <h3 class="text-[#ff3040] font-black tracking-wide text-xs mb-3 uppercase">How To Play 2048</h3>
+            <ul class="text-left text-[11px] text-zinc-400 space-y-2.5 mb-5 list-none pl-0">
+                <li class="flex items-start gap-2"><span class="text-[#ff3040] font-bold">1.</span> <span>Swipe left, right, up, or down directly on the dark grid squares to shift all numeric tiles.</span></li>
+                <li class="flex items-start gap-2"><span class="text-[#ff3040] font-bold">2.</span> <span>When two tiles with matching numbers collide, they **merge into one tile containing their sum**!</span></li>
+                <li class="flex items-start gap-2"><span class="text-[#ff3040] font-bold">3.</span> <span>Every slide spawns a new block. Keep combining them to clear space and reach higher tiles.</span></li>
             </ul>
             <button onclick="closeInstructions()" class="w-full bg-zinc-800 text-zinc-200 border border-white/5 py-2 rounded-xl text-xs font-bold active:scale-95 transition-transform">
-                Got It, Let's Play
+                Start Puzzle
             </button>
         </div>
     </div>
 
-    <!-- Logic Engine Module Script for 2048 Matrix Calculations -->
     <script>
-        let board = Array(16).fill(0);
+        let grid = Array(16).fill(0);
         let score = 0;
         let gameActive = false;
         let touchStartX = 0;
@@ -170,21 +148,21 @@
             gameActive = true;
             
             document.getElementById('pulseRing').style.display = 'none';
-            document.getElementById('wifiIcon').style.display = 'none';
+            document.getElementById('gameConsoleIcon').style.display = 'none';
             document.getElementById('diagnosticBox').style.display = 'none';
             
             document.getElementById('gameIcon').classList.remove('hidden');
             document.getElementById('gameArea').classList.remove('hidden');
             
             document.getElementById('mainHeading').innerHTML = 'BRAIN <span class="text-[#ff3040]">SANDBOX</span>';
-            document.getElementById('subHeading').innerText = 'Merge matching blocks. Use arrow pads or swipe directly anywhere inside the card frame layout!';
+            document.getElementById('subHeading').innerText = 'Swipe directly inside the dark grid box below to slide and merge matching data blocks.';
             
             setupSwipeListeners();
             restartGame();
         }
 
         function restartGame() {
-            board = Array(16).fill(0);
+            grid = Array(16).fill(0);
             score = 0;
             document.getElementById('scoreLabel').innerText = score;
             document.getElementById('gameOverlay').classList.add('hidden');
@@ -194,118 +172,158 @@
         }
 
         function spawnTile() {
-            let empties = board.map((v, i) => v === 0 ? i : null).filter(v => v !== null);
-            if (empties.length > 0) {
-                let index = empties[Math.floor(Math.random() * empties.length)];
-                board[index] = Math.random() < 0.9 ? 2 : 4;
+            let emptyCells = [];
+            for (let i = 0; i < 16; i++) {
+                if (grid[i] === 0) emptyCells.push(i);
+            }
+            if (emptyCells.length > 0) {
+                let randomChoice = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+                grid[randomChoice] = Math.random() < 0.9 ? 2 : 4;
             }
         }
 
         function renderBoard() {
-            const tileSlots = document.querySelectorAll('#gridContainer .tile-empty');
-            board.forEach((value, index) => {
-                let slot = tileSlots[index];
-                slot.innerText = value > 0 ? value : '';
-                // Wipe previous styling parameters cleanly
-                slot.className = "rounded-lg flex items-center justify-center text-base font-black font-mono aspect-square transition-all duration-100";
+            const visualSlots = document.querySelectorAll('#gridContainer .tile-empty');
+            grid.forEach((value, index) => {
+                let element = visualSlots[index];
+                element.innerText = value > 0 ? value : '';
+                element.className = "rounded-lg flex items-center justify-center text-sm font-black font-mono aspect-square transition-all duration-100";
                 if (value > 0) {
-                    slot.classList.add(`tile-${value}`);
+                    element.classList.add(`tile-${value}`);
                 } else {
-                    slot.classList.add('tile-empty');
+                    element.classList.add('tile-empty');
                 }
             });
         }
 
-        function move(direction) {
-            let moved = false;
-            // 0: Up, 1: Right, 2: Down, 3: Left
-            for (let i = 0; i < 4; i++) {
-                let line = [];
-                for (let j = 0; j < 4; j++) {
-                    let idx = getIndex(direction, i, j);
-                    if (board[idx] !== 0) line.push(board[idx]);
-                }
+        /* Fixed Complete Matrix Shift Rotation Math Controller Algorithms */
+        function processMove(direction) {
+            // direction: 0 = Up, 1 = Right, 2 = Down, 3 = Left
+            let rotatedGrid = getRotatedGrid(direction);
+            let scoreUpdate = 0;
+            let gridChanged = false;
+
+            // Slide and combine along lines rows
+            for (let r = 0; r < 4; r++) {
+                let row = rotatedGrid[r];
+                // Filter out zeroes
+                let filteredRow = row.filter(val => val !== 0);
+                let newRow = [];
                 
-                let newLine = mergeLine(line);
-                while (newLine.length < 4) newLine.push(0);
-                
-                for (let j = 0; j < 4; j++) {
-                    let idx = getIndex(direction, i, j);
-                    if (board[idx] !== newLine[j]) moved = true;
-                    board[idx] = newLine[j];
-                }
-            }
-            
-            if (moved) {
-                spawnTile();
-                renderBoard();
-                checkGameStatus();
-            }
-        }
-
-        function getIndex(dir, i, j) {
-            if (dir === 0) return j * 4 + i;     // Up
-            if (dir === 1) return i * 4 + (3 - j); // Right
-            if (dir === 2) return (3 - j) * 4 + i; // Down
-            return i * 4 + j;             // Left
-        }
-
-        function mergeLine(line) {
-            let res = [];
-            for (let i = 0; i < line.length; i++) {
-                if (line[i] === line[i+1]) {
-                    let fusedValue = line[i] * 2;
-                    res.push(fusedValue);
-                    score += fusedValue;
-                    document.getElementById('scoreLabel').innerText = score;
-                    i++;
-                } else {
-                    res.push(line[i]);
-                }
-            }
-            return res;
-        }
-
-        function checkGameStatus() {
-            if (board.includes(2048)) {
-                endTrial("YOU WIN!");
-                return;
-            }
-            if (!board.includes(0)) {
-                // Check if merges are left available
-                for (let i = 0; i < 4; i++) {
-                    for (let j = 0; j < 3; j++) {
-                        if (board[i*4+j] === board[i*4+j+1] || board[j*4+i] === board[(j+1)*4+i]) return;
+                // Combine pairs cleanly
+                for (let c = 0; c < filteredRow.length; c++) {
+                    if (c < filteredRow.length - 1 && filteredRow[c] === filteredRow[c + 1]) {
+                        let mergedVal = filteredRow[c] * 2;
+                        newRow.push(mergedVal);
+                        scoreUpdate += mergedVal;
+                        c++; // Skip paired block calculation item
+                    } else {
+                        newRow.push(filteredRow[c]);
                     }
                 }
-                endTrial("NO MOVES LEFT");
+                // Fill back remaining space with zeroes
+                while (newRow.length < 4) {
+                    newRow.push(0);
+                }
+                
+                // Check if changes happened
+                if (JSON.stringify(row) !== JSON.stringify(newRow)) {
+                    gridChanged = true;
+                }
+                rotatedGrid[r] = newRow;
+            }
+
+            if (gridChanged) {
+                score += scoreUpdate;
+                document.getElementById('scoreLabel').innerText = score;
+                setGridFromRotated(rotatedGrid, direction);
+                spawnTile();
+                renderBoard();
+                evaluateMatrixStatus();
             }
         }
 
-        function endTrial(message) {
+        function getRotatedGrid(direction) {
+            let tempMatrix = [];
+            for (let i = 0; i < 4; i++) {
+                tempMatrix.push(grid.slice(i * 4, i * 4 + 4));
+            }
+            if (direction === 3) return tempMatrix; // Left (Default baseline orientation style)
+            if (direction === 1) return tempMatrix.map(row => [...row].reverse()); // Right
+            
+            let finalRotated = Array.from({ length: 4 }, () => Array(4).fill(0));
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    if (direction === 0) finalRotated[r][c] = tempMatrix[c][r]; // Up
+                    if (direction === 2) finalRotated[r][c] = tempMatrix[3 - c][r]; // Down
+                }
+            }
+            return finalRotated;
+        }
+
+        function setGridFromRotated(rotated, direction) {
+            if (direction === 3) {
+                grid = rotated.flat();
+                return;
+            }
+            if (direction === 1) {
+                grid = rotated.map(row => [...row].reverse()).flat();
+                return;
+            }
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 4; c++) {
+                    if (direction === 0) grid[c * 4 + r] = rotated[r][c];
+                    if (direction === 2) grid[(3 - c) * 4 + r] = rotated[r][c];
+                }
+            }
+        }
+
+        function evaluateMatrixStatus() {
+            if (grid.includes(2048)) {
+                concludeTrial("YOU HIT 2048!");
+                return;
+            }
+            if (grid.includes(0)) return; // Still open slots available
+
+            // Scan rows for adjacent moves
+            for (let r = 0; r < 4; r++) {
+                for (let c = 0; c < 3; c++) {
+                    if (grid[r * 4 + c] === grid[r * 4 + c + 1]) return;
+                    if (grid[c * 4 + r] === grid[(c + 1) * 4 + r]) return;
+                }
+            }
+            concludeTrial("NO MOVES LEFT");
+        }
+
+        function concludeTrial(message) {
             document.getElementById('overlayTitle').innerText = message;
-            document.getElementById('overlayTitle').style.color = message.includes("WIN") ? "#34d399" : "#ff3040";
+            document.getElementById('overlayTitle').style.color = message.includes("HIT") ? "#34d399" : "#ff3040";
             document.getElementById('overlayScoreDisplay').innerHTML = `Final Trial Score: <span class="text-[#ff3040] font-bold">${score}</span>`;
             document.getElementById('gameOverlay').classList.remove('hidden');
         }
 
         function setupSwipeListeners() {
-            let area = document.getElementById('gridContainer');
-            area.addEventListener('touchstart', e => {
-                touchStartX = e.changedTouches[0].screenX;
-                touchStartY = e.changedTouches[0].screenY;
-            }, {passive: true});
+            const surface = document.getElementById('gridContainer');
+            
+            // Hard prevent system background actions on touch event registration strings
+            surface.addEventListener('touchstart', e => {
+                touchStartX = e.changedTouches[0].clientX;
+                touchStartY = e.changedTouches[0].clientY;
+            }, { passive: true });
 
-            area.addEventListener('touchend', e => {
-                let diffX = e.changedTouches[0].screenX - touchStartX;
-                let diffY = e.changedTouches[0].screenY - touchStartY;
+            surface.addEventListener('touchend', e => {
+                let changeX = e.changedTouches[0].clientX - touchStartX;
+                let changeY = e.changedTouches[0].clientY - touchStartY;
                 
-                if (Math.abs(diffX) > Math.abs(diffY)) {
-                    if (Math.abs(diffX) > 30) move(diffX > 0 ? 1 : 3);
+                // Detection threshold boundary logic parameter checks
+                if (Math.max(Math.abs(changeX), Math.abs(changeY)) < 25) return;
+
+                if (Math.abs(changeX) > Math.abs(changeY)) {
+                    processMove(changeX > 0 ? 1 : 3); // Horizontal Shift: Right / Left
                 } else {
-                    if (Math.abs(diffY) > 30) move(diffY > 0 ? 2 : 0);
+                    processMove(changeY > 0 ? 2 : 0); // Vertical Shift: Down / Up
                 }
-            }, {passive: true});
+            }, { passive: true });
         }
 
         function showInstructions() { document.getElementById('instructionModal').style.display = 'flex'; }
