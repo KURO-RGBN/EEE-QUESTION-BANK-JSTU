@@ -639,30 +639,49 @@ function closeNotes() {
     setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500);
 }
 
+
+let activeDownloadData = null;
+
 function confirmDownload(url, fileName) {
     if (document.getElementById('customAlert')) return;
+    
+   
+    activeDownloadData = { url, fileName };
+
     const alertHTML = `
         <div id="customAlert" class="premium-alert-overlay">
             <div class="premium-alert-card">
                 <div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                <h3 style="color: #1e293b; font-weight: 800; font-size: 18px; margin-bottom: 8px;">Download Notes?</h3>
+                <h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Download Notes?</h3>
                 <p style="color: #64748b; font-size: 12px; line-height: 1.5;">${fileName}</p>
                 <div class="alert-btn-group">
                     <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
-                    <button class="alert-btn btn-confirm" onclick="executeDownload('${url}', '${fileName}')">Download</button>
+                    <button class="alert-btn btn-confirm" onclick="executeDownload()">Download</button>
                 </div>
             </div>
-        </div>`;
+        </div>
+    `;
+    
     document.body.insertAdjacentHTML('beforeend', alertHTML);
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
 
-function executeDownload(url, fileName) {
+function executeDownload() {
+    if (!activeDownloadData) return;
+    
+    const { url, fileName } = activeDownloadData;
     const a = document.createElement('a');
-    a.href = url; a.download = fileName; a.target = '_blank';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    a.href = url;
+    a.download = fileName;
+    a.target = '_blank';
+    
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    
     closeAlert();
 }
+
 
 function closeAlert() {
     const el = document.getElementById('customAlert');
@@ -685,6 +704,8 @@ init();
 </script>
 	
 
-          
+    <!-- Vercel Web Analytics -->
+<script defer src="/_vercel/insights/script.js"></script>
+      
 </body>  
 </html>
