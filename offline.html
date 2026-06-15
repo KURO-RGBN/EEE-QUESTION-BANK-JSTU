@@ -179,11 +179,11 @@
 
     <div class="relative w-full max-w-[340px] mx-auto bg-zinc-900/90 rounded-[32px] premium-border p-5 text-center backdrop-blur-md shadow-[0_30px_80px_rgba(255,48,64,0.1)]">
 
-        <div id="iconWrapper" onclick="toggleGameView()" class="relative inline-flex items-center justify-center w-16 h-16 bg-zinc-800/80 rounded-full border border-white/5 mb-4 cursor-pointer active:[...]
+        <div id="iconWrapper" onclick="toggleGameView()" class="relative inline-flex items-center justify-center w-16 h-16 bg-zinc-800/80 rounded-full border border-white/5 mb-4 cursor-pointer active:scale-95 transition-transform">
             <div id="pulseRing" class="absolute inset-0 rounded-full border border-[#ff3040]/40 animate-custom-ping"></div>
 
             <svg id="gameConsoleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#ff3040" class="w-8 h-8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3h-9a3 3 0 0 0-3 3v8.25a3 3 0 0 0 3 3m9 0v-1.5a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1[...]
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3h-9a3 3 0 0 0-3 3v8.25a3 3 0 0 0 3 3m9 0v-1.5a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1.5 0 0 0-1.5 1.5" />
             </svg>
 
             <div id="gameIcon" class="hidden text-[#ff3040] font-black text-[9px] font-mono tracking-wider leading-tight">MISSION</div>
@@ -578,23 +578,23 @@
 
     function fireEnemyProjectile(enemy) {
         if (enemy.ti === 0) {
-            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.0, r: 2, color: '#71717a' });
+            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.5, r: 2, color: '#71717a' });
         } else if (enemy.ti === 1) {
-            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.0, r: 2.5, color: '#ff3040' });
+            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.5, r: 2.5, color: '#ff3040' });
         } else if (enemy.ti === 2) {
-            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.0, r: 3, color: '#e85d04' });
+            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.8, r: 3, color: '#e85d04' });
         } else if (enemy.ti === 3) {
-            gs.enemyProjectiles.push({ x: enemy.x - 6, y: enemy.y + enemy.h / 2, vx: -0.4, vy: 2.0, r: 3.5, color: '#9b2226' });
-            gs.enemyProjectiles.push({ x: enemy.x + 6, y: enemy.y + enemy.h / 2, vx: 0.4, vy: 2.0, r: 3.5, color: '#9b2226' });
+            gs.enemyProjectiles.push({ x: enemy.x - 6, y: enemy.y + enemy.h / 2, vx: -0.5, vy: 2.5, r: 3.5, color: '#9b2226' });
+            gs.enemyProjectiles.push({ x: enemy.x + 6, y: enemy.y + enemy.h / 2, vx: 0.5, vy: 2.5, r: 3.5, color: '#9b2226' });
         }
     }
 
     function fireBossProjectile(boss) {
         let patterns = [
-            [{ vx: 0, vy: 2.0 }],
-            [{ vx: -0.8, vy: 2.0 }, { vx: 0.8, vy: 2.0 }],
-            [{ vx: -1.2, vy: 2.0 }, { vx: 0, vy: 2.0 }, { vx: 1.2, vy: 2.0 }],
-            [{ vx: -1.6, vy: 2.0 }, { vx: -0.5, vy: 2.0 }, { vx: 0.5, vy: 2.0 }, { vx: 1.6, vy: 2.0 }],
+            [{ vx: 0, vy: 3 }],
+            [{ vx: -1, vy: 2.8 }, { vx: 1, vy: 2.8 }],
+            [{ vx: -1.5, vy: 2.5 }, { vx: 0, vy: 3 }, { vx: 1.5, vy: 2.5 }],
+            [{ vx: -2, vy: 2.2 }, { vx: -0.7, vy: 3 }, { vx: 0.7, vy: 3 }, { vx: 2, vy: 2.2 }],
         ];
         let pat = patterns[Math.min(boss.idx, 3)];
         for (let p of pat) {
