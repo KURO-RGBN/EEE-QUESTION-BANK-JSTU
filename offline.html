@@ -179,11 +179,11 @@
 
     <div class="relative w-full max-w-[340px] mx-auto bg-zinc-900/90 rounded-[32px] premium-border p-5 text-center backdrop-blur-md shadow-[0_30px_80px_rgba(255,48,64,0.1)]">
 
-        <div id="iconWrapper" onclick="toggleGameView()" class="relative inline-flex items-center justify-center w-16 h-16 bg-zinc-800/80 rounded-full border border-white/5 mb-4 cursor-pointer active:scale-95 transition-transform duration-150 mx-auto">
+        <div id="iconWrapper" onclick="toggleGameView()" class="relative inline-flex items-center justify-center w-16 h-16 bg-zinc-800/80 rounded-full border border-white/5 mb-4 cursor-pointer active:scale-95 transition-transform">
             <div id="pulseRing" class="absolute inset-0 rounded-full border border-[#ff3040]/40 animate-custom-ping"></div>
 
             <svg id="gameConsoleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#ff3040" class="w-8 h-8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3h-9a3 3 0 0 0-3 3v8.25a3 3 0 0 0 3 3m9 0v-1.5a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1.5 0 0 0-1.5 1.5v1.5m6-7.5h.008v.008H16.5V9.75Zm-9 0h.008v.008H7.5V9.75Zm3 3h.008v.008h-.008v-.008Zm3 0h.008v.008h-.008v-.008Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3h-9a3 3 0 0 0-3 3v8.25a3 3 0 0 0 3 3m9 0v-1.5a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1.5 0 0 0-1.5 1.5m9 0h-9" />
             </svg>
 
             <div id="gameIcon" class="hidden text-[#ff3040] font-black text-[9px] font-mono tracking-wider leading-tight">MISSION</div>
@@ -234,7 +234,7 @@
         </div>
 
         <a href="javascript:window.location.reload(true);"
-           class="inline-flex items-center justify-center gap-2 w-full bg-[#ff3040] hover:bg-[#e02635] text-white font-bold text-xs py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-[#ff3040]/10">
+           class="inline-flex items-center justify-center gap-2 w-full bg-[#ff3040] hover:bg-[#e02635] text-white font-bold text-xs py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-[rgba(255,48,64,0.3)]">
             <span class="tracking-wide text-[11px]">Retry Server Connection</span>
         </a>
     </div>
