@@ -183,7 +183,7 @@
             <div id="pulseRing" class="absolute inset-0 rounded-full border border-[#ff3040]/40 animate-custom-ping"></div>
 
             <svg id="gameConsoleIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.8" stroke="#ff3040" class="w-8 h-8">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3h-9a3 3 0 0 0-3 3v8.25a3 3 0 0 0 3 3m9 0v-1.5a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1.5 0 0 0-1.5 1.5m9 0h-9" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 0 3-3V7.5a3 3 0 0 0-3-3h-9a3 3 0 0 0-3 3v8.25a3 3 0 0 0 3 3m9 0v-1.5a1.5 1.5 0 0 0-1.5-1.5h-4.5a1.5 1.5 0 0 0-1.5 1.5" />
             </svg>
 
             <div id="gameIcon" class="hidden text-[#ff3040] font-black text-[9px] font-mono tracking-wider leading-tight">MISSION</div>
@@ -234,7 +234,7 @@
         </div>
 
         <a href="javascript:window.location.reload(true);"
-           class="inline-flex items-center justify-center gap-2 w-full bg-[#ff3040] hover:bg-[#e02635] text-white font-bold text-xs py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg shadow-[rgba(255,48,64,0.3)]">
+           class="inline-flex items-center justify-center gap-2 w-full bg-[#ff3040] hover:bg-[#e02635] text-white font-bold text-xs py-3.5 px-6 rounded-xl transition-all duration-200">
             <span class="tracking-wide text-[11px]">Retry Server Connection</span>
         </a>
     </div>
@@ -292,9 +292,9 @@
     function freshState() {
         return {
             running: false, won: false, dead: false, score: 0, wave: 0, bossWave: false, frameCount: 0,
-            shakeFrames: 0, stars: [], player: null, bullets: [], enemies: [], boss: null, bossHP: 0, bossMaxHP: 0,
-            bossProjectiles: [], particles: [], trails: [], autoFireTimer: 0, spawnTimer: 0, waveEnemiesLeft: 0,
-            waveCleared: false, wavePause: 0
+            shakeFrames: 0, player: null, bullets: [], enemies: [], boss: null, bossHP: 0, bossMaxHP: 0,
+            bossProjectiles: [], enemyProjectiles: [], particles: [], trails: [], autoFireTimer: 0, spawnTimer: 0, waveEnemiesLeft: 0,
+            waveCleared: false, wavePause: 0, waveMessage: '', scanLineOffset: 0
         };
     }
 
@@ -304,35 +304,26 @@
         gs.running = true;
         gs.score = 0;
         gs.wave = 0;
-        gs.stars = makeStars();
         gs.player = { x: W / 2, y: H - 36, w: 22, h: 28, speed: 4, hp: 3, maxHp: 3, iframes: 0 };
         setupInput();
         startWave();
         loop();
     }
 
-    function makeStars() {
-        let s = [];
-        for (let i = 0; i < 38; i++) {
-            s.push({ x: Math.random() * W, y: Math.random() * H, r: Math.random() * 1.2 + 0.3, spd: Math.random() * 0.4 + 0.15, b: Math.random() });
-        }
-        return s;
-    }
-
     // === WAVE / BOSS DEFINITIONS ===
     const BOSS_WAVES = [4, 8, 12, 16];
     const BOSS_DEFS = [
-        { name: 'QUIZ BARRAGE', hp: 120, color: '#ff3040', sz: 42, spd: 1.1, fireRate: 70, score: 500 },
-        { name: 'ASSIGNMENT OVERLORD', hp: 200, color: '#e85d04', sz: 52, spd: 0.9, fireRate: 55, score: 1000 },
-        { name: 'LAB REPORT TITAN', hp: 300, color: '#9b2226', sz: 58, spd: 0.75, fireRate: 45, score: 2000 },
-        { name: 'SEMESTER FINAL', hp: 500, color: '#6a0572', sz: 66, spd: 0.6, fireRate: 35, score: 5000 },
+        { name: 'QUIZ BARRAGE', hp: 60, color: '#ff3040', sz: 42, spd: 1.1, fireRate: 70, score: 500 },
+        { name: 'ASSIGNMENT OVERLORD', hp: 90, color: '#e85d04', sz: 52, spd: 0.9, fireRate: 55, score: 1000 },
+        { name: 'LAB REPORT TITAN', hp: 130, color: '#9b2226', sz: 58, spd: 0.75, fireRate: 45, score: 2000 },
+        { name: 'SEMESTER FINAL', hp: 180, color: '#6a0572', sz: 66, spd: 0.6, fireRate: 35, score: 5000 },
     ];
 
     const ENEMY_TYPES = [
-        { name: 'Quiz Paper',       hp: 1, score: 10,  w: 22, h: 22, color: '#52525b', accent: '#a1a1aa', spd: 0.9 },
-        { name: 'Assignment Sheet', hp: 2, score: 25,  w: 28, h: 26, color: '#3f3f46', accent: '#ff3040', spd: 0.7 },
-        { name: 'Lab Report',       hp: 4, score: 60,  w: 34, h: 30, color: '#27272a', accent: '#e85d04', spd: 0.55 },
-        { name: 'Backlog Monster',  hp: 7, score: 120, w: 40, h: 36, color: '#1c1c1e', accent: '#9b2226', spd: 0.4 },
+        { name: 'Quiz Paper',       hp: 1, score: 10,  w: 22, h: 22, color: '#52525b', accent: '#a1a1aa', spd: 0.9, fireRate: 180 },
+        { name: 'Assignment Sheet', hp: 2, score: 25,  w: 28, h: 26, color: '#3f3f46', accent: '#ff3040', spd: 0.7, fireRate: 140 },
+        { name: 'Lab Report',       hp: 4, score: 60,  w: 34, h: 30, color: '#27272a', accent: '#e85d04', spd: 0.55, fireRate: 110 },
+        { name: 'Backlog Monster',  hp: 7, score: 120, w: 40, h: 36, color: '#1c1c1e', accent: '#9b2226', spd: 0.4, fireRate: 90 },
     ];
 
     function startWave() {
@@ -340,6 +331,7 @@
         gs.bossWave = BOSS_WAVES.includes(gs.wave);
         gs.waveCleared = false;
         gs.wavePause = 0;
+        gs.waveMessage = '';
 
         if (gs.bossWave) spawnBoss();
         else spawnEnemyWave();
@@ -348,12 +340,12 @@
     function spawnBoss() {
         let idx = BOSS_WAVES.indexOf(gs.wave);
         let def = BOSS_DEFS[idx];
-        gs.bossMaxHP = def.hp + gs.wave * 8;
+        gs.bossMaxHP = def.hp;
         gs.bossHP = gs.bossMaxHP;
         gs.boss = {
             x: W / 2, y: def.sz / 2 + 18, vx: def.spd, vy: 0, w: def.sz, h: def.sz,
             color: def.color, name: def.name, fireRate: def.fireRate, fireTimer: 0,
-            score: def.score, idx: idx, wobble: 0
+            score: def.score, idx: idx, wobble: 0, attackPattern: 0, patternTimer: 0
         };
         gs.bossProjectiles = [];
         gs.enemies = [];
@@ -362,7 +354,6 @@
     function spawnEnemyWave() {
         gs.enemies = [];
         let count = Math.min(5 + gs.wave * 2, 24);
-        let diff = Math.min(gs.wave - 1, 3);
         let typeWeights = [
             Math.max(0, 10 - gs.wave), 
             Math.min(gs.wave * 2, 8),  
@@ -385,12 +376,15 @@
             let col = i % cols;
             let ex = 20 + (col / (cols - 1 || 1)) * (W - 40);
             let ey = 24 + row * 36;
+            let driftWave = Math.random() * 0.3;
             gs.enemies.push({
                 x: ex, y: ey,
                 vx: (Math.random() < 0.5 ? 1 : -1) * def.spd * (1 + gs.wave * 0.04),
                 vy: def.spd * 0.3 * (1 + gs.wave * 0.03),
                 w: def.w, h: def.h, hp: def.hp, maxHp: def.hp, score: def.score,
-                color: def.color, accent: def.accent, ti: ti, type: def.name
+                color: def.color, accent: def.accent, ti: ti, type: def.name,
+                fireTimer: Math.random() * def.fireRate, fireRate: def.fireRate,
+                driftWave: driftWave, driftPhase: Math.random() * Math.PI * 2
             });
         }
         gs.waveEnemiesLeft = gs.enemies.length;
@@ -441,12 +435,8 @@
 
     function update() {
         gs.frameCount++;
+        gs.scanLineOffset = (gs.scanLineOffset + 0.5) % 4;
         if (gs.dead || gs.won) return;
-
-        for (let s of gs.stars) {
-            s.y += s.spd;
-            if (s.y > H) { s.y = 0; s.x = Math.random() * W; }
-        }
 
         let p = gs.player;
         if (inputX !== null) {
@@ -478,6 +468,7 @@
             if (boss.x < boss.w / 2 + 8 || boss.x > W - boss.w / 2 - 8) boss.vx *= -1;
 
             boss.fireTimer++;
+            boss.patternTimer++;
             if (boss.fireTimer >= boss.fireRate) {
                 boss.fireTimer = 0;
                 fireBossProjectile(boss);
@@ -509,6 +500,7 @@
                             gs.bossWave = false;
                             gs.wavePause = 90;
                             gs.waveCleared = true;
+                            gs.waveMessage = ['QUIZ', 'ASSIGNMENT', 'LAB', 'SEMESTER'][boss.idx] + ' CLEARED';
                         }
                     }
                     return false;
@@ -517,13 +509,31 @@
             });
         } else {
             for (let e of gs.enemies) {
-                e.x += e.vx; e.y += e.vy * 0.3;
+                let driftAmount = Math.sin(gs.frameCount * 0.02 + e.driftPhase) * e.driftWave;
+                e.x += e.vx + driftAmount; 
+                e.y += e.vy * 0.3;
                 if (e.x < e.w / 2 + 4 || e.x > W - e.w / 2 - 4) e.vx *= -1;
+
+                e.fireTimer++;
+                if (e.fireTimer >= e.fireRate) {
+                    e.fireTimer = 0;
+                    fireEnemyProjectile(e);
+                }
 
                 if (p.iframes === 0 && rectsOverlap(e.x - e.w/2, e.y - e.h/2, e.w, e.h, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
                     hitPlayer();
                 }
             }
+
+            gs.enemyProjectiles = gs.enemyProjectiles.filter(ep => {
+                ep.x += ep.vx; ep.y += ep.vy;
+                if (ep.y > H + 10) return false;
+                if (p.iframes === 0 && rectsOverlap(ep.x - 3, ep.y - 3, 6, 6, p.x - p.w/2, p.y - p.h/2, p.w, p.h)) {
+                    hitPlayer();
+                    return false;
+                }
+                return true;
+            });
 
             gs.bullets = gs.bullets.filter(b => {
                 let hit = false;
@@ -547,6 +557,7 @@
             if (!gs.waveCleared && gs.enemies.length === 0) {
                 gs.waveCleared = true;
                 gs.wavePause = 80;
+                gs.waveMessage = 'WAVE ' + gs.wave + ' CLEARED';
             }
         }
 
@@ -563,6 +574,19 @@
 
         if (gs.shakeFrames > 0) gs.shakeFrames--;
         document.getElementById('scoreLabel').innerText = gs.score;
+    }
+
+    function fireEnemyProjectile(enemy) {
+        if (enemy.ti === 0) {
+            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.5, r: 2, color: '#71717a' });
+        } else if (enemy.ti === 1) {
+            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.5, r: 2.5, color: '#ff3040' });
+        } else if (enemy.ti === 2) {
+            gs.enemyProjectiles.push({ x: enemy.x, y: enemy.y + enemy.h / 2, vx: 0, vy: 2.8, r: 3, color: '#e85d04' });
+        } else if (enemy.ti === 3) {
+            gs.enemyProjectiles.push({ x: enemy.x - 6, y: enemy.y + enemy.h / 2, vx: -0.5, vy: 2.5, r: 3.5, color: '#9b2226' });
+            gs.enemyProjectiles.push({ x: enemy.x + 6, y: enemy.y + enemy.h / 2, vx: 0.5, vy: 2.5, r: 3.5, color: '#9b2226' });
+        }
     }
 
     function fireBossProjectile(boss) {
@@ -651,10 +675,10 @@
     function spawnParticles(x, y, count, color) {
         for (let i = 0; i < count; i++) {
             let angle = Math.random() * Math.PI * 2;
-            let spd = Math.random() * 3 + 1;
+            let spd = Math.random() * 2.5 + 0.5;
             gs.particles.push({
-                x, y, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd - 1,
-                life: Math.floor(Math.random() * 18) + 8, maxLife: 26, color, r: Math.random() * 2.5 + 0.8,
+                x, y, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd - 0.8,
+                life: Math.floor(Math.random() * 14) + 6, maxLife: 20, color, r: Math.random() * 1.8 + 0.6,
             });
         }
     }
@@ -670,23 +694,45 @@
         c.save();
         c.translate(shakeX, shakeY);
 
+        // Dark academic background
         c.fillStyle = '#09090b';
         c.fillRect(-4, -4, W + 8, H + 8);
 
-        for (let s of gs.stars) {
-            c.globalAlpha = 0.3 + s.b * 0.5;
-            c.fillStyle = '#fff';
-            c.beginPath(); c.arc(s.x, s.y, s.r, 0, Math.PI * 2); c.fill();
+        // Grid lines
+        c.strokeStyle = 'rgba(39, 39, 42, 0.4)';
+        c.lineWidth = 0.5;
+        for (let x = 0; x < W; x += 40) {
+            c.beginPath();
+            c.moveTo(x, 0);
+            c.lineTo(x, H);
+            c.stroke();
         }
-        c.globalAlpha = 1;
+        for (let y = 0; y < H; y += 40) {
+            c.beginPath();
+            c.moveTo(0, y);
+            c.lineTo(W, y);
+            c.stroke();
+        }
 
+        // Subtle scan lines
+        c.strokeStyle = 'rgba(24, 24, 27, 0.3)';
+        c.lineWidth = 1;
+        for (let y = gs.scanLineOffset; y < H; y += 4) {
+            c.beginPath();
+            c.moveTo(0, y);
+            c.lineTo(W, y);
+            c.stroke();
+        }
+
+        // Trails
         for (let t of gs.trails) {
-            c.globalAlpha = (t.life / t.maxLife) * 0.5;
+            c.globalAlpha = (t.life / t.maxLife) * 0.6;
             c.fillStyle = '#ff3040';
             c.fillRect(t.x - 1.5, t.y, 3, 6);
         }
         c.globalAlpha = 1;
 
+        // Particles
         for (let p of gs.particles) {
             c.globalAlpha = p.life / p.maxLife;
             c.fillStyle = p.color;
@@ -694,34 +740,45 @@
         }
         c.globalAlpha = 1;
 
+        // Enemies
         for (let e of gs.enemies) drawEnemy(c, e);
 
+        // Boss
         if (gs.bossWave && gs.boss) {
             drawBoss(c, gs.boss); drawBossHP(c);
         }
 
+        // Boss projectiles
         for (let bp of gs.bossProjectiles) {
-            c.fillStyle = '#ff3040'; c.shadowColor = '#ff3040'; c.shadowBlur = 6;
+            c.fillStyle = '#ff3040';
             c.beginPath(); c.arc(bp.x, bp.y, 4, 0, Math.PI * 2); c.fill();
-            c.shadowBlur = 0;
         }
 
+        // Enemy projectiles
+        for (let ep of gs.enemyProjectiles) {
+            c.fillStyle = ep.color;
+            c.beginPath(); c.arc(ep.x, ep.y, ep.r, 0, Math.PI * 2); c.fill();
+        }
+
+        // Player bullets
         for (let b of gs.bullets) {
-            c.fillStyle = '#ff3040'; c.shadowColor = '#ff3040'; c.shadowBlur = 8;
+            c.fillStyle = '#ff3040';
             c.fillRect(b.x - b.w / 2, b.y - b.h / 2, b.w, b.h);
-            c.shadowBlur = 0;
         }
 
+        // Player
         if (!gs.dead) drawPlayer(c, gs.player);
 
-        if (gs.waveCleared && gs.wavePause > 30 && !gs.bossWave) {
+        // Wave cleared message
+        if (gs.waveCleared && gs.wavePause > 30) {
             c.globalAlpha = Math.min(1, (gs.wavePause - 30) / 30);
             c.fillStyle = '#ff3040'; c.font = 'bold 13px monospace';
             c.textAlign = 'center';
-            c.fillText('WAVE ' + gs.wave + ' CLEARED!', W / 2, H / 2);
+            c.fillText(gs.waveMessage, W / 2, H / 2);
             c.globalAlpha = 1;
         }
 
+        // Boss alert
         if (gs.bossWave && gs.boss && gs.frameCount < 80) {
             let alpha = Math.sin(gs.frameCount * 0.15) * 0.5 + 0.5;
             c.globalAlpha = alpha; c.fillStyle = '#ff3040';
@@ -737,35 +794,37 @@
     function drawPlayer(c, p) {
         if (p.iframes > 0 && Math.floor(gs.frameCount / 4) % 2 === 0) return;
         let x = p.x, y = p.y;
-        c.shadowColor = '#ff3040'; c.shadowBlur = 14;
         c.fillStyle = '#ff3040';
         c.beginPath(); c.moveTo(x, y - p.h / 2); c.lineTo(x - p.w / 2, y + p.h / 2);
         c.lineTo(x, y + p.h / 2 - 6); c.lineTo(x + p.w / 2, y + p.h / 2); c.closePath(); c.fill();
         c.fillStyle = '#fff'; c.globalAlpha = 0.5;
         c.beginPath(); c.moveTo(x, y - p.h / 2 + 4); c.lineTo(x - 3, y + p.h / 2 - 8);
         c.lineTo(x + 3, y + p.h / 2 - 8); c.closePath(); c.fill(); c.globalAlpha = 1;
-        c.fillStyle = '#ff8040'; c.shadowBlur = 10;
+        c.fillStyle = '#ff8040';
         c.beginPath(); c.arc(x, y + p.h / 2 - 4, 3 + Math.sin(gs.frameCount * 0.3) * 1.5, 0, Math.PI * 2); c.fill();
-        c.shadowBlur = 0;
     }
 
     function drawEnemy(c, e) {
         let x = e.x, y = e.y;
-        c.save(); c.shadowColor = e.accent; c.shadowBlur = 6; c.fillStyle = e.color;
+        c.save(); c.fillStyle = e.color;
         if (e.ti === 0) {
+            // Quiz Paper - rectangular
             c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h); c.fillStyle = e.accent; c.globalAlpha = 0.6;
             for (let l = 0; l < 3; l++) c.fillRect(x - e.w/2 + 3, y - e.h/2 + 4 + l*5, e.w - 6, 2);
         } else if (e.ti === 1) {
+            // Assignment Sheet - clipboard shape
             c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h); c.fillStyle = e.accent; c.globalAlpha = 0.5;
             c.beginPath(); c.moveTo(x + e.w/2 - 7, y - e.h/2); c.lineTo(x + e.w/2, y - e.h/2 + 7);
             c.lineTo(x + e.w/2 - 7, y - e.h/2 + 7); c.closePath(); c.fill(); c.globalAlpha = 0.4;
             for (let l = 0; l < 3; l++) c.fillRect(x - e.w/2 + 3, y - e.h/2 + 5 + l*6, e.w - 12, 2);
         } else if (e.ti === 2) {
+            // Lab Report - folder
             c.fillRect(x - e.w/2, y - e.h/2, e.w, e.h); c.fillStyle = e.accent; c.globalAlpha = 0.6;
             c.beginPath(); let zigX = x - e.w/2 + 4; c.moveTo(zigX, y - e.h/2 + 6);
             for (let z = 0; z < 4; z++) c.lineTo(zigX + (z%2===0?e.w-8:4), y - e.h/2 + 6 + z * 5);
             c.strokeStyle = e.accent; c.lineWidth = 1.5; c.globalAlpha = 0.5; c.stroke();
         } else {
+            // Backlog Monster - star shape
             c.globalAlpha = 1; c.beginPath(); let pts = 8;
             for (let i = 0; i < pts; i++) {
                 let angle = (i / pts) * Math.PI * 2 - Math.PI/2;
@@ -789,30 +848,68 @@
     }
 
     function drawBoss(c, boss) {
-        let x = boss.x, y = boss.y, pulse = Math.sin(gs.frameCount * 0.08) * 3;
-        c.save(); c.shadowColor = boss.color; c.shadowBlur = 22 + pulse;
-        c.strokeStyle = boss.color; c.lineWidth = 2; c.globalAlpha = 0.4 + Math.sin(gs.frameCount * 0.1) * 0.2;
-        c.beginPath(); c.arc(x, y, boss.w/2 + 8 + pulse, 0, Math.PI * 2); c.stroke(); c.globalAlpha = 1;
-        c.fillStyle = boss.color; let sides = 6; c.beginPath();
-        for (let i = 0; i < sides; i++) {
-            let angle = (i / sides) * Math.PI * 2 - Math.PI/2 + gs.frameCount * 0.012;
-            let bx = x + Math.cos(angle) * boss.w/2; let by = y + Math.sin(angle) * boss.h/2;
-            if (i === 0) c.moveTo(bx, by); else c.lineTo(bx, by);
+        let x = boss.x, y = boss.y;
+        c.save(); 
+        c.fillStyle = boss.color; 
+        
+        if (boss.idx === 0) {
+            // Quiz Barrage - stack of papers
+            for (let i = 0; i < 3; i++) {
+                c.save();
+                c.globalAlpha = 0.8 - i * 0.1;
+                let rot = Math.sin(gs.frameCount * 0.06 + i) * 0.1;
+                c.translate(x, y - 8 + i * 6);
+                c.rotate(rot);
+                c.fillRect(-14, -8, 28, 16);
+                c.restore();
+            }
+        } else if (boss.idx === 1) {
+            // Assignment Overlord - clipboard
+            c.beginPath();
+            c.moveTo(x, y - boss.w/2);
+            c.lineTo(x + boss.w/2, y - boss.w/4);
+            c.lineTo(x + boss.w/2, y + boss.w/2);
+            c.lineTo(x - boss.w/2, y + boss.w/2);
+            c.lineTo(x - boss.w/2, y - boss.w/4);
+            c.closePath();
+            c.fill();
+            c.fillStyle = '#27272a';
+            c.fillRect(x - boss.w/3, y - boss.w/4, boss.w * 0.67, boss.h * 0.6);
+        } else if (boss.idx === 2) {
+            // Lab Report Titan - folder/envelope
+            c.fillRect(x - boss.w/2, y - boss.h/2, boss.w, boss.h);
+            c.fillStyle = '#18181b';
+            let foldSize = boss.w / 3;
+            c.fillRect(x - boss.w/2, y - boss.h/2, foldSize, foldSize);
+        } else if (boss.idx === 3) {
+            // Semester Final - hexagon emblem
+            let sides = 6;
+            c.beginPath();
+            for (let i = 0; i < sides; i++) {
+                let angle = (i / sides) * Math.PI * 2 - Math.PI/2 + gs.frameCount * 0.01;
+                let px = x + Math.cos(angle) * boss.w/2.2;
+                let py = y + Math.sin(angle) * boss.h/2.2;
+                if (i === 0) c.moveTo(px, py); else c.lineTo(px, py);
+            }
+            c.closePath();
+            c.fill();
+            c.fillStyle = '#18181b';
+            c.beginPath();
+            c.arc(x, y, boss.w / 4, 0, Math.PI * 2);
+            c.fill();
         }
-        c.closePath(); c.fill(); c.fillStyle = '#09090b'; c.beginPath(); c.arc(x, y, boss.w/4, 0, Math.PI * 2); c.fill();
-        c.fillStyle = boss.color; c.globalAlpha = 0.8;
-        c.beginPath(); c.arc(x, y, boss.w/6 + Math.sin(gs.frameCount * 0.15) * 2, 0, Math.PI * 2); c.fill();
-        c.globalAlpha = 1; c.restore();
+        
+        c.restore();
     }
 
     function drawBossHP(c) {
         let bw = W - 20, bh = 6, bx = 10, by = 8, ratio = Math.max(0, gs.bossHP / gs.bossMaxHP);
-        c.fillStyle = '#27272a'; c.beginPath(); c.roundRect ? c.roundRect(bx, by, bw, bh, 3) : c.fillRect(bx, by, bw, bh); c.fill();
+        c.fillStyle = '#27272a'; c.fillRect(bx, by, bw, bh);
         let bossColor = gs.boss ? gs.boss.color : '#ff3040';
-        c.fillStyle = bossColor; c.shadowColor = bossColor; c.shadowBlur = 8;
+        c.fillStyle = bossColor;
         let fw = bw * ratio;
-        if (fw > 0) { c.beginPath(); c.roundRect ? c.roundRect(bx, by, fw, bh, 3) : c.fillRect(bx, by, fw, bh); c.fill(); }
-        c.shadowBlur = 0; c.fillStyle = '#f8f8f8'; c.font = 'bold 8px monospace';
+        if (fw > 0) { c.fillRect(bx, by, fw, bh); }
+        c.fillStyle = '#f8f8f8'; c.font = 'bold 8px monospace';
         c.textAlign = 'center'; c.fillText(gs.boss ? gs.boss.name : '', W/2, by - 2);
     }
 
@@ -820,11 +917,8 @@
         if (!gs.player) return;
         for (let i = 0; i < gs.player.maxHp; i++) {
             c.fillStyle = i < gs.player.hp ? '#ff3040' : '#27272a';
-            c.shadowColor = i < gs.player.hp ? '#ff3040' : 'transparent';
-            c.shadowBlur = i < gs.player.hp ? 6 : 0;
             c.beginPath(); c.arc(W - 14 - i * 14, H - 10, 4, 0, Math.PI * 2); c.fill();
         }
-        c.shadowBlur = 0;
     }
     </script>
 </body>
