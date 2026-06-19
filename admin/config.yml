@@ -1,7 +1,9 @@
 backend:
-  name: git-gateway
-  repo: "KURO-RGBN/EEE-QUESTION-BANK-JSTU" 
+  name: github
+  repo: "KURO-RGBN/EEE-QUESTION-BANK-JSTU"
   branch: main
+  base_url: "https://decap-cms-github-backend-production.up.railway.app"
+  auth_endpoint: "auth"  
 
 collections:
   - name: "vault_data"
