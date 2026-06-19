@@ -1,5 +1,5 @@
 [
-  { "subjects":[ {
+  { 
     "semester": "1st Year 1st Semester",
     "title": "Electrical Circuit I",
     "code": "EEE 1111",
@@ -17,11 +17,11 @@
       { "name": "S-3 Superposition and Maximum Power Theorem", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/S-3%20Superposition%20and%20Maximum%20Power%20Theorem.pdf" },
       { "name": "S-4 Source Transformation", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/S-4%20Source%20Transformation.pdf" },
       { "name": "S-5 Thevenin, Norton Theorem.pdf", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/S-5%20Thevenin%2C%20Norton%20Theorem.pdf" },
-      { "name": "S-6 C-4 Magnetic Quantities & Magnetization Curve", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/S-6%20C-4%20Magnetic%20Quantities%20%26%20Magnetization%20Curve.pdf" }
+      { "name": "S-6 C-4 Magnetic Quantities & Magnetization Curve", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/S-6%20C-4%20Magnetic%20Quantities%20%26%20Magnetization%20Curve.pdf" }]
     
     
-    ] }
-]  },
+    
+  },
   {
     "semester": "1st Year 1st Semester",
     "title": "Technical and Communicative English",
