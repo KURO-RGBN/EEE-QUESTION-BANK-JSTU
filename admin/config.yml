@@ -13,16 +13,18 @@ collections:
     label: "Vault"
     files:
       - file: "data.json"
-        label: "Subjects Data"
+        label: "course Data"
         name: "data"
         fields:
-          - name: "subjects"
-            label: "Subjects"
+          - name: "Course"
+            label: "Courses"
             widget: "list"
+             summary: "{{fields.semester}} | {{fields.title}} ({{fields.code}})"
             fields:
+            
               - {name: "semester", label: "Semester", widget: "string"}
-              - {name: "title", label: "Subject Title", widget: "string"}
-              - {name: "code", label: "Subject Code", widget: "string"}
+              - {name: "title", label: "Course Title", widget: "string"}
+              - {name: "code", label: "Course Code", widget: "string"}
               - name: "links"
                 label: "Session Links"
                 widget: "object"
