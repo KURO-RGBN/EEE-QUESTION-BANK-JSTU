@@ -78,11 +78,11 @@
     "title": "Electrical Circuit II",
     "code": "EEE 1211",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/circuit2p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/circuit2p2.jpg"],
-      "21-22": "missing",
+      "21-22": [],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Circuit%20II-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Circuit%20II-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Circuit-I_p3.jpg"],
-      "23-24": "missing",
-      "24-25": "missing" },
-    "notes": [{ "name": "Upcoming..","url": "ENTER_URL_HERE" }]
+      "23-24": [],
+      "24-25": [] },
+    "notes": []
   },
   {
     "semester": "1st Year 2nd Semester",
@@ -102,42 +102,42 @@
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/ACCOUNTING-P1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/ACCOUNTING-P2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/ACCOUNTING-P3.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/ACCOUNTING-P4.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/ACCOUNTING-P5.jpeg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/Accounting%20and%20Economics%20for%20Engineers-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/Accounting%20and%20Economics%20for%20Engineers-p2.jpg"],
       
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
-    "notes": [{ "name": "Upcoming..", "url": "ENTER_URL_HERE" }]
+      "22-23": [],
+      "23-24": [],
+      "24-25":[] },
+    "notes": []
   },
   {
     "semester": "1st Year 2nd Semester",
     "title": "Linear Algebra and Vector Analysis",
     "code": "MATH 1211",
-    "links": { "20-21": "missing",
+    "links": { "20-21": [],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/linear-algebra-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/linear-algebra-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/linear-algebra-p3.jpg"],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Linear%20Algebra%20and%20Vector%20Analysis-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Linear%20Algebra%20and%20Vector%20Analysis-p2.jpg"],
       "23-24": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/Linear%20Algebra%20and%20Vector%20Analysis-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/Linear%20Algebra%20and%20Vector%20Analysis-p2.jpg"],
-      "24-25": "missing" },
+      "24-25": [] },
     "notes": [{ "name": "linear algebra-3rd edition", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/1-2/linear%20algebra.pdf" }]
   },
   {
     "semester": "1st Year 2nd Semester",
     "title": "Chemistry",
     "code": "CHEM 1211",
-    "links": { "20-21": "missing",
+    "links": { "20-21":[],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/chem1211p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/chem1211p2.jpg"], 
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Physical%20and%20Inorganic%20Chemistry-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Physical%20and%20Inorganic%20Chemistry-p2.jpg"],
       "23-24": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/Physical%20and%20Inorganic%20Chemistry-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-23-24/main/Physical%20and%20Inorganic%20Chemistry-p2.jpg"],
-      "24-25": "missing" },
-    "notes": [{ "name": "upcoming..", "url": "ENTER_URL_HERE" }]
+      "24-25": [] },
+    "notes": []
   },
   {
     "semester": "2nd Year 1st Semester",
     "title": "Electrical Engineering Materials",
     "code": "EEE 2111",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/ENG-MATEROALS-P1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/ENG-MATEROALS-P2.jpeg"],
-      "21-22": "missing",
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "21-22": [],
+      "22-23": [],
+      "23-24": [],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -147,8 +147,8 @@
     "links": { "20-21": "missing",
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Electronic%20Device%20and%20Circuit%20II-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Electronic%20Device%20and%20Circuit%20II-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Electronic%20Device%20and%20Circuit%20II-p3.jpg"],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electronic%20Device%20and%20Circuit%20II-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electronic%20Device%20and%20Circuit%20II-p2.jpg"], 
-      "23-24": "missing",
-      "24-25": "missing" },
+      "23-24": [],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -156,10 +156,10 @@
     "title": "Basic Mechanical Engineering",
     "code": "ME 2111",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/MECHANICAL-P1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/MECHANICAL-P2.jpeg"],
-      "21-22": "missing", 
+      "21-22": [], 
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Basic%20Mechanical%20Engineering-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Basic%20Mechanical%20Engineering-p2.jpg"],
-      "23-24": "missing",
-      "24-25": "missing" },
+      "23-24": [],
+      "24-25":[] },
     "notes": []
   },
   {
@@ -167,10 +167,10 @@
     "title": "Statistics for Engineers",
     "code": "STAT 2111",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/STATS-P1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/STATS-P2.jpeg"],
-      "21-22": "missing",
+      "21-22": [],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Statistics%20for%20Engineers-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Statistics%20for%20Engineers-p2.jpg"],
-      "23-24": "missing",
-      "24-25": "missing" },
+      "23-24": [],
+      "24-25":[] },
     "notes": []
   },
  
@@ -179,10 +179,10 @@
     "title": "Legal Issues and Professional Ethics for Engineers",
     "code": "HUM 2121",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/LEGALISSUES-P1.jpeg"],
-      "21-22": "missing",
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "21-22": [],
+      "22-23": [],
+      "23-24": [],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -190,10 +190,10 @@
     "title": "Electronic Device and Circuit III",
     "code": "EEE 2211",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/DEVICE-3-P1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/DEVICE-3-P2.jpeg"],
-      "21-22": "missing",
-      "22-23": "missing",
-      "23-24": "missing", 
-      "24-25": "missing" },
+      "21-22": [],
+      "22-23": [],
+      "23-24": [], 
+      "24-25":[] },
     "notes": []
   },
   {
@@ -203,8 +203,8 @@
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-1-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-1-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-1-p3.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-1-p4.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-1-p5.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-1-p6.jpeg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Electrical%20Machine-%20I_p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Electrical%20Machine-%20I_p2.jpg"],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/MACHINE%201-P1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/MACHINE-1-P2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/MACHINE-1-P3.jpeg"],
-      "23-24": "missing",
-      "24-25": "missing" },
+      "23-24": [],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -214,8 +214,8 @@
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/digital%20electronics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Digital%20Electronics-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/DIGITAL%20ELECTRONICS(19-20)-P1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/DIGITAL%20ELECTRONICS(19-20)-P2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/DIGITAL%20ELECTRONICS(19-20)-P3.jpeg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Digital%20Electronics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Digital%20Electronics-p2.jpg"],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Digital%20Electronics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Digital%20Electronics-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Digital%20Electronics-p3.jpg","https://github.com/KURO-RGBN/EEE-SESSION-22-23/blob/main/Digital%20Electronics-p4.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Digital%20Electronics-p5.jpg"],
-      "23-24": "missing", 
-      "24-25": "missing"},
+      "23-24": [], 
+      "24-25": []},
     "notes": [ {"name":"Digital Fundamentals by Thomas L.Floyd","url":"https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/DIGITAL_ELECTRONICS-by-Flyod.pdf"}]
   },
   {
@@ -225,8 +225,8 @@
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Computational%20Methods%20for%20Engineers-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Computational%20Methods%20for%20Engineers-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/COMPUTATIONAL(19-20)-P1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/COMPUTATIONAL(19-20)-P2.jpeg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/copmutionalmethod2241p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/computationalmethod2241p2.jpg"],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Computational%20Methods%20for%20Engineers-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Computational%20Methods%20for%20Engineers-p2.jpg"],
-      "23-24": "missing",
-      "24-25": "missing" },
+      "23-24": [],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -236,8 +236,8 @@
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p2.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p2.jpg"],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p3.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Fourier%20Analysis%2C%20Laplace%20Transform%20and%20Differential%20Equation-p4.jpg"],
-      "23-24": "missing",
-      "24-25": "missing" },
+      "23-24": [],
+      "24-25": []},
     "notes": []
   },
   {
@@ -246,9 +246,9 @@
     "code": "EEE 3111",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/measurement-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/measurement-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/measurement-p3.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/measurement-p4.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Measurement%20%26%20Instrumentation-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Measurement%20%26%20Instrumentation-p2.jpg"],
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "22-23": [],
+      "23-24": [],
+      "24-25":[] },
     "notes": []
   },
   {
@@ -258,8 +258,8 @@
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-2-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-2-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-2-p3.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-2-p4.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/machine-2-p5.jpeg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Electrical%20Machine%20II.jpg"],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Machine%20II-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Machine%20II-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Machine%20II-p3.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Electrical%20Machine%20II-p4.jpg"],
-      "23-24": "missing",
-      "24-25": "missing" },
+      "23-24": [],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -268,9 +268,9 @@
     "code": "EEE 3131",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Micro-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/micro-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/micro-p3.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/micro-p4.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Microprocessor%20and%20Microcontroller-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Microprocessor%20and%20Microcontroller-p3.jpg"]
-      , "22-23": "missing",
-      "23-24": "missing", 
-      "24-25": "missing" },
+      , "22-23":[],
+      "23-24":[], 
+      "24-25": [] },
     "notes": []
   },
   {
@@ -280,8 +280,8 @@
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20Electronics.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Power%20Electronics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Power%20Electronics-p2.jpg"],
       "22-23": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Power%20Electronics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-22-23/main/Power%20Electronics-p2.jpg"],
-      "23-24": "missing",
-      "24-25": "missing" },
+      "23-24": [],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -289,11 +289,11 @@
     "title": "Signals and Linear Systems",
     "code": "EEE 3151",
     "links": { "20-21":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Signals%20and%20Linear%20Systems-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Signals%20and%20Linear%20Systems-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Signals%20and%20Linear%20Systems-p3.jpg"],
-      "21-22": "missing",
-      "22-23": "missing",
+      "21-22": [],
+      "22-23": [],
       
-      "23-24": "missing",
-      "24-25": "missing" },
+      "23-24": [],
+      "24-25": []},
     "notes": []
   },
   {
@@ -302,9 +302,9 @@
     "code": "EEE 3211",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Communication%20Engineering%20I-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Communication%20Engineering%20I-p2.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/communication%201-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/communication%201-p2.jpeg"],
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "22-23":[],
+      "23-24":[],
+      "24-25":[] },
     "notes": []
   },
   {
@@ -313,9 +313,9 @@
     "code": "EEE 3221",
     "links": { "20-21":["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20System%20I-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20System%20I-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/POWERSYSTEM-2-19-20-P1.JPEG","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/POWERSYSTEM-2-19-20-P2.JPEG"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/powersystem-1-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/powersystem-1-p2.jpeg"],
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "22-23": [],
+      "23-24": [],
+      "24-25":[] },
     "notes": []
   },
   {
@@ -323,11 +323,11 @@
     "title": "Power Plant Engineering and Economy",
     "code": "EEE 3231",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20Plant%20Engineering%20and%20Economy-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Power%20Plant%20Engineering%20and%20Economy-p2.jpg"],
-      "21-22": "missing",
-      "22-23":"missing",
+      "21-22": [],
+      "22-23":[],
        "23-24":
-      "missing",
-      "24-25": "missing" },
+     [],
+      "24-25":[] },
     "notes": []
   },
   {
@@ -336,9 +336,9 @@
     "code": "EEE 3241",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/controlsystem-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/controlsystem-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/controlsystem-p3.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/control%20system%2019-20-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/control%20system%2019-20-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/control%20system%2019-20-p3.jpeg"], 
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Control%20Systems-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Control%20Systems-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Control%20Systems-p3.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Control%20Systems-p4.jpeg"],
-      "22-23": "missing", 
-      "23-24": "missing", 
-      "24-25": "missing" },
+      "22-23":[], 
+      "23-24": [], 
+      "24-25": [] },
       "notes": []
   },
   {
@@ -347,9 +347,9 @@
     "code": "EEE 3251",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Engineering%20Electromagnetics-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Engineering%20Electromagnetics-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Engineering%20Electromagnetics-p3.jpg"],
       "21-22": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Engineering%20Electromagnetics-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-21-22/main/Engineering%20Electromagnetics-p2.jpeg"],
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "22-23": [],
+      "23-24": [],
+      "24-25":[] },
     "notes": []
   },
   {
@@ -357,10 +357,10 @@
     "title": "Communication Engineering II",
     "code": "EEE 4111",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Communication%20Engineering%20II-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Communication%20Engineering%20II-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/COMMUNICATION-2-19-20.jpeg"],
-      "21-22": "missing",
-      "22-23": "missing", 
-      "23-24": "missing",
-      "24-25": "missing" },
+      "21-22": [],
+      "22-23":[], 
+      "23-24": [],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -368,9 +368,10 @@
     "title": "Power System II",
     "code": "EEE 4121",
     "links": {"20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/POWERSYSTEM 2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/POWERSYSTEM2_02.jpg"] ,
-      "21-22": "missing", 
-      "22-23": "missing", 
-      "23-24": "missing", "24-25": "missing" },
+      "21-22": [], 
+      "22-23": [], 
+      "23-24":[],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -378,10 +379,10 @@
     "title": "Digital Signal Processing",
     "code": "EEE 4131",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/digital%20processing-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Digital%20Signal%20Processing-p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/DIGITAL%20SIGNAL-19-20-P1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/DIGITAL%20SIGNAL-19-20-P2.jpeg"],
-      "21-22": "missing",
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "21-22": [],
+      "22-23": [],
+      "23-24": [],
+      "24-25":[] },
     "notes": []
   },
   {
@@ -389,10 +390,10 @@
     "title": "Elective I",
     "code": "EEE 41**",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Biomedical%20Engineering-p1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/Biomedical%20Engineering_p2.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/biomedical(19-20)-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/biomedical(19-20)-p2.jpeg"],
-      "21-22": "missing",
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "21-22": [],
+      "22-23": [],
+      "23-24": [],
+      "24-25": [] },
     "notes": []
   },
   {
@@ -400,10 +401,10 @@
     "title": "Communication Engineering III",
     "code": "EEE 4211",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/communication-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/communication-p2.jpeg"],
-      "21-22": "missing",
-      "22-23": "missing",
-      "23-24": "missing", 
-      "24-25": "missing" },
+      "21-22":[],
+      "22-23":[],
+      "23-24": [], 
+      "24-25": [] },
     "notes": []
   },
   {
@@ -411,10 +412,10 @@
     "title": "Power System Protection and Switchgear",
     "code": "EEE 4221",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/powersystemswitchgear-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/powersystemswitchgear-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/switchgear(19-20)-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/switchgear(19-20)-p2.jpeg"],
-      "21-22": "missing",
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "21-22":[],
+      "22-23": [],
+      "23-24": [],
+      "24-25":[] },
     "notes": []
   },
   {
@@ -422,10 +423,10 @@
     "title": "VLSI Circuits and Design",
     "code": "EEE 4231",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/CamScanner%2003-05-2026%2016.39_1.jpg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/CamScanner%2003-05-2026%2016.39_2.jpg"],
-      "21-22": "missing",
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "21-22": [],
+      "22-23":[],
+      "23-24": [],
+      "24-25": [] },
     "notes": [ ]
   },
   {
@@ -433,10 +434,10 @@
     "title": "Elective II",
     "code": "EEE 42**",
     "links": { "20-21": ["https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/image-processing-p1.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/image-processing-p2.jpeg","https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-20-21/main/image-processing-p3.jpeg"],
-      "21-22": "missing",
-      "22-23": "missing",
-      "23-24": "missing",
-      "24-25": "missing" },
+      "21-22": [],
+      "22-23": [],
+      "23-24": [],
+      "24-25":[] },
     "notes": []
   }
 ]
