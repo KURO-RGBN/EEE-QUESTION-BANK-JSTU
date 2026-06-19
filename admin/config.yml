@@ -1,6 +1,6 @@
 backend:
   name: git-gateway
-  repo: "KURO-RGBN/EEE-VAULT-JSTU-OFFICIAL-" # Use your exact repository path here
+  repo: "KURO-RGBN/EEE-QUESTION-BANK-JSTU" # Use your exact repository path here
   branch: main
 
 collections:
