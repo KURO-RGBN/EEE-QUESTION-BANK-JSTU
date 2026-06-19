@@ -415,10 +415,15 @@ let currentPages = [];
 let touchStartLine = 0;
 
 // 2. INITIALIZATION
+// 2. INITIALIZATION
 async function init() {
     try {
         const res = await fetch('data.json?t=' + Date.now());
-        courseData = await res.json();
+        const data = await res.json();
+        
+     
+        courseData = data.Course ? data.Course : data;
+        
         renderCourses(courseData);
     } catch (err) {
         console.error("Data load failed", err);
