@@ -19,9 +19,8 @@ collections:
           - name: "Course"
             label: "Courses"
             widget: "list"
-             summary: "{{fields.semester}} | {{fields.title}} ({{fields.code}})"
+            summary: "{{fields.semester}} | {{fields.title}} ({{fields.code}})"
             fields:
-            
               - {name: "semester", label: "Semester", widget: "string"}
               - {name: "title", label: "Course Title", widget: "string"}
               - {name: "code", label: "Course Code", widget: "string"}
@@ -40,3 +39,4 @@ collections:
                 fields:
                   - {name: "name", label: "Note Name", widget: "string"}
                   - {name: "url", label: "URL", widget: "string"}
+               
