@@ -1,5 +1,5 @@
 [
-  {
+  { "subjects":[ {
     "semester": "1st Year 1st Semester",
     "title": "Electrical Circuit I",
     "code": "EEE 1111",
@@ -20,8 +20,8 @@
       { "name": "S-6 C-4 Magnetic Quantities & Magnetization Curve", "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/S-6%20C-4%20Magnetic%20Quantities%20%26%20Magnetization%20Curve.pdf" }
     
     
-    ]
-  },
+    ] }
+]  },
   {
     "semester": "1st Year 1st Semester",
     "title": "Technical and Communicative English",
