@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+k<!DOCTYPE html>
 
 <html lang="en">  
 <head>  
@@ -426,6 +426,7 @@ async function init() {
 }
 
 // 3. UI RENDERING & FILTERING
+
 function renderCourses(data) {
     const container = document.getElementById('courseContainer');
     container.innerHTML = data.map((course) => {
@@ -444,8 +445,9 @@ function renderCourses(data) {
                             <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
                         </button>
                         ${batches.map(batch => {
-                            const link = course.links[batch];
-                            const isMissing = !link || link === "missing" || (Array.isArray(link) && link.length === 0);
+                            // Safely check if the batch exists in the object
+                            const link = course.links ? course.links[batch] : null;
+                            const isMissing = !link || (Array.isArray(link) && link.length === 0) || link === "missing";
                             return `
                                 <button onclick="${isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`}" 
                                         class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
@@ -459,6 +461,7 @@ function renderCourses(data) {
             </div>`;
     }).join('');
 }
+
 
 function toggleSemModal(show) {
     const modal = document.getElementById('semModal');
