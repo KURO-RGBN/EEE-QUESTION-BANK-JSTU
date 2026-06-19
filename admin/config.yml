@@ -9,31 +9,32 @@ media_folder: "admin/uploads"
 public_folder: "/admin/uploads"
 
 collections:
-  - name: "vault_data"
-    label: "Vault Data"
-    folder: "/" # Point to the root where data.json lives
-    file: "data.json" # If it's a single file, use this
-    create: false
-    fields:
-      - name: "subjects"
-        label: "Subjects"
-        widget: "list"
+  - name: "vault"
+    label: "Vault"
+    files:
+      - file: "data.json"
+        label: "Subjects Data"
+        name: "data"
         fields:
-          - {name: "semester", label: "Semester", widget: "string"}
-          - {name: "title", label: "Subject Title", widget: "string"}
-          - {name: "code", label: "Subject Code", widget: "string"}
-          - name: "links"
-            label: "Session Links"
-            widget: "object"
-            fields:
-              - {name: "20-21", label: "Session 20-21", widget: "list"}
-              - {name: "21-22", label: "Session 21-22", widget: "list"}
-              - {name: "22-23", label: "Session 22-23", widget: "list"}
-              - {name: "23-24", label: "Session 23-24", widget: "list"}
-              - {name: "24-25", label: "Session 24-25", widget: "list"}
-          - name: "notes"
-            label: "Course Notes"
+          - name: "subjects"
+            label: "Subjects"
             widget: "list"
             fields:
-              - {name: "name", label: "Note Name", widget: "string"}
-              - {name: "url", label: "URL", widget: "string"}
+              - {name: "semester", label: "Semester", widget: "string"}
+              - {name: "title", label: "Subject Title", widget: "string"}
+              - {name: "code", label: "Subject Code", widget: "string"}
+              - name: "links"
+                label: "Session Links"
+                widget: "object"
+                fields:
+                  - {name: "20-21", label: "Session 20-21", widget: "list", field: {label: "URL", name: "url", widget: "string"}}
+                  - {name: "21-22", label: "Session 21-22", widget: "list", field: {label: "URL", name: "url", widget: "string"}}
+                  - {name: "22-23", label: "Session 22-23", widget: "list", field: {label: "URL", name: "url", widget: "string"}}
+                  - {name: "23-24", label: "Session 23-24", widget: "list", field: {label: "URL", name: "url", widget: "string"}}
+                  - {name: "24-25", label: "Session 24-25", widget: "list", field: {label: "URL", name: "url", widget: "string"}}
+              - name: "notes"
+                label: "Course Notes"
+                widget: "list"
+                fields:
+                  - {name: "name", label: "Note Name", widget: "string"}
+                  - {name: "url", label: "URL", widget: "string"}
