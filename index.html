@@ -445,10 +445,7 @@ function confirmPdfDownload() {
     document.body.insertAdjacentHTML('beforeend', alertHTML);
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
-async function executePdfDownload() {
-    closeAlert();
-    const pdfBtn = document.getElementById('pdfBtn');
-    const headerLoader = document.getElementById('headerLoader');
+
 
 
 async function executePdfDownload() {
