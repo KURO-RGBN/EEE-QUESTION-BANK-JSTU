@@ -458,38 +458,48 @@ async function executeZipDownload() {
     const folder = zip.folder("EEE_Vault_Papers");
 
     try {
+        // 1. Generate the filename FIRST so it's ready
+        const currentTitle = document.getElementById('viewingTitle').innerText.trim();
+        
+        // Formats "ELECTRICAL CIRCUIT I - 20-21" into "ELECTRICAL_CIRCUIT_I_20-21"
+        let formattedName = currentTitle
+            .replace(/\s+-\s+/g, '_')   // Replaces the " - " divider with "_"
+            .replace(/\s+/g, '_')      // Replaces all other spaces with "_"
+            .replace(/[^a-zA-Z0-9-_]/g, ''); // Removes any illegal filename characters
+
+        const finalFileName = `${formattedName || 'session_papers'}.zip`;
+
+        // 2. Fetch images using a much more stable image proxy
         for (let i = 0; i < currentPages.length; i++) {
-            // Using a clean fallback wrapper if proxy fails directly
-            const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(currentPages[i]));
-            if (!response.ok) throw new Error("Proxy error");
+            // Clean up the URL to remove any existing protocol if needed for weserv
+            const cleanUrl = currentPages[i].replace(/^https?:\/\//, '');
+            const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}`;
+            
+            const response = await fetch(proxyUrl);
+            if (!response.ok) throw new Error(`Failed to fetch page ${i + 1}`);
+            
             const blob = await response.blob();
             folder.file(`page_${i + 1}.jpg`, blob);
         }
         
+        // 3. Generate and trigger download
         const content = await zip.generateAsync({ type: "blob" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(content);
+        link.download = finalFileName;
         
-        // Grab header string safely (e.g., "ELECTRICAL CIRCUIT I - 20-21")
-        const currentTitle = document.getElementById('viewingTitle').innerText.trim();
-        
-        // Clean string conversions substituting characters smoothly 
-        let formattedName = currentTitle
-            .replace(/\s+-\s+/g, '_')   
-            .replace(/\s+/g, '_');      
-            
-        link.download = `${formattedName || 'session_papers'}.zip`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+        
     } catch (err) {
-        alert("Download failed. Some files might be restricted by CORS or proxy down.");
+        console.error(err);
+        alert("Download failed. The proxy server is struggling or the image links are broken.");
     } finally {
         zipBtn.classList.remove('hidden');
         headerLoader.classList.add('hidden');
     }
 }
-
 
 function toggleSemModal(show) {
     const modal = document.getElementById('semModal');
