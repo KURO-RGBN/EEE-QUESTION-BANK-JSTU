@@ -445,12 +445,6 @@ function confirmPdfDownload() {
     document.body.insertAdjacentHTML('beforeend', alertHTML);
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
-
-async function executePdfDownload() {
-    closeAlert();
-    const pdfBtn = document.getElementById('pdfBtn');
-    const headerLoader = document.getElementById('headerLoader');
-
 async function executePdfDownload() {
     closeAlert();
     const pdfBtn = document.getElementById('pdfBtn');
@@ -510,31 +504,45 @@ async function executePdfDownload() {
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
         
-        // --- APK & MOBILE COMPATIBILITY LAYER ---
-        // Generate the PDF as an array buffer blob
+        // --- NATIVE SYSTEM DOWNLOAD FORCING LAYER ---
         const pdfBlob = pdf.output('blob');
-        const pdfFile = new File([pdfBlob], finalFileName, { type: 'application/pdf' });
 
-        // Check if Web Share API is supported (True for Android WebViews & Mobile Browsers)
-        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-            await navigator.share({
-                files: [pdfFile],
-                title: finalFileName,
-                text: 'EEE Vault Document Download'
-            });
+        // Create a temporary upload payload to obtain a public downloadable stream link
+        const formData = new FormData();
+        formData.append('file', pdfBlob, finalFileName);
+
+        // Upload securely to bashupload ephemeral storage system
+        const uploadResponse = await fetch('https://bashupload.com/', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!uploadResponse.ok) throw new Error("Upload handler failed");
+        
+        const responseText = await uploadResponse.text();
+        // Extract the target unique URL link from response text
+        const downloadUrlMatch = responseText.match(/https:\/\/bashupload\.com\/[^\s]+/);
+        
+        if (downloadUrlMatch && downloadUrlMatch[0]) {
+            const serverDownloadUrl = downloadUrlMatch[0].trim();
+            
+            // Force open this directly in the system's external native browser (Chrome/Samsung Internet)
+            // This pulls the action out of the broken WebView sandbox entirely
+            window.open(serverDownloadUrl, '_blank');
         } else {
-            // Fallback for standard desktop web browsers
+            // Local fallback if the remote routing system fails
             pdf.save(finalFileName);
         }
 
     } catch (err) {
         console.error(err);
-        alert("Compilation failed. Storage or proxy settings blocked the download.");
+        alert("Compilation or storage routing failed. Please try again.");
     } finally {
         pdfBtn.classList.remove('hidden');
         headerLoader.classList.add('hidden');
     }
 }
+
 
 function toggleSemModal(show) {
     const modal = document.getElementById('semModal');
