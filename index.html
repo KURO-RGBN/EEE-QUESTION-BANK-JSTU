@@ -303,6 +303,7 @@
         </footer>  
     </main>  
 
+    <!-- Notes Bottom Sheet Overlay -->
     <div id="notesModal" onclick="if(event.target === this) closeNotes()" class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">  
         <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">  
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>  
@@ -319,19 +320,23 @@
         </div>  
     </div>
 
+    <!-- Main Fullscreen Document Viewer -->
     <div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col">  
-        <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110]">  
-            <div class="flex flex-col">  
-                <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest truncate max-w-[150px]"></h2>  
+        <!-- Fixed height header layout keeping actions contained tightly -->
+        <div class="px-4 py-3 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110] min-h-[64px]">  
+            <!-- Left block: Flexible multi-line title setup to prevent ellipse truncation -->
+            <div class="flex-grow pr-3">  
+                <h2 id="viewingTitle" class="font-bold text-white uppercase text-xs tracking-wide leading-tight break-words max-w-full"></h2>  
             </div> 
-            <div class="flex justify-end gap-2" style="width: 140px; min-width: 140px;">
-                <button id="zipBtn" onclick="confirmZipDownload()" class="px-4 py-2 rounded-xl text-xs font-bold btn-premium-zip">
+            <!-- Right block: Crisp fixed buttons including the original red close element -->
+            <div class="flex items-center gap-2 shrink-0">
+                <button id="zipBtn" onclick="confirmZipDownload()" class="px-3 py-2 rounded-xl text-xs font-bold btn-premium-zip">
                     <i class="fa-solid fa-file-zipper mr-1"></i> ZIP ALL
                 </button>
-                <div id="headerLoader" class="hidden flex items-center justify-center px-4 py-2">
+                <div id="headerLoader" class="hidden flex items-center justify-center px-3 py-2">
                     <div class="loader-ring"></div>
                 </div>
-                <button onclick="closeViewer()" class="px-4 py-2 rounded-xl text-xs font-bold bg-zinc-800 text-slate-400 hover:text-white transition-colors">CLOSE</button>  
+                <button onclick="closeViewer()" class="px-4 py-2 rounded-xl text-xs font-bold bg-red-600 text-white shadow-[0_0_15px_rgba(220,38,38,0.4)] active:scale-95 transition-all tracking-wide uppercase">CLOSE</button>  
             </div>
         </div> 
         <div class="flex-grow bg-black relative overflow-y-auto">  
@@ -339,6 +344,7 @@
         </div>  
     </div>
 
+    <!-- Forms Contribution Modal -->
     <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">  
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">  
             <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>  
@@ -348,6 +354,7 @@
         </div>  
     </div>
 
+    <!-- Filter Semester Modal Sheet -->
     <div id="semModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 modal-overlay">  
         <div class="absolute inset-0 bg-slate-900/60" onclick="toggleSemModal(false)"></div>  
         <div class="relative w-full max-w-sm bg-white rounded-[32px] overflow-hidden shadow-2xl modal-content-pop" id="semModalContent">  
@@ -521,7 +528,6 @@ function openPaperByCode(code, batch) {
     if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`);
 }
 
-// Fixed up vertical filmstrip scroll setup
 function viewPaper(links, title) {
     currentPages = Array.isArray(links) ? links : [links];
     document.getElementById('viewingTitle').innerText = title;
@@ -707,7 +713,9 @@ function closeUpload() { document.getElementById('uploadModal').classList.add('h
 init();
 </script>
 	
+<!-- Vercel Web Analytics -->
 <script defer src="/_vercel/insights/script.js"></script>
 </body>  
 </html>
+
 
