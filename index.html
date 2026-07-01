@@ -449,12 +449,19 @@ async function executePdfDownload() {
     closeAlert();
     const pdfBtn = document.getElementById('pdfBtn');
     const headerLoader = document.getElementById('headerLoader');
+
+
+async function executePdfDownload() {
+    closeAlert();
+    const pdfBtn = document.getElementById('pdfBtn');
+    const headerLoader = document.getElementById('headerLoader');
     
     pdfBtn.classList.add('hidden');
     headerLoader.classList.remove('hidden');
 
     try {
         const currentTitle = document.getElementById('viewingTitle').innerText.trim();
+        // Clean filename formatting
         let formattedName = currentTitle
             .replace(/\s+-\s+/g, '_')   
             .replace(/\s+/g, '_')      
@@ -470,32 +477,40 @@ async function executePdfDownload() {
         for (let i = 0; i < currentPages.length; i++) {
             if (i > 0) pdf.addPage();
 
+            // Clean the source URL and route it via the CORS proxy
             const cleanUrl = currentPages[i].replace(/^https?:\/\//, '');
-            const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}`;
+            const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}&output=jpg&q=80`;
 
-            const response = await fetch(proxyUrl);
-            if (!response.ok) throw new Error(`Failed to fetch page ${i + 1}`);
-            const blob = await response.blob();
-            
+            // Bypass fetch() entirely by loading directly into an Image object with Anonymous CORS rights
             const imgData = await new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
+                const img = new Image();
+                img.crossOrigin = 'Anonymous'; 
+                img.onload = () => {
+                    // Convert image to a clean JPEG data URL via canvas
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    resolve(canvas.toDataURL('image/jpeg', 0.8));
+                };
+                img.onerror = () => reject(new Error(`Failed to process page ${i + 1}`));
+                img.src = proxyUrl;
             });
 
-            const img = new Image();
+            // Re-load image properties to safely calculate layout dimensions
+            const calcImg = new Image();
             await new Promise((resolve) => {
-                img.onload = resolve;
-                img.src = imgData;
+                calcImg.onload = resolve;
+                calcImg.src = imgData;
             });
 
             let renderWidth = pdfWidth;
-            let renderHeight = (img.height * pdfWidth) / img.width;
+            let renderHeight = (calcImg.height * pdfWidth) / calcImg.width;
 
             if (renderHeight > pdfHeight) {
                 renderHeight = pdfHeight;
-                renderWidth = (img.width * pdfHeight) / img.height;
+                renderWidth = (calcImg.width * pdfHeight) / calcImg.height;
             }
 
             const xOffset = (pdfWidth - renderWidth) / 2;
@@ -504,39 +519,23 @@ async function executePdfDownload() {
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
         
-        // --- NATIVE SYSTEM DOWNLOAD FORCING LAYER ---
-        const pdfBlob = pdf.output('blob');
+        // --- MULTI-ENVIRONMENT DOWNLOAD ENGINE ---
+        // Generate a standard base64 data URI string
+        const pdfBase64 = pdf.output('datauristring');
 
-        // Create a temporary upload payload to obtain a public downloadable stream link
-        const formData = new FormData();
-        formData.append('file', pdfBlob, finalFileName);
-
-        // Upload securely to bashupload ephemeral storage system
-        const uploadResponse = await fetch('https://bashupload.com/', {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!uploadResponse.ok) throw new Error("Upload handler failed");
+        // Create a temporary DOM trigger link
+        const downloadLink = document.createElement('a');
+        downloadLink.href = pdfBase64;
+        downloadLink.download = finalFileName;
         
-        const responseText = await uploadResponse.text();
-        // Extract the target unique URL link from response text
-        const downloadUrlMatch = responseText.match(/https:\/\/bashupload\.com\/[^\s]+/);
-        
-        if (downloadUrlMatch && downloadUrlMatch[0]) {
-            const serverDownloadUrl = downloadUrlMatch[0].trim();
-            
-            // Force open this directly in the system's external native browser (Chrome/Samsung Internet)
-            // This pulls the action out of the broken WebView sandbox entirely
-            window.open(serverDownloadUrl, '_blank');
-        } else {
-            // Local fallback if the remote routing system fails
-            pdf.save(finalFileName);
-        }
+        // Force append to body to ensure mobile WebView registers the layout click event
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
 
     } catch (err) {
         console.error(err);
-        alert("Compilation or storage routing failed. Please try again.");
+        alert("Download layout error. Check internet connection or image source.");
     } finally {
         pdfBtn.classList.remove('hidden');
         headerLoader.classList.add('hidden');
