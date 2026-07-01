@@ -444,6 +444,7 @@ function confirmPdfDownload() {
     document.body.insertAdjacentHTML('beforeend', alertHTML);
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
+
 async function executePdfDownload() {
     closeAlert();
     const pdfBtn = document.getElementById('pdfBtn');
@@ -497,9 +498,16 @@ async function executePdfDownload() {
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
 
-        
         // Client-side save — no server round trip needed
         pdf.save(finalFileName);
+
+    } catch (err) {
+        console.error(err);
+        alert("Download layout error. Check internet connection or image source.");
+    } finally {
+        pdfBtn.classList.remove('hidden');
+        headerLoader.classList.add('hidden');
+    }
 }
 
 function toggleSemModal(show) {
