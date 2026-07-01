@@ -497,32 +497,9 @@ async function executePdfDownload() {
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
 
-        // --- REAL-URL HANDOFF (replaces the data-URI hack) ---
-        const pdfBlob = pdf.output('blob');
-        const uploadRes = await fetch(`/api/upload-pdf?filename=${encodeURIComponent(finalFileName)}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/pdf' },
-            body: pdfBlob,
-        });
-        if (!uploadRes.ok) throw new Error('Upload failed');
-        const { downloadUrl } = await uploadRes.json();
-
-        // Mirrors your working Notes download exactly:
-        const a = document.createElement('a');
-        a.href = downloadUrl;
-        a.download = finalFileName;
-        a.target = '_blank';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-    } catch (err) {
-        console.error(err);
-        alert("Download layout error. Check internet connection or image source.");
-    } finally {
-        pdfBtn.classList.remove('hidden');
-        headerLoader.classList.add('hidden');
-    }
+        
+        // Client-side save — no server round trip needed
+        pdf.save(finalFileName);
 }
 
 function toggleSemModal(show) {
