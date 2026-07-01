@@ -510,27 +510,18 @@ async function executePdfDownload() {
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
         
-        // --- NATIVE APK DOWNLOAD OVERRIDE ---
-        // 1. Get the raw PDF blob from jsPDF
-        const rawPdfBlob = pdf.output('blob');
+        // --- THE BASE64 DATA URI HACK ---
+        // Converts the PDF to a base64 string to bypass WebView blob restrictions
+        const pdfDataUri = pdf.output('datauristring');
         
-        // 2. THE HACK: Force the MIME type to generic binary data. 
-        // This blinds WPS Office and forces the OS to download it instead of opening it.
-        const forcedDownloadBlob = new Blob([rawPdfBlob], { type: 'application/octet-stream' });
-
-        // 3. Create the secure internal download link
-        const blobUrl = URL.createObjectURL(forcedDownloadBlob);
         const downloadLink = document.createElement('a');
-        downloadLink.href = blobUrl;
+        downloadLink.href = pdfDataUri;
         downloadLink.download = finalFileName; 
         
-        // 4. Trigger the silent download
         document.body.appendChild(downloadLink);
         downloadLink.click();
         
-        // 5. Clean up memory
         document.body.removeChild(downloadLink);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
 
     } catch (err) {
         console.error(err);
