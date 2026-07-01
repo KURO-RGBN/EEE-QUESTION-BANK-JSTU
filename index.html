@@ -711,30 +711,20 @@ function confirmDownload(url, fileName) {
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
 
-async function executeDownload() {
-    if (!activeDownloadData || isDownloading) return;
-    isDownloading = true;
+function executeDownload() {
+    if (!activeDownloadData) return;
 
     const { url, fileName } = activeDownloadData;
-    const btn = document.getElementById('confirmDownloadBtn');
-    
-    try {
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        // This attribute is critical for browsers to treat it as a download
-        a.setAttribute('download', fileName); 
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.target = '_blank';
 
-        setTimeout(closeAlert, 500);
-    } catch (err) {
-        console.error(err);
-        alert("Download failed.");
-    } finally {
-        isDownloading = false;
-    }
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    closeAlert();
 }
 
 
