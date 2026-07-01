@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
 <meta name="theme-color" content="#000000">  
 <link rel="apple-touch-icon" href="icon.jpeg">  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <script src="https://cdn.tailwindcss.com"></script>  
 	
@@ -354,17 +355,26 @@ transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8"></div>  
     </div>  
 </div>
-
 <div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col">  
     <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110]">  
         <div class="flex flex-col">  
             <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>  
-              
-        </div>  
-        <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95">CLOSE</button>  
-    </div>  <div class="flex-grow bg-black relative overflow-y-auto">  
-    <div id="paperFilmstrip" class="viewer-filmstrip">  
-        </div>  
+        </div> 
+
+        <div class="flex gap-2">
+            <button onclick="downloadAllImages()" class="text-white font-bold px-4 py-2 bg-green-700 rounded-xl active:scale-95 text-xs">
+                <i class="fa-solid fa-download mr-1"></i> ZIP ALL
+            </button>
+            <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95 text-xs">
+                CLOSE</button>  
+        </div>
+    </div> 
+    
+    <div class="flex-grow bg-black relative overflow-y-auto">  
+        <div id="paperFilmstrip" class="viewer-filmstrip"></div>  
+    </div>  
+</div>
+
 
      
 </div>
@@ -465,6 +475,35 @@ function renderCourses(data) {
                 </div>
             </div>`;
     }).join('');
+}
+		//download function 
+async function downloadAllImages() {
+    // 1. Alert the user that it's starting
+    alert("Preparing files... please wait a moment.");
+    
+    const zip = new JSZip();
+    const folder = zip.folder("EEE_Vault_Papers");
+
+    try {
+        // 2. Loop through all pages and fetch them
+        for (let i = 0; i < currentPages.length; i++) {
+            const response = await fetch(currentPages[i]);
+            const blob = await response.blob();
+            folder.file(`page_${i + 1}.jpg`, blob);
+        }
+
+        // 3. Generate the zip and trigger download
+        const content = await zip.generateAsync({ type: "blob" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(content);
+        link.download = "session_papers.zip";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    } catch (err) {
+        console.error("Download failed", err);
+        alert("Download failed. Some files might be restricted by CORS.");
+    }
 }
 
 
