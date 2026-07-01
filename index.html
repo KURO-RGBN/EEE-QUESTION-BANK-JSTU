@@ -510,34 +510,25 @@ async function executePdfDownload() {
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
         
-        // --- NATIVE MOBILE SHARE & STORAGE ENGINE ---
-        const pdfBlob = pdf.output('blob');
+        // --- NATIVE APK DOWNLOAD OVERRIDE ---
+        // 1. Get the raw PDF blob from jsPDF
+        const rawPdfBlob = pdf.output('blob');
         
-        // 1. Package the blob into a strict File object to lock the filename
-        const pdfFile = new File([pdfBlob], finalFileName, { type: 'application/pdf' });
+        // 2. THE HACK: Force the MIME type to generic binary data. 
+        // This blinds WPS Office and forces the OS to download it instead of opening it.
+        const forcedDownloadBlob = new Blob([rawPdfBlob], { type: 'application/octet-stream' });
 
-        // 2. Attempt to trigger the native Android/iOS Share Sheet first
-        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
-            try {
-                await navigator.share({
-                    files: [pdfFile],
-                    title: finalFileName
-                });
-                return; // Exit here if share sheet was successful
-            } catch (shareErr) {
-                console.log('User cancelled share or share failed. Falling back...', shareErr);
-            }
-        }
-
-        // 3. Fallback for desktop or browsers that don't support the Share API
-        const blobUrl = URL.createObjectURL(pdfBlob);
+        // 3. Create the secure internal download link
+        const blobUrl = URL.createObjectURL(forcedDownloadBlob);
         const downloadLink = document.createElement('a');
         downloadLink.href = blobUrl;
         downloadLink.download = finalFileName; 
         
+        // 4. Trigger the silent download
         document.body.appendChild(downloadLink);
         downloadLink.click();
         
+        // 5. Clean up memory
         document.body.removeChild(downloadLink);
         setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
 
@@ -549,9 +540,6 @@ async function executePdfDownload() {
         headerLoader.classList.add('hidden');
     }
 }
-
-
-
 
 
 function toggleSemModal(show) {
