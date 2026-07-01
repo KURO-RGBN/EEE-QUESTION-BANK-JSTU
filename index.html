@@ -712,7 +712,7 @@ function confirmDownload(url, fileName) {
 }
 
 async function executeDownload() {
-    if (!activeDownloadData || isDownloading) return; // blocks the double-tap issue
+    if (!activeDownloadData || isDownloading) return;
     isDownloading = true;
 
     const { url, fileName } = activeDownloadData;
@@ -726,21 +726,17 @@ async function executeDownload() {
     btn.innerHTML = `<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top:2px solid white;border-radius:50%;animation:spin 0.8s linear infinite;"></span>`;
 
     try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`Server responded ${response.status}`);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-
+        // Direct native download — browser streams the file to disk,
+        // never loads it into page memory. Works for files of any size.
         const a = document.createElement('a');
-        a.href = blobUrl;
+        a.href = url;
         a.download = fileName;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-        setTimeout(() => URL.revokeObjectURL(blobUrl), 3000);
 
         btn.innerHTML = `<i class="fa-solid fa-check"></i>`;
-        setTimeout(closeAlert, 500); // brief success state before closing
+        setTimeout(closeAlert, 700);
 
     } catch (err) {
         console.error(err);
@@ -748,7 +744,7 @@ async function executeDownload() {
         btn.disabled = false;
         if (cancelBtn) cancelBtn.disabled = false;
         btn.style.opacity = '1';
-        alert('Download failed. Please check your connection and try again.');
+        alert('Download failed. Please try again.');
     } finally {
         isDownloading = false;
     }
