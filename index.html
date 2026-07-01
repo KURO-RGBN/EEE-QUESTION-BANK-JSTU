@@ -473,7 +473,18 @@ async function executeZipDownload() {
         const content = await zip.generateAsync({ type: "blob" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(content);
-        link.download = "session_papers.zip";
+        
+        // 1. Get header string (e.g., "ELECTRICAL CIRCUIT I - 20-21")
+        const currentTitle = document.getElementById('viewingTitle').innerText.trim();
+        
+        // 2. Format it nicely for file saving (e.g., replaces " - " with "_")
+        let formattedName = currentTitle
+            .replace(/\s+-\s+/g, '_')   // Replace " - " with "_"
+            .replace(/\s+/g, '_');      // Replace any remaining spaces with "_"
+            
+        // 3. Fallback check and file assignment
+        link.download = `${formattedName || 'session_papers'}.zip`;
+        
         link.click();
     } catch (err) {
         alert("Download failed. Please check your connection.");
@@ -482,6 +493,7 @@ async function executeZipDownload() {
         headerLoader.classList.add('hidden');
     }
 }
+
 
 function toggleSemModal(show) {
     const modal = document.getElementById('semModal');
