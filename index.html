@@ -718,7 +718,10 @@ function executeDownload() {
     const a = document.createElement('a');
     a.href = url;
     a.download = fileName;
-    a.target = '_blank';
+    
+    // REMOVE: a.target = '_blank'; 
+    // Keeping this removed forces the browser to handle the download 
+    // in the background without trying to navigate to the PDF URL.
 
     document.body.appendChild(a);
     a.click();
