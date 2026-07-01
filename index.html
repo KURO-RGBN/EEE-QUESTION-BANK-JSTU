@@ -711,45 +711,28 @@ function confirmDownload(url, fileName) {
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
 
-async function executeDownload() {
+function executeDownload() {
     if (!activeDownloadData) return;
     const { url, fileName } = activeDownloadData;
 
-    try {
-        // 1. Fetch the file as a raw binary blob
-        const response = await fetch(url);
-        const blob = await response.blob();
-        
-        // 2. Create a temporary, local object URL
-        // This makes the browser think the file is local to your app
-        const localUrl = window.URL.createObjectURL(blob);
-        
-        const a = document.createElement('a');
-        a.href = localUrl;
-        a.download = fileName;
-        
-        // 3. Trigger without opening a new tab
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        
-        // 4. Cleanup
-        window.URL.revokeObjectURL(localUrl);
+    // 1. Create a hidden iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    document.body.appendChild(iframe);
+
+    // 2. Set the src to the PDF URL
+    // The browser will handle the download inside the iframe 
+    // without ever changing your main page's URL
+    iframe.src = url;
+
+    // 3. Cleanup: Remove the iframe after a delay
+    // This allows the browser enough time to initiate the download
+    setTimeout(() => {
+        document.body.removeChild(iframe);
         closeAlert();
-        
-    } catch (err) {
-        console.error("Download failed:", err);
-        // Fallback: If fetch fails due to CORS, use the old method as a last resort
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = fileName;
-        a.target = '_blank'; // Use _blank only as a fallback
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        closeAlert();
-    }
+    }, 2000); 
 }
+
 
 
 
