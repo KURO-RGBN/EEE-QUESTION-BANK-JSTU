@@ -711,23 +711,44 @@ function confirmDownload(url, fileName) {
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
 
-function executeDownload() {
+async function executeDownload() {
     if (!activeDownloadData) return;
-
     const { url, fileName } = activeDownloadData;
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    
-    // REMOVE: a.target = '_blank'; 
-    // Keeping this removed forces the browser to handle the download 
-    // in the background without trying to navigate to the PDF URL.
 
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    closeAlert();
+    try {
+        // 1. Fetch the file as a raw binary blob
+        const response = await fetch(url);
+        const blob = await response.blob();
+        
+        // 2. Create a temporary, local object URL
+        // This makes the browser think the file is local to your app
+        const localUrl = window.URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = localUrl;
+        a.download = fileName;
+        
+        // 3. Trigger without opening a new tab
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        // 4. Cleanup
+        window.URL.revokeObjectURL(localUrl);
+        closeAlert();
+        
+    } catch (err) {
+        console.error("Download failed:", err);
+        // Fallback: If fetch fails due to CORS, use the old method as a last resort
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fileName;
+        a.target = '_blank'; // Use _blank only as a fallback
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        closeAlert();
+    }
 }
 
 
