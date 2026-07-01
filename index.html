@@ -303,7 +303,6 @@
         </footer>  
     </main>  
 
-    <!-- Notes Bottom Sheet Overlay -->
     <div id="notesModal" onclick="if(event.target === this) closeNotes()" class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">  
         <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">  
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>  
@@ -320,15 +319,11 @@
         </div>  
     </div>
 
-    <!-- Main Fullscreen Document Viewer -->
     <div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col">  
-        <!-- Fixed height header layout keeping actions contained tightly -->
         <div class="px-4 py-3 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110] min-h-[64px]">  
-            <!-- Left block: Flexible multi-line title setup to prevent ellipse truncation -->
             <div class="flex-grow pr-3">  
                 <h2 id="viewingTitle" class="font-bold text-white uppercase text-xs tracking-wide leading-tight break-words max-w-full"></h2>  
             </div> 
-            <!-- Right block: Crisp fixed buttons including the original red close element -->
             <div class="flex items-center gap-2 shrink-0">
                 <button id="zipBtn" onclick="confirmZipDownload()" class="px-3 py-2 rounded-xl text-xs font-bold btn-premium-zip">
                     <i class="fa-solid fa-file-zipper mr-1"></i> ZIP ALL
@@ -344,7 +339,6 @@
         </div>  
     </div>
 
-    <!-- Forms Contribution Modal -->
     <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">  
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">  
             <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>  
@@ -354,7 +348,6 @@
         </div>  
     </div>
 
-    <!-- Filter Semester Modal Sheet -->
     <div id="semModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 modal-overlay">  
         <div class="absolute inset-0 bg-slate-900/60" onclick="toggleSemModal(false)"></div>  
         <div class="relative w-full max-w-sm bg-white rounded-[32px] overflow-hidden shadow-2xl modal-content-pop" id="semModalContent">  
@@ -466,28 +459,31 @@ async function executeZipDownload() {
 
     try {
         for (let i = 0; i < currentPages.length; i++) {
+            // Using a clean fallback wrapper if proxy fails directly
             const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(currentPages[i]));
+            if (!response.ok) throw new Error("Proxy error");
             const blob = await response.blob();
             folder.file(`page_${i + 1}.jpg`, blob);
         }
+        
         const content = await zip.generateAsync({ type: "blob" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(content);
         
-        // 1. Get header string (e.g., "ELECTRICAL CIRCUIT I - 20-21")
+        // Grab header string safely (e.g., "ELECTRICAL CIRCUIT I - 20-21")
         const currentTitle = document.getElementById('viewingTitle').innerText.trim();
         
-        // 2. Format it nicely for file saving (e.g., replaces " - " with "_")
+        // Clean string conversions substituting characters smoothly 
         let formattedName = currentTitle
-            .replace(/\s+-\s+/g, '_')   // Replace " - " with "_"
-            .replace(/\s+/g, '_');      // Replace any remaining spaces with "_"
+            .replace(/\s+-\s+/g, '_')   
+            .replace(/\s+/g, '_');      
             
-        // 3. Fallback check and file assignment
         link.download = `${formattedName || 'session_papers'}.zip`;
-        
+        document.body.appendChild(link);
         link.click();
+        document.body.removeChild(link);
     } catch (err) {
-        alert("Download failed. Please check your connection.");
+        alert("Download failed. Some files might be restricted by CORS or proxy down.");
     } finally {
         zipBtn.classList.remove('hidden');
         headerLoader.classList.add('hidden');
@@ -559,6 +555,7 @@ function viewPaper(links, title) {
     filmstrip.scrollTop = 0;
 }
 
+// Fixed clear down handler
 function closeViewer() {
     const modal = document.getElementById('viewerModal');
     modal.classList.remove('viewer-active');
@@ -725,9 +722,6 @@ function closeUpload() { document.getElementById('uploadModal').classList.add('h
 init();
 </script>
 	
-<!-- Vercel Web Analytics -->
 <script defer src="/_vercel/insights/script.js"></script>
 </body>  
 </html>
-
-
