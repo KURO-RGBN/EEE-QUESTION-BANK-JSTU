@@ -426,7 +426,6 @@ function renderCourses(data) {
             </div>`;
     }).join('');
 }
-
 // 4. BUNDLED PREMIUM PDF GENERATION SYSTEM
 function confirmPdfDownload() {
     const alertHTML = `
@@ -445,10 +444,6 @@ function confirmPdfDownload() {
     document.body.insertAdjacentHTML('beforeend', alertHTML);
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
-
-
-
-
 
 async function executePdfDownload() {
     closeAlert();
@@ -541,6 +536,9 @@ async function executePdfDownload() {
         headerLoader.classList.add('hidden');
     }
 }
+
+
+
 
 
 function toggleSemModal(show) {
