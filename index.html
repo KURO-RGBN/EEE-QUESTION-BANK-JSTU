@@ -450,6 +450,11 @@ async function executePdfDownload() {
     closeAlert();
     const pdfBtn = document.getElementById('pdfBtn');
     const headerLoader = document.getElementById('headerLoader');
+
+async function executePdfDownload() {
+    closeAlert();
+    const pdfBtn = document.getElementById('pdfBtn');
+    const headerLoader = document.getElementById('headerLoader');
     
     pdfBtn.classList.add('hidden');
     headerLoader.classList.remove('hidden');
@@ -469,11 +474,8 @@ async function executePdfDownload() {
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
         for (let i = 0; i < currentPages.length; i++) {
-            if (i > 0) {
-                pdf.addPage();
-            }
+            if (i > 0) pdf.addPage();
 
-            // High stability proxy redirect layer for CORS handling
             const cleanUrl = currentPages[i].replace(/^https?:\/\//, '');
             const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}`;
 
@@ -494,7 +496,6 @@ async function executePdfDownload() {
                 img.src = imgData;
             });
 
-            // Keep correct aspect ratios intact to prevent stretching
             let renderWidth = pdfWidth;
             let renderHeight = (img.height * pdfWidth) / img.width;
 
@@ -509,10 +510,26 @@ async function executePdfDownload() {
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
         
-        pdf.save(finalFileName);
+        // --- APK & MOBILE COMPATIBILITY LAYER ---
+        // Generate the PDF as an array buffer blob
+        const pdfBlob = pdf.output('blob');
+        const pdfFile = new File([pdfBlob], finalFileName, { type: 'application/pdf' });
+
+        // Check if Web Share API is supported (True for Android WebViews & Mobile Browsers)
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+            await navigator.share({
+                files: [pdfFile],
+                title: finalFileName,
+                text: 'EEE Vault Document Download'
+            });
+        } else {
+            // Fallback for standard desktop web browsers
+            pdf.save(finalFileName);
+        }
+
     } catch (err) {
         console.error(err);
-        alert("Compilation failed. The proxy server is struggling or image files are unavailable.");
+        alert("Compilation failed. Storage or proxy settings blocked the download.");
     } finally {
         pdfBtn.classList.remove('hidden');
         headerLoader.classList.add('hidden');
