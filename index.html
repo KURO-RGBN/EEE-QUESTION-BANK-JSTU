@@ -448,34 +448,7 @@ function confirmPdfDownload() {
 
 
 
-async function executePdfDownload() {
-    closeAlert();
-    const pdfBtn = document.getElementById('pdfBtn');
-    const headerLoader = document.getElementById('headerLoader');
-    
-    pdfBtn.classList.add('hidden');
-    headerLoader.classList.remove('hidden');
 
-    try {
-        const currentTitle = document.getElementById('viewingTitle').innerText.trim();
-        // Clean filename formatting
-        let formattedName = currentTitle
-            .replace(/\s+-\s+/g, '_')   
-            .replace(/\s+/g, '_')      
-            .replace(/[^a-zA-Z0-9-_]/g, ''); 
-            
-        const finalFileName = `${formattedName || 'session_papers'}.pdf`;
-
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4'); 
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-
-        for (let i = 0; i < currentPages.length; i++) {
-            if (i > 0) pdf.addPage();
-
-            // Clean the source URL and route it via the CORS proxy
-            const cleanUrl = currentPages[i].replace(/^https?:\/\//, '');
 
 async function executePdfDownload() {
     closeAlert();
