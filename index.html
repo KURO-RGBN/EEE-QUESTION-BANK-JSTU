@@ -1,19 +1,17 @@
 <!DOCTYPE html>
-
 <html lang="en">  
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>EEE Vault JSTU </title>  <link rel="manifest" href="manifest.json">  
-<meta name="apple-mobile-web-app-capable" content="yes">  
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
-<meta name="theme-color" content="#000000">  
-<link rel="apple-touch-icon" href="icon.jpeg">  
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-<script src="https://cdn.tailwindcss.com"></script>  
-	
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
+    <title>EEE Vault JSTU</title>  
+    <link rel="manifest" href="manifest.json">  
+    <meta name="apple-mobile-web-app-capable" content="yes">  
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
+    <meta name="theme-color" content="#000000">  
+    <link rel="apple-touch-icon" href="icon.jpeg">  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
 
 <style>  
     * { -webkit-tap-highlight-color: transparent; }  
@@ -71,75 +69,68 @@
         transition: 0.2s;  
     }  
     .file-card:active { transform: scale(0.95); background: #f1f5f9; }   
-	body.modal-open {
-    overflow: hidden;
-    touch-action: none;
-}
+    body.modal-open { overflow: hidden; touch-action: none; }
 	
-	/* Container now stacks images vertically */
+    /* Container now stacks images vertically */
+    .viewer-filmstrip {
+        display: block;
+        width: 100%;
+        height: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+        scroll-behavior: smooth;
+    }
 
-.viewer-filmstrip {
-display: block;
-width: 100%;
-height: 100%;
-overflow-y: auto;
-overflow-x: hidden;
--webkit-overflow-scrolling: touch;
-touch-action: pan-y;
-scroll-behavior: smooth;
-}
+    .viewer-page {
+        width: 100%;
+        display: block;
+        margin-bottom: 12px;
+    }
 
-.viewer-page {
-width: 100%;
-display: block;
-margin-bottom: 12px;
-}
+    .viewer-page img {
+        width: 100%;
+        height: auto;
+        display: block;
+        user-select: none;
+    }
 
-.viewer-page img {
-width: 100%;
-height: auto;
-display: block;
-user-select: none;
-}
+    /* FIXED ZOOM SYSTEM */
+    .zoom-wrapper {
+        position: relative;
+        overflow: hidden;
+        touch-action: pan-y;
+    }
 
-/* FIXED ZOOM SYSTEM (Adobe-like behavior) */
-.zoom-wrapper {
-position: relative;
-overflow: hidden;
-touch-action: pan-y;
-}
+    .zoom-wrapper img {
+        width: 100%;
+        transform-origin: center center;
+        will-change: transform;
+        transition: transform 0.08s linear;
+    }
 
-.zoom-wrapper img {
-width: 100%;
-transform-origin: center center;
-will-change: transform;
-transition: transform 0.08s linear;
-}
+    .modal-content-pop {
+        position: relative;
+        z-index: 130;
+        transform: scale(0.95);
+        opacity: 0;
+        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s linear;
+        will-change: transform, opacity;
+    }
 
-.modal-content-pop {
-position: relative;
-z-index: 130;
-transform: scale(0.95);
-opacity: 0;
+    .modal-overlay.active-sheet .modal-content-pop { transform: scale(1); opacity: 1; }
 
-transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s linear;
-will-change: transform, opacity;
-}
+    /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
+    .modal-overlay {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+        backdrop-filter: blur(0px);
+        -webkit-backdrop-filter: blur(0px);
+    }
 
-.modal-overlay.active-sheet .modal-content-pop {
-transform: scale(1);
-opacity: 1;
-}
-/* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
-.modal-overlay {
-opacity: 0;
-pointer-events: none;
-transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
-backdrop-filter: blur(0px);
--webkit-backdrop-filter: blur(0px);
-}
-
-.modal-overlay.active-sheet {  
+    .modal-overlay.active-sheet {  
         opacity: 1;  
         pointer-events: auto;  
         backdrop-filter: blur(8px);  
@@ -152,260 +143,224 @@ backdrop-filter: blur(0px);
         transform: translateY(100%);  
         transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);  
         will-change: transform;  
-        /* FIX: Prevents APK Swipe-to-Refresh */  
         overscroll-behavior-y: contain;   
     }  
 
-    .modal-overlay.active-sheet .modal-content-slide {  
-        transform: translateY(0%);  
-    }  
+    .modal-overlay.active-sheet .modal-content-slide { transform: translateY(0%); }  
+
     /* --- PREMIUM DOWNLOAD ALERT STYLES --- */
+    .premium-alert-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        z-index: 20000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
 
-.premium-alert-overlay {
-position: fixed;
-inset: 0;
-background: rgba(0, 0, 0, 0.4);
-backdrop-filter: blur(8px);
--webkit-backdrop-filter: blur(8px);
-z-index: 20000;
-display: flex;
-align-items: center;
-justify-content: center;
-opacity: 0;
-transition: opacity 0.3s ease;
-pointer-events: none;
-}
+    .premium-alert-overlay.active { opacity: 1; pointer-events: auto; }
 
-.premium-alert-overlay.active {
-opacity: 1;
-pointer-events: auto;
-}
+    .premium-alert-card {
+        background: white;
+        width: 85%;
+        max-width: 320px;
+        padding: 24px;
+        border-radius: 28px;
+        text-align: center;
+        transform: scale(0.9);
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
 
-.premium-alert-card {
-background: white;
-width: 85%;
-max-width: 320px;
-padding: 24px;
-border-radius: 28px;
-text-align: center;
-transform: scale(0.9);
-transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
+    .premium-alert-overlay.active .premium-alert-card { transform: scale(1); }
 
-.premium-alert-overlay.active .premium-alert-card {
-transform: scale(1);
-}
+    .alert-icon-circle {
+        width: 60px;
+        height: 60px;
+        background: #fee2e2;
+        color: #dc2626;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 16px;
+        font-size: 24px;
+    }
 
-.alert-icon-circle {
-width: 60px;
-height: 60px;
-background: #fee2e2;
-color: #dc2626;
-border-radius: 50%;
-display: flex;
-align-items: center;
-justify-content: center;
-margin: 0 auto 16px;
-font-size: 24px;
-}
+    .alert-btn-group { display: flex; gap: 12px; margin-top: 24px; }
+    .alert-btn { flex: 1; padding: 12px; border-radius: 14px; font-weight: 700; font-size: 14px; transition: all 0.2s; }
+    .btn-cancel { background: #f1f5f9; color: #64748b; }
+    .btn-confirm { background: #dc2626; color: white; }
 
-.alert-btn-group {
-display: flex;
-gap: 12px;
-margin-top: 24px;
-}
+    /* VIEWER MODAL ANIMATION */
+    #viewerModal { pointer-events: none; }
+    #viewerModal.viewer-active { pointer-events: auto; }
 
-.alert-btn {
-flex: 1;
-padding: 12px;
-border-radius: 14px;
-font-weight: 700;
-font-size: 14px;
-transition: all 0.2s;
-}
+    #viewerModal .bg-zinc-900 {
+        transform: translateY(-100%);
+        transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+    }
 
-.btn-cancel { background: #f1f5f9; color: #64748b; }
-.btn-confirm { background: #dc2626; color: white; }
-/* VIEWER MODAL ANIMATION /
-/ VIEWER MODAL ANIMATION */
-#viewerModal {
-pointer-events: none;
-}
+    #viewerModal.viewer-active .bg-zinc-900 { transform: translateY(0%); }
 
-#viewerModal.viewer-active {
-pointer-events: auto;
-}
+    #viewerModal .flex-grow {
+        transform: translateY(100%);
+        transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+        will-change: transform;
+    }
 
-/* Header slides down from top */
-#viewerModal .bg-zinc-900 {
-transform: translateY(-100%);
-transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-will-change: transform;
-}
+    #viewerModal.viewer-active .flex-grow { transform: translateY(0%); }
 
-#viewerModal.viewer-active .bg-zinc-900 {
-transform: translateY(0%);
-}
-
-/* Black bg + content slides up from bottom as one unit */
-#viewerModal .flex-grow {
-transform: translateY(100%);
-transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-will-change: transform;
-}
-
-#viewerModal.viewer-active .flex-grow {
-transform: translateY(0%);
-}
-
-#notesList {  
-        overscroll-behavior-y: contain;  
-        -webkit-overflow-scrolling: touch;  
-    }  
-    #appBody {  
-transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-
-}
-
-#notesList::-webkit-scrollbar { width: 4px; }  
+    #notesList { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }  
+    #appBody { transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+    #notesList::-webkit-scrollbar { width: 4px; }  
     #notesList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }  
-
     ::-webkit-scrollbar { width: 0px; height: 0px; }  
+
+    /* Premium Loader */
+    .loader-ring {
+        width: 22px;
+        height: 22px;
+        border: 3px solid rgba(220, 38, 38, 0.3);
+        border-top: 3px solid #dc2626;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    /* Premium Glass Button Style */
+    .btn-premium-zip {
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.4);
+        color: #10b981;
+        transition: all 0.3s ease;
+    }
+    .btn-premium-zip:active {
+        background: rgba(16, 185, 129, 0.2);
+        transform: scale(0.95);
+    }
 </style>
-
 </head>  
+
 <body class="bg-slate-100 min-h-screen text-slate-800 pb-10">
-	<nav class="bg-black text-white shadow-xl border-b border-red-900/30 sticky top-0 z-50 p-4 pt-8">  
-    <div class="max-w-6xl mx-auto flex justify-between items-center">  
-       <div class="flex flex-col items-center">  
-<div class="flex items-center gap-2">  
-    <i class="fa-solid fa-brain text-red-600 text-2xl"></i>  
-    <h1 class="font-black text-xl tracking-tighter uppercase leading-none">  
-        EEE <span class="text-red-600">VAULT</span>  
-    </h1>  
-</div>  
-<p class="text-[9px] font-bold tracking-[0.4em] text-slate-400 uppercase mt-1 text-center w-full">  
-    JSTU  
-</p>
-
-</div>  <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white transition shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">  
-            <i class="fa-solid fa-plus mr-1"></i> Add Paper  
-        </button>  
-    </div>  
-</nav>  
-
-<main id="appBody"class="max-w-6xl mx-auto p-4 md:p-8">  
-    <div class="glass-card p-6 rounded-3xl shadow-sm mb-8 border border-white">  
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">  
-            <div class="relative">  
-                <i class="fa-solid fa-search absolute left-4 top-4 text-slate-400"></i>  
-                <input type="text" id="mainSearch" placeholder="Search Title or Code..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 outline-none">  
+    <nav class="bg-black text-white shadow-xl border-b border-red-900/30 sticky top-0 z-50 p-4 pt-8">  
+        <div class="max-w-6xl mx-auto flex justify-between items-center">  
+            <div class="flex flex-col items-center">  
+                <div class="flex items-center gap-2">  
+                    <i class="fa-solid fa-brain text-red-600 text-2xl"></i>  
+                    <h1 class="font-black text-xl tracking-tighter uppercase leading-none">  
+                        EEE <span class="text-red-600">VAULT</span>  
+                    </h1>  
+                </div>  
+                <p class="text-[9px] font-bold tracking-[0.4em] text-slate-400 uppercase mt-1 text-center w-full">JSTU</p>
             </div>  
-           <div class="relative">  
-<button onclick="toggleSemModal(true)"   
-        class="w-full flex items-center justify-between bg-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]">  
-    <span id="currentSemesterText" class="font-bold text-slate-800">All Semesters</span>  
-    <i class="fa-solid fa-chevron-down text-slate-400"></i>  
-</button>
-
-</div>  </div>  
-    </div>  
-
-    <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
-
-<footer class="w-full py-12 mt-10 border-t border-slate-200 bg-slate-50">  
-    <div class="flex flex-col items-center justify-center">  
-        <div class="w-8 h-[2px] bg-red-600 rounded-full mb-4"></div>  <p class="text-[10px] tracking-[0.3em] text-slate-400 font-black uppercase mb-1">  
-        Developed & Maintained by   
-    </p>  
-      
-    <h4 class="text-lg font-black tracking-tighter text-slate-800">  
-        SAIDUL ISLAM  <span class="text-red-600">KURO</span>  
-    </h4>  
-      
-    <div class="flex items-center gap-2 mt-2">  
-        <span class="h-[1px] w-4 bg-slate-300"></span>  
-        <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">  
-            JSTU • EEE BATCH 06  
-        </p>  
-        <span class="h-[1px] w-4 bg-slate-300"></span>  
-    </div>  
-      
-    <p class="text-[10px] text-slate-400 mt-6 italic">© 2026 EEE Vault JSTU</p>  
-</div>
-
-</footer>  </main>  
-
-<div id="notesModal"   
-     onclick="if(event.target === this) closeNotes()"   
-     class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">  
-      
-    <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">  
-        <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>  
-          
-        <div class="flex justify-between items-center mb-6">  
-            <div>  
-                <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Notes & Materials</h3>  
-                <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>  
-            </div>  
-            <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">  
-                <i class="fa-solid fa-xmark"></i>  
+            <button onclick="openUpload()" class="bg-red-600 px-4 py-2 rounded-full text-sm font-semibold text-white transition shadow-[0_0_15px_rgba(220,38,38,0.5)] active:scale-95">  
+                <i class="fa-solid fa-plus mr-1"></i> Add Paper  
             </button>  
         </div>  
-        <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8"></div>  
-    </div>  
-</div>
-<div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col">  
-    <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110]">  
-        <div class="flex flex-col">  
-            <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest"></h2>  
+    </nav>  
+
+    <main id="appBody" class="max-w-6xl mx-auto p-4 md:p-8">  
+        <div class="glass-card p-6 rounded-3xl shadow-sm mb-8 border border-white">  
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">  
+                <div class="relative">  
+                    <i class="fa-solid fa-search absolute left-4 top-4 text-slate-400"></i>  
+                    <input type="text" id="mainSearch" placeholder="Search Title or Code..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 outline-none">  
+                </div>  
+                <div class="relative">  
+                    <button onclick="toggleSemModal(true)" class="w-full flex items-center justify-between bg-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]">  
+                        <span id="currentSemesterText" class="font-bold text-slate-800">All Semesters</span>  
+                        <i class="fa-solid fa-chevron-down text-slate-400"></i>  
+                    </button>
+                </div>  
+            </div>  
+        </div>  
+
+        <div id="courseContainer" class="grid grid-cols-1 gap-6"></div>
+
+        <footer class="w-full py-12 mt-10 border-t border-slate-200 bg-slate-50">  
+            <div class="flex flex-col items-center justify-center">  
+                <div class="w-8 h-[2px] bg-red-600 rounded-full mb-4"></div>  
+                <p class="text-[10px] tracking-[0.3em] text-slate-400 font-black uppercase mb-1">Developed & Maintained by</p>  
+                <h4 class="text-lg font-black tracking-tighter text-slate-800">SAIDUL ISLAM <span class="text-red-600">KURO</span></h4>  
+                <div class="flex items-center gap-2 mt-2">  
+                    <span class="h-[1px] w-4 bg-slate-300"></span>  
+                    <p class="text-[9px] text-slate-500 font-bold uppercase tracking-widest">JSTU • EEE BATCH 06</p>  
+                    <span class="h-[1px] w-4 bg-slate-300"></span>  
+                </div>  
+                <p class="text-[10px] text-slate-400 mt-6 italic">© 2026 EEE Vault JSTU</p>  
+            </div>
+        </footer>  
+    </main>  
+
+    <div id="notesModal" onclick="if(event.target === this) closeNotes()" class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">  
+        <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">  
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>  
+            <div class="flex justify-between items-center mb-6">  
+                <div>  
+                    <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">Notes & Materials</h3>  
+                    <p id="notesCourseTitle" class="text-slate-500 text-xs font-bold uppercase"></p>  
+                </div>  
+                <button onclick="closeNotes()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">  
+                    <i class="fa-solid fa-xmark"></i>  
+                </button>  
+            </div>  
+            <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8"></div>  
+        </div>  
+    </div>
+
+    <div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col">  
+        <div class="p-4 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110]">  
+            <div class="flex flex-col">  
+                <h2 id="viewingTitle" class="font-bold text-white uppercase text-[10px] tracking-widest truncate max-w-[150px]"></h2>  
+            </div> 
+            <div class="flex justify-end gap-2" style="width: 140px; min-width: 140px;">
+                <button id="zipBtn" onclick="confirmZipDownload()" class="px-4 py-2 rounded-xl text-xs font-bold btn-premium-zip">
+                    <i class="fa-solid fa-file-zipper mr-1"></i> ZIP ALL
+                </button>
+                <div id="headerLoader" class="hidden flex items-center justify-center px-4 py-2">
+                    <div class="loader-ring"></div>
+                </div>
+                <button onclick="closeViewer()" class="px-4 py-2 rounded-xl text-xs font-bold bg-zinc-800 text-slate-400 hover:text-white transition-colors">CLOSE</button>  
+            </div>
         </div> 
+        <div class="flex-grow bg-black relative overflow-y-auto">  
+            <div id="paperFilmstrip" class="viewer-filmstrip"></div>  
+        </div>  
+    </div>
 
-        <div class="flex gap-2">
-            <button onclick="downloadAllImages()" class="text-white font-bold px-4 py-2 bg-green-700 rounded-xl active:scale-95 text-xs">
-                <i class="fa-solid fa-download mr-1"></i> ZIP ALL
-            </button>
-            <button onclick="closeViewer()" class="text-white font-bold px-4 py-2 bg-red-600 rounded-xl active:scale-95 text-xs">
-                CLOSE</button>  
+    <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">  
+        <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">  
+            <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>  
+            <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned image/pdf files to the Google form to add a missing Paper/Notes -kuro(^~^).</p>  
+            <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>  
+            <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>  
+        </div>  
+    </div>
+
+    <div id="semModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 modal-overlay">  
+        <div class="absolute inset-0 bg-slate-900/60" onclick="toggleSemModal(false)"></div>  
+        <div class="relative w-full max-w-sm bg-white rounded-[32px] overflow-hidden shadow-2xl modal-content-pop" id="semModalContent">  
+            <div class="p-6 text-center border-b border-slate-50">  
+                <h3 class="text-xl font-black text-slate-900 uppercase tracking-tighter">Select Semester</h3>  
+            </div>  
+            <div id="semOptionsList" class="p-4 max-h-[60vh] overflow-y-auto"></div>  
+            <button onclick="toggleSemModal(false)" class="w-full p-4 bg-slate-50 text-slate-400 font-bold text-xs hover:text-slate-600 transition-colors uppercase tracking-widest">Close</button>  
         </div>
-    </div> 
-    
-    <div class="flex-grow bg-black relative overflow-y-auto">  
-        <div id="paperFilmstrip" class="viewer-filmstrip"></div>  
-    </div>  
-</div>
-
-
-     
-</div>
-
-</div>  <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">  
-    <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">  
-        <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>  
-        <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned image/pdf files to the Google form to add a missing Paper/Notes -kuro(^~^).</p>  
-        <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" target="_blank" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>  
-        <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>  
-    </div>  
-</div>
-
-<div id="semModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 modal-overlay">  
-    <div class="absolute inset-0 bg-slate-900/60" onclick="toggleSemModal(false)"></div>  <div class="relative w-full max-w-sm bg-white rounded-[32px] overflow-hidden shadow-2xl modal-content-pop" id="semModalContent">  
-    <div class="p-6 text-center border-b border-slate-50">  
-        <h3 class="text-xl font-black text-slate-900 uppercase tracking-tighter">Select Semester</h3>  
-         
     </div>  
 
-    <div id="semOptionsList" class="p-4 max-h-[60vh] overflow-y-auto">  
-    </div>  
-
-    <button onclick="toggleSemModal(false)" class="w-full p-4 bg-slate-50 text-slate-400 font-bold text-xs hover:text-slate-600 transition-colors uppercase tracking-widest">  
-        Close  
-    </button>  
-</div>
-
-</div>  
-	<script>
-		// 1. DATA & STATE
+<script>
+// 1. DATA & STATE
 const semesters = [
     { label: "All Semesters", value: "all" },
     { label: "1st Year 1st Sem", value: "1st Year 1st Semester" },
@@ -423,17 +378,14 @@ let courseData = [];
 const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
 let currentPages = [];
 let touchStartLine = 0;
+let activeDownloadData = null;
 
-// 2. INITIALIZATION
 // 2. INITIALIZATION
 async function init() {
     try {
         const res = await fetch('data.json?t=' + Date.now());
         const data = await res.json();
-        
-     
         courseData = data.Course ? data.Course : data;
-        
         renderCourses(courseData);
     } catch (err) {
         console.error("Data load failed", err);
@@ -441,7 +393,6 @@ async function init() {
 }
 
 // 3. UI RENDERING & FILTERING
-
 function renderCourses(data) {
     const container = document.getElementById('courseContainer');
     container.innerHTML = data.map((course) => {
@@ -460,7 +411,6 @@ function renderCourses(data) {
                             <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
                         </button>
                         ${batches.map(batch => {
-                            // Safely check if the batch exists in the object
                             const link = course.links ? course.links[batch] : null;
                             const isMissing = !link || (Array.isArray(link) && link.length === 0) || link === "missing";
                             return `
@@ -476,36 +426,55 @@ function renderCourses(data) {
             </div>`;
     }).join('');
 }
-		//download function 
-async function downloadAllImages() {
-    // 1. Alert the user that it's starting
-    alert("Preparing files... please wait a moment.");
+
+// 4. BUNDLED PREMIUM ZIP DOWNLOAD SYSTEM
+function confirmZipDownload() {
+    const alertHTML = `
+        <div id="customAlert" class="premium-alert-overlay">
+            <div class="premium-alert-card">
+                <div class="alert-icon-circle"><i class="fa-solid fa-file-zipper"></i></div>
+                <h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Download Session?</h3>
+                <p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">Download all pages as a single ZIP file.</p>
+                <div class="alert-btn-group">
+                    <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
+                    <button class="alert-btn btn-confirm" onclick="executeZipDownload()">Start</button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', alertHTML);
+    setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
+}
+
+async function executeZipDownload() {
+    closeAlert();
+    const zipBtn = document.getElementById('zipBtn');
+    const headerLoader = document.getElementById('headerLoader');
     
+    zipBtn.classList.add('hidden');
+    headerLoader.classList.remove('hidden');
+
     const zip = new JSZip();
     const folder = zip.folder("EEE_Vault_Papers");
 
     try {
-        // 2. Loop through all pages and fetch them
         for (let i = 0; i < currentPages.length; i++) {
-            const response = await fetch(currentPages[i]);
+            const response = await fetch("https://corsproxy.io/?" + encodeURIComponent(currentPages[i]));
             const blob = await response.blob();
             folder.file(`page_${i + 1}.jpg`, blob);
         }
-
-        // 3. Generate the zip and trigger download
         const content = await zip.generateAsync({ type: "blob" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(content);
         link.download = "session_papers.zip";
-        document.body.appendChild(link);
         link.click();
-        document.body.removeChild(link);
     } catch (err) {
-        console.error("Download failed", err);
-        alert("Download failed. Some files might be restricted by CORS.");
+        alert("Download failed. Please check your connection.");
+    } finally {
+        zipBtn.classList.remove('hidden');
+        headerLoader.classList.add('hidden');
     }
 }
-
 
 function toggleSemModal(show) {
     const modal = document.getElementById('semModal');
@@ -546,18 +515,18 @@ document.getElementById('mainSearch').addEventListener('input', () => {
     applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);
 });
 
-// 4. VIEWER & ZOOM SYSTEM
+// 5. DOCUMENT VIEWER & ZOOM SYSTEM
 function openPaperByCode(code, batch) {
     const course = courseData.find(c => c.code === code);
     if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`);
 }
 
+// Fixed up vertical filmstrip scroll setup
 function viewPaper(links, title) {
     currentPages = Array.isArray(links) ? links : [links];
     document.getElementById('viewingTitle').innerText = title;
     const filmstrip = document.getElementById('paperFilmstrip');
     
-    // Clear and build new pages
     filmstrip.innerHTML = currentPages.map(url => `
         <div class="viewer-page">
             <div class="zoom-wrapper">
@@ -582,7 +551,7 @@ function closeViewer() {
     }, 550);
 }
 
-// 5. STABILIZED ZOOM LOGIC
+// 6. STABILIZED SMOOTH MOBILE PAN & PINCH ZOOM LOGIC
 function initZoomForImage(img) {
     const wrapper = img.parentElement;
     let scale = 1, lastScale = 1, panX = 0, panY = 0, startX = 0, startY = 0;
@@ -659,7 +628,7 @@ function initZoomForImage(img) {
     });
 }
 
-// 6. NOTES & DOWNLOADS
+// 7. SINGLE PDF NOTES & DOCUMENT MATERIALS SYSTEM
 function openNotes(code) {
     const course = courseData.find(c => c.code === code);
     const list = document.getElementById('notesList');
@@ -686,13 +655,8 @@ function closeNotes() {
     setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500);
 }
 
-
-let activeDownloadData = null;
-
 function confirmDownload(url, fileName) {
     if (document.getElementById('customAlert')) return;
-    
-   
     activeDownloadData = { url, fileName };
 
     const alertHTML = `
@@ -715,20 +679,16 @@ function confirmDownload(url, fileName) {
 
 function executeDownload() {
     if (!activeDownloadData) return;
-    
     const { url, fileName } = activeDownloadData;
     const a = document.createElement('a');
     a.href = url;
     a.download = fileName;
     a.target = '_blank';
-    
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    
     closeAlert();
 }
-
 
 function closeAlert() {
     const el = document.getElementById('customAlert');
@@ -745,14 +705,9 @@ function openUpload() { document.getElementById('uploadModal').classList.remove(
 function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
 
 init();
-
-
-
 </script>
 	
-
-    <!-- Vercel Web Analytics -->
 <script defer src="/_vercel/insights/script.js"></script>
-      
 </body>  
 </html>
+
