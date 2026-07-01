@@ -455,7 +455,8 @@ async function executePdfDownload() {
 
     try {
         const currentTitle = document.getElementById('viewingTitle').innerText.trim();
-        // Clean filename formatting to match exactly what you want
+        
+        // Clean filename formatting
         let formattedName = currentTitle
             .replace(/\s+-\s+/g, '_')   
             .replace(/\s+/g, '_')      
@@ -509,22 +510,34 @@ async function executePdfDownload() {
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
         
-        // --- NATIVE MOBILE STORAGE OVERRIDE ENGINE ---
-        // 1. Output the compiled PDF array data as a binary blob structure
+        // --- NATIVE MOBILE SHARE & STORAGE ENGINE ---
         const pdfBlob = pdf.output('blob');
+        
+        // 1. Package the blob into a strict File object to lock the filename
+        const pdfFile = new File([pdfBlob], finalFileName, { type: 'application/pdf' });
 
-        // 2. Generate a secure internal browser object path instead of an unstable raw text string
+        // 2. Attempt to trigger the native Android/iOS Share Sheet first
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+            try {
+                await navigator.share({
+                    files: [pdfFile],
+                    title: finalFileName
+                });
+                return; // Exit here if share sheet was successful
+            } catch (shareErr) {
+                console.log('User cancelled share or share failed. Falling back...', shareErr);
+            }
+        }
+
+        // 3. Fallback for desktop or browsers that don't support the Share API
         const blobUrl = URL.createObjectURL(pdfBlob);
-
-        // 3. Mount a temporary hardware download node
         const downloadLink = document.createElement('a');
         downloadLink.href = blobUrl;
-        downloadLink.download = finalFileName; // Forces custom filename routing
+        downloadLink.download = finalFileName; 
         
         document.body.appendChild(downloadLink);
         downloadLink.click();
         
-        // Clean up memory space right after the trigger registers
         document.body.removeChild(downloadLink);
         setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
 
