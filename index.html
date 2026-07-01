@@ -444,46 +444,39 @@ function confirmPdfDownload() {
     document.body.insertAdjacentHTML('beforeend', alertHTML);
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
-
 async function executePdfDownload() {
     closeAlert();
     const pdfBtn = document.getElementById('pdfBtn');
     const headerLoader = document.getElementById('headerLoader');
-    
     pdfBtn.classList.add('hidden');
     headerLoader.classList.remove('hidden');
 
     try {
         const currentTitle = document.getElementById('viewingTitle').innerText.trim();
-        
-        // Clean filename formatting
         let formattedName = currentTitle
-            .replace(/\s+-\s+/g, '_')   
-            .replace(/\s+/g, '_')      
-            .replace(/[^a-zA-Z0-9-_]/g, ''); 
-            
+            .replace(/\s+-\s+/g, '_')
+            .replace(/\s+/g, '_')
+            .replace(/[^a-zA-Z0-9-_]/g, '');
         const finalFileName = `${formattedName || 'session_papers'}.pdf`;
 
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4'); 
+        const pdf = new jsPDF('p', 'mm', 'a4');
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = pdf.internal.pageSize.getHeight();
 
         for (let i = 0; i < currentPages.length; i++) {
             if (i > 0) pdf.addPage();
-
             const cleanUrl = currentPages[i].replace(/^https?:\/\//, '');
             const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}&output=jpg&q=80`;
 
             const imgData = await new Promise((resolve, reject) => {
                 const img = new Image();
-                img.crossOrigin = 'Anonymous'; 
+                img.crossOrigin = 'Anonymous';
                 img.onload = () => {
                     const canvas = document.createElement('canvas');
                     canvas.width = img.width;
                     canvas.height = img.height;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
+                    canvas.getContext('2d').drawImage(img, 0, 0);
                     resolve(canvas.toDataURL('image/jpeg', 0.8));
                 };
                 img.onerror = () => reject(new Error(`Failed to process page ${i + 1}`));
@@ -491,37 +484,37 @@ async function executePdfDownload() {
             });
 
             const calcImg = new Image();
-            await new Promise((resolve) => {
-                calcImg.onload = resolve;
-                calcImg.src = imgData;
-            });
+            await new Promise((resolve) => { calcImg.onload = resolve; calcImg.src = imgData; });
 
             let renderWidth = pdfWidth;
             let renderHeight = (calcImg.height * pdfWidth) / calcImg.width;
-
             if (renderHeight > pdfHeight) {
                 renderHeight = pdfHeight;
                 renderWidth = (calcImg.width * pdfHeight) / calcImg.height;
             }
-
             const xOffset = (pdfWidth - renderWidth) / 2;
             const yOffset = (pdfHeight - renderHeight) / 2;
-
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
-        
-        // --- THE BASE64 DATA URI HACK ---
-        // Converts the PDF to a base64 string to bypass WebView blob restrictions
-        const pdfDataUri = pdf.output('datauristring');
-        
-        const downloadLink = document.createElement('a');
-        downloadLink.href = pdfDataUri;
-        downloadLink.download = finalFileName; 
-        
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        
-        document.body.removeChild(downloadLink);
+
+        // --- REAL-URL HANDOFF (replaces the data-URI hack) ---
+        const pdfBlob = pdf.output('blob');
+        const uploadRes = await fetch(`/api/upload-pdf?filename=${encodeURIComponent(finalFileName)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/pdf' },
+            body: pdfBlob,
+        });
+        if (!uploadRes.ok) throw new Error('Upload failed');
+        const { downloadUrl } = await uploadRes.json();
+
+        // Mirrors your working Notes download exactly:
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = finalFileName;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
 
     } catch (err) {
         console.error(err);
@@ -531,7 +524,6 @@ async function executePdfDownload() {
         headerLoader.classList.add('hidden');
     }
 }
-
 
 function toggleSemModal(show) {
     const modal = document.getElementById('semModal');
