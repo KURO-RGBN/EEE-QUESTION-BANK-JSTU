@@ -9,7 +9,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
     <meta name="theme-color" content="#000000">  
     <link rel="apple-touch-icon" href="icon.jpeg">  
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>  
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
 
@@ -239,13 +239,13 @@
     }
 
     /* Premium Glass Button Style */
-    .btn-premium-zip {
+    .btn-premium-pdf {
         background: rgba(16, 185, 129, 0.1);
         border: 1px solid rgba(16, 185, 129, 0.4);
         color: #10b981;
         transition: all 0.3s ease;
     }
-    .btn-premium-zip:active {
+    .btn-premium-pdf:active {
         background: rgba(16, 185, 129, 0.2);
         transform: scale(0.95);
     }
@@ -325,8 +325,8 @@
                 <h2 id="viewingTitle" class="font-bold text-white uppercase text-xs tracking-wide leading-tight break-words max-w-full"></h2>  
             </div> 
             <div class="flex items-center gap-2 shrink-0">
-                <button id="zipBtn" onclick="confirmZipDownload()" class="px-3 py-2 rounded-xl text-xs font-bold btn-premium-zip">
-                    <i class="fa-solid fa-file-zipper mr-1"></i> ZIP ALL
+                <button id="pdfBtn" onclick="confirmPdfDownload()" class="px-3 py-2 rounded-xl text-xs font-bold btn-premium-pdf">
+                    <i class="fa-solid fa-file-pdf mr-1"></i> PDF ALL
                 </button>
                 <div id="headerLoader" class="hidden flex items-center justify-center px-3 py-2">
                     <div class="loader-ring"></div>
@@ -427,17 +427,17 @@ function renderCourses(data) {
     }).join('');
 }
 
-// 4. BUNDLED PREMIUM ZIP DOWNLOAD SYSTEM
-function confirmZipDownload() {
+// 4. BUNDLED PREMIUM PDF GENERATION SYSTEM
+function confirmPdfDownload() {
     const alertHTML = `
         <div id="customAlert" class="premium-alert-overlay">
             <div class="premium-alert-card">
-                <div class="alert-icon-circle"><i class="fa-solid fa-file-zipper"></i></div>
-                <h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Download Session?</h3>
-                <p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">Download all pages as a single ZIP file.</p>
+                <div class="alert-icon-circle"><i class="fa-solid fa-file-pdf"></i></div>
+                <h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Compile PDF?</h3>
+                <p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">Download all question pages compiled into a single A4 PDF file.</p>
                 <div class="alert-btn-group">
                     <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
-                    <button class="alert-btn btn-confirm" onclick="executeZipDownload()">Start</button>
+                    <button class="alert-btn btn-confirm" onclick="executePdfDownload()">Start</button>
                 </div>
             </div>
         </div>
@@ -446,57 +446,75 @@ function confirmZipDownload() {
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
 
-async function executeZipDownload() {
+async function executePdfDownload() {
     closeAlert();
-    const zipBtn = document.getElementById('zipBtn');
+    const pdfBtn = document.getElementById('pdfBtn');
     const headerLoader = document.getElementById('headerLoader');
     
-    zipBtn.classList.add('hidden');
+    pdfBtn.classList.add('hidden');
     headerLoader.classList.remove('hidden');
 
-    const zip = new JSZip();
-    const folder = zip.folder("EEE_Vault_Papers");
-
     try {
-        // 1. Generate the filename FIRST so it's ready
         const currentTitle = document.getElementById('viewingTitle').innerText.trim();
-        
-        // Formats "ELECTRICAL CIRCUIT I - 20-21" into "ELECTRICAL_CIRCUIT_I_20-21"
         let formattedName = currentTitle
-            .replace(/\s+-\s+/g, '_')   // Replaces the " - " divider with "_"
-            .replace(/\s+/g, '_')      // Replaces all other spaces with "_"
-            .replace(/[^a-zA-Z0-9-_]/g, ''); // Removes any illegal filename characters
+            .replace(/\s+-\s+/g, '_')   
+            .replace(/\s+/g, '_')      
+            .replace(/[^a-zA-Z0-9-_]/g, ''); 
+            
+        const finalFileName = `${formattedName || 'session_papers'}.pdf`;
 
-        const finalFileName = `${formattedName || 'session_papers'}.zip`;
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4'); 
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
 
-        // 2. Fetch images using a much more stable image proxy
         for (let i = 0; i < currentPages.length; i++) {
-            // Clean up the URL to remove any existing protocol if needed for weserv
+            if (i > 0) {
+                pdf.addPage();
+            }
+
+            // High stability proxy redirect layer for CORS handling
             const cleanUrl = currentPages[i].replace(/^https?:\/\//, '');
             const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}`;
-            
+
             const response = await fetch(proxyUrl);
             if (!response.ok) throw new Error(`Failed to fetch page ${i + 1}`);
-            
             const blob = await response.blob();
-            folder.file(`page_${i + 1}.jpg`, blob);
+            
+            const imgData = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+
+            const img = new Image();
+            await new Promise((resolve) => {
+                img.onload = resolve;
+                img.src = imgData;
+            });
+
+            // Keep correct aspect ratios intact to prevent stretching
+            let renderWidth = pdfWidth;
+            let renderHeight = (img.height * pdfWidth) / img.width;
+
+            if (renderHeight > pdfHeight) {
+                renderHeight = pdfHeight;
+                renderWidth = (img.width * pdfHeight) / img.height;
+            }
+
+            const xOffset = (pdfWidth - renderWidth) / 2;
+            const yOffset = (pdfHeight - renderHeight) / 2;
+
+            pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
         
-        // 3. Generate and trigger download
-        const content = await zip.generateAsync({ type: "blob" });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(content);
-        link.download = finalFileName;
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
+        pdf.save(finalFileName);
     } catch (err) {
         console.error(err);
-        alert("Download failed. The proxy server is struggling or the image links are broken.");
+        alert("Compilation failed. The proxy server is struggling or image files are unavailable.");
     } finally {
-        zipBtn.classList.remove('hidden');
+        pdfBtn.classList.remove('hidden');
         headerLoader.classList.add('hidden');
     }
 }
@@ -565,7 +583,6 @@ function viewPaper(links, title) {
     filmstrip.scrollTop = 0;
 }
 
-// Fixed clear down handler
 function closeViewer() {
     const modal = document.getElementById('viewerModal');
     modal.classList.remove('viewer-active');
@@ -726,6 +743,7 @@ function handleTouchMove(e) {
     if (list.scrollTop <= 0 && e.touches[0].pageY > touchStartLine) if (e.cancelable) e.preventDefault();
 }
 
+// 8. FORM HANDLERS
 function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
 function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
 
