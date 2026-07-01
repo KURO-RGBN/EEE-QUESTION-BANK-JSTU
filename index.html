@@ -476,14 +476,40 @@ async function executePdfDownload() {
 
             // Clean the source URL and route it via the CORS proxy
             const cleanUrl = currentPages[i].replace(/^https?:\/\//, '');
+
+async function executePdfDownload() {
+    closeAlert();
+    const pdfBtn = document.getElementById('pdfBtn');
+    const headerLoader = document.getElementById('headerLoader');
+    
+    pdfBtn.classList.add('hidden');
+    headerLoader.classList.remove('hidden');
+
+    try {
+        const currentTitle = document.getElementById('viewingTitle').innerText.trim();
+        // Clean filename formatting to match exactly what you want
+        let formattedName = currentTitle
+            .replace(/\s+-\s+/g, '_')   
+            .replace(/\s+/g, '_')      
+            .replace(/[^a-zA-Z0-9-_]/g, ''); 
+            
+        const finalFileName = `${formattedName || 'session_papers'}.pdf`;
+
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4'); 
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+
+        for (let i = 0; i < currentPages.length; i++) {
+            if (i > 0) pdf.addPage();
+
+            const cleanUrl = currentPages[i].replace(/^https?:\/\//, '');
             const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}&output=jpg&q=80`;
 
-            // Bypass fetch() entirely by loading directly into an Image object with Anonymous CORS rights
             const imgData = await new Promise((resolve, reject) => {
                 const img = new Image();
                 img.crossOrigin = 'Anonymous'; 
                 img.onload = () => {
-                    // Convert image to a clean JPEG data URL via canvas
                     const canvas = document.createElement('canvas');
                     canvas.width = img.width;
                     canvas.height = img.height;
@@ -495,7 +521,6 @@ async function executePdfDownload() {
                 img.src = proxyUrl;
             });
 
-            // Re-load image properties to safely calculate layout dimensions
             const calcImg = new Image();
             await new Promise((resolve) => {
                 calcImg.onload = resolve;
@@ -516,19 +541,24 @@ async function executePdfDownload() {
             pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
         }
         
-        // --- MULTI-ENVIRONMENT DOWNLOAD ENGINE ---
-        // Generate a standard base64 data URI string
-        const pdfBase64 = pdf.output('datauristring');
+        // --- NATIVE MOBILE STORAGE OVERRIDE ENGINE ---
+        // 1. Output the compiled PDF array data as a binary blob structure
+        const pdfBlob = pdf.output('blob');
 
-        // Create a temporary DOM trigger link
+        // 2. Generate a secure internal browser object path instead of an unstable raw text string
+        const blobUrl = URL.createObjectURL(pdfBlob);
+
+        // 3. Mount a temporary hardware download node
         const downloadLink = document.createElement('a');
-        downloadLink.href = pdfBase64;
-        downloadLink.download = finalFileName;
+        downloadLink.href = blobUrl;
+        downloadLink.download = finalFileName; // Forces custom filename routing
         
-        // Force append to body to ensure mobile WebView registers the layout click event
         document.body.appendChild(downloadLink);
         downloadLink.click();
+        
+        // Clean up memory space right after the trigger registers
         document.body.removeChild(downloadLink);
+        setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
 
     } catch (err) {
         console.error(err);
