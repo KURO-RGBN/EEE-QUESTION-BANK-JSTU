@@ -715,48 +715,28 @@ async function executeDownload() {
     if (!activeDownloadData || isDownloading) return;
     isDownloading = true;
 
-    // The user's original URL (e.g., github.com/user/repo/blob/main/file.pdf)
-    let { url, fileName } = activeDownloadData;
+    const { url, fileName } = activeDownloadData;
     const btn = document.getElementById('confirmDownloadBtn');
     
-    // 1. CONVERT GITHUB URL TO RAW URL
-    // If it's a blob/github link, convert it to raw.githubusercontent.com
-    let rawUrl = url;
-    if (url.includes('github.com') && url.includes('/blob/')) {
-        rawUrl = url.replace('github.com', 'raw.githubusercontent.com')
-                    .replace('/blob/', '/');
-    }
-
-    btn.innerHTML = `<span class="loader-ring" style="border-top-color: white;"></span>`;
-
     try {
-        // 2. Fetch using mode: 'cors' to ensure the browser handles the binary stream
-        const response = await fetch(rawUrl, { mode: 'cors' });
-        
-        if (!response.ok) throw new Error("Could not reach GitHub");
-        
-        const blob = await response.blob();
-        
-        // 3. Trigger download via object URL
-        const blobUrl = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
-        a.href = blobUrl;
+        a.href = url;
         a.download = fileName;
+        // This attribute is critical for browsers to treat it as a download
+        a.setAttribute('download', fileName); 
         document.body.appendChild(a);
         a.click();
-        
         document.body.removeChild(a);
-        window.URL.revokeObjectURL(blobUrl);
 
-        closeAlert();
+        setTimeout(closeAlert, 500);
     } catch (err) {
-        console.error("Download Failed:", err);
-        alert("Failed to download. Ensure the file is public in your GitHub repository.");
-        btn.innerHTML = "Download";
+        console.error(err);
+        alert("Download failed.");
     } finally {
         isDownloading = false;
     }
 }
+
 
 
 
