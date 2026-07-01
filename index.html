@@ -715,50 +715,49 @@ async function executeDownload() {
     if (!activeDownloadData || isDownloading) return;
     isDownloading = true;
 
-    const { url, fileName } = activeDownloadData;
+    // The user's original URL (e.g., github.com/user/repo/blob/main/file.pdf)
+    let { url, fileName } = activeDownloadData;
     const btn = document.getElementById('confirmDownloadBtn');
-    const cancelBtn = document.querySelector('#customAlert .btn-cancel');
-    const originalLabel = btn.innerHTML;
+    
+    // 1. CONVERT GITHUB URL TO RAW URL
+    // If it's a blob/github link, convert it to raw.githubusercontent.com
+    let rawUrl = url;
+    if (url.includes('github.com') && url.includes('/blob/')) {
+        rawUrl = url.replace('github.com', 'raw.githubusercontent.com')
+                    .replace('/blob/', '/');
+    }
 
-    btn.disabled = true;
-    if (cancelBtn) cancelBtn.disabled = true;
-    btn.style.opacity = '0.7';
-    btn.innerHTML = `<span style="display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,0.4);border-top:2px solid white;border-radius:50%;animation:spin 0.8s linear infinite;"></span>`;
+    btn.innerHTML = `<span class="loader-ring" style="border-top-color: white;"></span>`;
 
     try {
-        // 1. Fetch the file as a blob to bypass browser security blocks
-        const response = await fetch(url);
-        if (!response.ok) throw new Error("Network response was not ok");
+        // 2. Fetch using mode: 'cors' to ensure the browser handles the binary stream
+        const response = await fetch(rawUrl, { mode: 'cors' });
+        
+        if (!response.ok) throw new Error("Could not reach GitHub");
+        
         const blob = await response.blob();
         
-        // 2. Create a local URL for the blob
+        // 3. Trigger download via object URL
         const blobUrl = window.URL.createObjectURL(blob);
-        
-        // 3. Create a temporary download link
         const a = document.createElement('a');
         a.href = blobUrl;
         a.download = fileName;
         document.body.appendChild(a);
         a.click();
         
-        // 4. Cleanup
         document.body.removeChild(a);
         window.URL.revokeObjectURL(blobUrl);
 
-        btn.innerHTML = `<i class="fa-solid fa-check"></i>`;
-        setTimeout(closeAlert, 700);
-
+        closeAlert();
     } catch (err) {
-        console.error("Download Error:", err);
-        btn.innerHTML = originalLabel;
-        btn.disabled = false;
-        if (cancelBtn) cancelBtn.disabled = false;
-        btn.style.opacity = '1';
-        alert('Download failed. This is likely due to security restrictions on the file host. Try downloading on a different network or browser.');
+        console.error("Download Failed:", err);
+        alert("Failed to download. Ensure the file is public in your GitHub repository.");
+        btn.innerHTML = "Download";
     } finally {
         isDownloading = false;
     }
 }
+
 
 
 function closeAlert() {
