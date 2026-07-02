@@ -713,27 +713,19 @@ function confirmDownload(url, fileName) {
 
 function executeDownload() {
     if (!activeDownloadData) return;
+
     const { url, fileName } = activeDownloadData;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.target = '_blank';
 
-    // 1. Create a hidden iframe
-    const iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    document.body.appendChild(iframe);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
-    // 2. Set the src to the PDF URL
-    // The browser will handle the download inside the iframe 
-    // without ever changing your main page's URL
-    iframe.src = url;
-
-    // 3. Cleanup: Remove the iframe after a delay
-    // This allows the browser enough time to initiate the download
-    setTimeout(() => {
-        document.body.removeChild(iframe);
-        closeAlert();
-    }, 2000); 
+    closeAlert();
 }
-
-
 
 
 
