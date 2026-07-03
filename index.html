@@ -34,7 +34,29 @@
         user-select: none;  
         color: #333333;  
         font-family: sans-serif;  
-    }  
+    } 
+	/* 1. Ensure the modals cannot expand wider than the screen */
+#viewerModal, #aiChatPanel {
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* 2. Force the body to never exceed the screen width */
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    position: relative; /* Helps contain child elements */
+}
+
+/* 3. Ensure the main container doesn't force width expansion */
+#appBody {
+    max-width: 100vw;
+    box-sizing: border-box;
+}
+
+	
     .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }  
       
     .scroll-container {  
