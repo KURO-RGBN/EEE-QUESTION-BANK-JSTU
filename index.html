@@ -11,6 +11,9 @@
     <link rel="apple-touch-icon" href="icon.jpeg">  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>  
+	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
 
 <style>  
@@ -843,22 +846,26 @@ function renderSessionChatHistory() {
     
     aiChatHistory.forEach(msg => {
         if(msg.role === 'user') {
-            baseHTML += `
-                <div class="flex justify-end pl-8">
-                    <div class="bg-purple-600 text-white text-xs p-3 rounded-2xl rounded-tr-none shadow-md max-w-full break-words">
-                        ${msg.displayContent || msg.content}
-                    </div>
-                </div>`;
+            // ... (keep user logic)
         } else if(msg.role === 'assistant') {
+            // Use marked.parse() to turn text into formatted HTML
+            const formattedContent = marked.parse(msg.content); 
             baseHTML += `
                 <div class="flex justify-start pr-8">
-                    <div class="bg-zinc-800 border border-zinc-700/50 text-zinc-100 text-xs p-3 rounded-2xl rounded-tl-none shadow-md max-w-full break-words leading-relaxed">
-                        ${msg.content.replace(/\n/g, '<br>')}
+                    <div class="bg-zinc-800 border border-zinc-700/50 text-zinc-100 text-xs p-4 rounded-2xl rounded-tl-none shadow-md max-w-full leading-relaxed">
+                        ${formattedContent}
                     </div>
                 </div>`;
         }
     });
+    
     container.innerHTML = baseHTML;
+    
+    // Tell MathJax to re-render the math equations inside the new HTML
+    if (window.MathJax) {
+        MathJax.typesetPromise([container]).catch((err) => console.log(err));
+    }
+    
     container.scrollTop = container.scrollHeight;
 }
 
