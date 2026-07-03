@@ -35,8 +35,9 @@ html {
     width: 100%;
     height: 100%;
     overflow-x: hidden;
-    /* Ensure the root doesn't lock */
     overflow-y: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
 }
 
 body {   
@@ -45,13 +46,14 @@ body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    overflow-y: auto; /* Required for the home page to scroll */
+    overflow-y: auto;
     -webkit-overflow-scrolling: touch;  
     user-select: none;  
     color: #333333;  
-    font-family: sans-serif;  
-    /* Remove overscroll-behavior-y: contain from here */
-} 
+    font-family: sans-serif;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
 
 /* Only apply scroll locks when a modal is ACTUALLY open */
 body.modal-open { 
