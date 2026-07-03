@@ -32,7 +32,7 @@
         overscroll-behavior-y: contain;   
         -webkit-overflow-scrolling: touch;  
         user-select: none;  
-        color: #e5e5e5;  
+        color: #333333;  
         font-family: sans-serif;  
     }  
     .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }  
@@ -107,53 +107,14 @@
         display: block;
         user-select: none;
 	}
-/* --- CLEAN WHITE-RED-BLACK THEME --- */
 
-/* 1. Base Panel: White Background, Black Text */
-#aiChatPanel {
-    background-color: #ffffff !important;
-    color: #000000 !important;
-}
-
-/* 2. Headers & Modals */
-#aiChatPanel .bg-zinc-900, #aiKeyModal .bg-zinc-900 {
-    background-color: #ffffff !important;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-/* 3. Global Text: Forced Black */
-#aiChatPanel h3, #aiChatPanel p, #aiChatPanel span, 
-#aiKeyModal h3, #aiKeyModal p, #aiKeyModal input {
-    color: #000000 !important;
-}
-
-/* 4. Light Boxes (Instructions, Input, AI Messages) */
-.bg-zinc-800, #aiKeyModal .bg-zinc-800, .ai-message-bubble {
-    background-color: #f8fafc !important;
-    border: 1px solid #e2e8f0 !important;
-    color: #000000 !important;
-}
-
-/* 5. User Messages: Red Background, White Text */
-.user-message-bubble {
-    background-color: #dc2626 !important;
-    color: #ffffff !important;
-}
-
-/* 6. Buttons: Red Background, White Text */
-#aiSendBtn, #aiKeyModal .save-button {
-    background-color: #dc2626 !important;
-    color: #ffffff !important;
-}
-
-/* 7. Icons: Red */
-.icon-style {
-    color: #dc2626 !important;
-}
-
-
-
-
+    /* AI Markdown Rendering Styles */
+    .ai-markdown-content p { margin-bottom: 12px; }
+    .ai-markdown-content ul { list-style-type: disc; margin-left: 20px; margin-bottom: 12px; }
+    .ai-markdown-content ol { list-style-type: decimal; margin-left: 20px; margin-bottom: 12px; }
+    .ai-markdown-content strong { color: #000000; font-weight: 700; }
+    .ai-markdown-content pre { background: #f1f5f9; padding: 10px; border-radius: 8px; overflow-x: auto; margin-bottom: 12px; font-size: 12px; }
+    .ai-markdown-content code { background: #f1f5f9; padding: 2px 4px; border-radius: 4px; font-size: 12px; color: #dc2626; }
 
     /* FIXED ZOOM SYSTEM */
     .zoom-wrapper {
@@ -402,31 +363,31 @@
             </div>  
         </div>  
 
-        <div id="aiChatPanel" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-zinc-950 border-l border-zinc-800 z-[120] translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
-            <div class="p-4 bg-zinc-900 border-b border-zinc-800 flex justify-between items-center">
+        <div id="aiChatPanel" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white border-l border-slate-200 z-[120] translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
+            <div class="p-4 bg-white border-b border-slate-200 flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-purple-500"></i>
-                    <h3 class="font-black text-sm uppercase tracking-wider text-zinc-200">Paper Assistant</h3>
+                    <i class="fa-solid fa-wand-magic-sparkles text-red-500"></i>
+                    <h3 class="font-black text-sm uppercase tracking-wider text-slate-900">Paper Assistant</h3>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="openAiKeyModal()" class="text-zinc-400 hover:text-white text-xs" title="API Settings">
+                    <button onclick="openAiKeyModal()" class="text-slate-400 hover:text-slate-800 text-xs" title="API Settings">
                         <i class="fa-solid fa-gear"></i>
                     </button>
-                    <button onclick="toggleAiPanel(false)" class="text-zinc-400 hover:text-red-500">
+                    <button onclick="toggleAiPanel(false)" class="text-slate-400 hover:text-red-600">
                         <i class="fa-solid fa-chevron-right"></i>
                     </button>
                 </div>
             </div>
 
-            <div id="aiChatMessages" class="flex-grow p-4 overflow-y-auto space-y-4 scroll-smooth bg-zinc-900/40">
+            <div id="aiChatMessages" class="flex-grow p-4 overflow-y-auto bg-white">
                 </div>
 
-            <div class="p-4 bg-zinc-900 border-t border-zinc-800 space-y-2">
+            <div class="p-4 bg-white border-t border-slate-200 space-y-2">
                 <div class="flex gap-2">
                     <input type="text" id="aiUserQuery" placeholder="Ask to solve Q1, derive formulas..." 
-                           class="flex-grow bg-zinc-800 text-white text-xs p-3 rounded-xl outline-none border border-zinc-700 focus:border-purple-500 transition-colors"
+                           class="flex-grow bg-slate-50 text-slate-800 text-xs p-3 rounded-xl outline-none border border-slate-300 focus:border-red-500 transition-colors"
                            onkeypress="if(event.key === 'Enter') sendQueryToAI()">
-                    <button onclick="sendQueryToAI()" id="aiSendBtn" class="bg-purple-600 hover:bg-purple-700 text-white px-4 rounded-xl transition-all active:scale-95">
+                    <button onclick="sendQueryToAI()" id="aiSendBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 rounded-xl transition-all active:scale-95">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
@@ -435,25 +396,25 @@
     </div>
 
     <div id="aiKeyModal" class="fixed inset-0 bg-black/80 z-[30000] hidden flex items-center justify-center p-4">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl">
-            <div class="w-12 h-12 bg-purple-900/30 text-purple-400 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl">
+            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
                 <i class="fa-solid fa-key"></i>
             </div>
-            <h3 class="text-white font-black uppercase text-sm tracking-wide mb-1">AI Setup</h3>
-            <p class="text-zinc-400 text-xs mb-4">Enter your personal Gemini API key. Stored safely on your local device cache only.</p>
+            <h3 class="text-slate-900 font-black uppercase text-sm tracking-wide mb-1">AI Setup</h3>
+            <p class="text-slate-500 text-xs mb-4">Enter your personal Gemini API key. Stored safely on your local device cache only.</p>
             
             <input type="password" id="aiApiKeyField" placeholder="sk-proj-... or AIza..." 
-                   class="w-full bg-zinc-800 border border-zinc-700 text-white text-xs p-3 rounded-xl outline-none mb-2 text-center focus:border-purple-500">
+                   class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs p-3 rounded-xl outline-none mb-2 text-center focus:border-red-500">
             
             <a href="https://aistudio.google.com/app/apikey" target="_blank" 
-   class="block text-[11px] text-purple-400 font-bold hover:underline mb-5">
+   class="block text-[11px] text-red-600 font-bold hover:underline mb-5">
    Get Free Gemini API Key here <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i>
 </a>
 
 
             <div class="flex gap-2">
-                <button onclick="closeAiKeyModal()" class="flex-1 bg-zinc-800 text-zinc-400 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider">Cancel</button>
-                <button onclick="saveAiKey()" class="flex-1 bg-purple-600 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-purple-600/20">Save Configuration</button>
+                <button onclick="closeAiKeyModal()" class="flex-1 bg-slate-100 text-slate-500 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider">Cancel</button>
+                <button onclick="saveAiKey()" class="flex-1 bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-red-600/20">Save Configuration</button>
             </div>
         </div>
     </div>
@@ -890,37 +851,38 @@ function loadSavedKeyToField() {
 
 function appendSystemMessage(text) {
     const box = document.getElementById('aiChatMessages');
-    box.innerHTML += `<div class="text-[10px] text-zinc-500 text-center py-1 uppercase tracking-widest"><i class="fa-solid fa-microchip mr-1"></i> ${text}</div>`;
+    box.innerHTML += `<div class="text-[10px] text-slate-400 text-center py-1 uppercase tracking-widest"><i class="fa-solid fa-microchip mr-1"></i> ${text}</div>`;
     box.scrollTop = box.scrollHeight;
 }
 
 function renderSessionChatHistory() {
     const container = document.getElementById('aiChatMessages');
+    
+    // Clear out everything except history
     let baseHTML = `
-        <div class="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4 text-xs text-zinc-400 space-y-2">
-            <p class="font-bold text-zinc-200"><i class="fa-solid fa-circle-info text-purple-400 mr-1"></i> How to use:</p>
-            <p>1. Ensure your Gemini or OpenAI API Key is saved in settings.</p>
+        <div class="bg-red-50 border border-red-100 rounded-2xl p-4 text-xs text-slate-600 space-y-2 mb-4">
+            <p class="font-bold text-red-600"><i class="fa-solid fa-circle-info mr-1"></i> How to use:</p>
+            <p>1. Ensure your Gemini API Key is saved in settings.</p>
             <p>2. Ask anything about the currently displayed engineering question paper.</p>
         </div>`;
     
     aiChatHistory.forEach(msg => {
-    if(msg.role === 'user') {
-        baseHTML += `
-            <div class="flex justify-end pl-8">
-                <div class="bg-red-600 text-white text-xs p-3 rounded-2xl rounded-tr-none shadow-md max-w-full break-words">
-                    ${msg.displayContent || msg.content}
-                </div>
-            </div>`;
-    } else if(msg.role === 'assistant') {
-        const formattedContent = marked.parse(msg.content);
-        baseHTML += `
-            <div class="flex justify-start pr-8">
-                <div class="bg-zinc-800 border border-zinc-700/50 text-zinc-100 text-xs p-4 rounded-2xl rounded-tl-none shadow-md max-w-full leading-relaxed">
+        if(msg.role === 'user') {
+            baseHTML += `
+                <div class="flex justify-end p-2 mb-2">
+                    <div class="bg-red-600 text-white text-[13px] px-4 py-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] break-words">
+                        ${msg.displayContent || msg.content}
+                    </div>
+                </div>`;
+        } else if(msg.role === 'assistant') {
+            const formattedContent = marked.parse(msg.content);
+            // Replaced the dark box with the spacious white layout
+            baseHTML += `
+                <div class="w-full px-2 py-4 mb-2 text-slate-800 text-[14px] leading-relaxed ai-markdown-content">
                     ${formattedContent}
-                </div>
-            </div>`;
-    }
-});
+                </div>`;
+        }
+    });
     
     container.innerHTML = baseHTML;
     
@@ -965,7 +927,7 @@ async function sendQueryToAI() {
     // Show "Thinking..." inside the chat
     const thinkingId = "thinking-msg";
     document.getElementById('aiChatMessages').insertAdjacentHTML('beforeend', 
-        `<div id="${thinkingId}" class="text-[10px] text-zinc-500 text-center py-2 animate-pulse">AI is thinking...</div>`);
+        `<div id="${thinkingId}" class="text-[10px] text-slate-400 text-center py-2 animate-pulse">AI is thinking...</div>`);
 
     try {
         let contents = [];
@@ -1019,10 +981,6 @@ async function sendQueryToAI() {
         renderSessionChatHistory();
     }
 }
-
-
-
-                    
 
 function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
 function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
