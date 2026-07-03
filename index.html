@@ -106,44 +106,52 @@
         height: auto;
         display: block;
         user-select: none;
-    }
-	/* Update these styles in your <style> section */
-/* 1. Main Background and Panel */
+	}
+/* --- CLEAN WHITE-RED-BLACK THEME --- */
+
+/* 1. Base Panel: White Background, Black Text */
 #aiChatPanel {
-    background-color: #ffffff !important; /* Pure white background */
-    color: #000000 !important;           /* Black text */
-}
-
-/* 2. "How to use" instruction box */
-.bg-zinc-800 {
-    background-color: #f8fafc !important; /* Very light gray/white box */
-    border: 1px solid #e2e8f0 !important; /* Soft border */
-    color: #1e293b !important;           /* Dark text for readability */
-}
-
-/* 3. Icon colors (Change purple to red) */
-/* This targets the icon in the header and the AI setup icon */
-.text-purple-500, .text-purple-600 {
-    color: #dc2626 !important; /* Red color */
-}
-
-/* 4. AI Setup Modal (White/Red/Black theme) */
-.ai-setup-modal {
     background-color: #ffffff !important;
     color: #000000 !important;
 }
 
-/* 5. Buttons and Inputs */
-#aiSendBtn {
-    background-color: #dc2626 !important; /* Red background for button */
+/* 2. Headers & Modals */
+#aiChatPanel .bg-zinc-900, #aiKeyModal .bg-zinc-900 {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+/* 3. Global Text: Forced Black */
+#aiChatPanel h3, #aiChatPanel p, #aiChatPanel span, 
+#aiKeyModal h3, #aiKeyModal p, #aiKeyModal input {
+    color: #000000 !important;
+}
+
+/* 4. Light Boxes (Instructions, Input, AI Messages) */
+.bg-zinc-800, #aiKeyModal .bg-zinc-800, .ai-message-bubble {
+    background-color: #f8fafc !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #000000 !important;
+}
+
+/* 5. User Messages: Red Background, White Text */
+.user-message-bubble {
+    background-color: #dc2626 !important;
     color: #ffffff !important;
 }
 
-.input-field {
-    background-color: #f1f5f9 !important;
-    border: 1px solid #d1d5db !important;
-    color: #000000 !important;
+/* 6. Buttons: Red Background, White Text */
+#aiSendBtn, #aiKeyModal .save-button {
+    background-color: #dc2626 !important;
+    color: #ffffff !important;
 }
+
+/* 7. Icons: Red */
+.icon-style {
+    color: #dc2626 !important;
+}
+
+
 
 
 
