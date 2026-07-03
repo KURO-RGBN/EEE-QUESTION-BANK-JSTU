@@ -28,34 +28,39 @@
 
 <style>  
     * { -webkit-tap-highlight-color: transparent; }  
+
+    /* 1. Fixed Home Scroll Bug */
+    html {
+        width: 100vw;
+        overflow-x: hidden;
+    }
     body {   
+        width: 100%;
+        overflow-x: hidden;
         overscroll-behavior-y: contain;   
         -webkit-overflow-scrolling: touch;  
         user-select: none;  
         color: #333333;  
         font-family: sans-serif;  
     } 
-	/* 1. Ensure the modals cannot expand wider than the screen */
-#viewerModal, #aiChatPanel {
-    max-width: 100vw;
-    overflow-x: hidden;
-}
 
-/* 2. Force the body to never exceed the screen width */
-html, body {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    position: relative; /* Helps contain child elements */
-}
+    #appBody {
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
 
-/* 3. Ensure the main container doesn't force width expansion */
-#appBody {
-    max-width: 100vw;
-    box-sizing: border-box;
-}
+    #viewerModal, #aiChatPanel {
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
 
+    /* 2. Stop Scroll Bleed to Background */
+    .viewer-filmstrip, #notesList, #aiChatMessages {
+        overscroll-behavior: none; 
+    }
+
+    body.modal-open { overflow: hidden; touch-action: none; }
 	
     .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }  
       
@@ -91,7 +96,6 @@ html, body {
         color: #ef6c00 !important;  
     }  
 
-    /* File Card Styling */  
     .file-card {  
         background: #f8fafc;  
         border: 1px solid #e2e8f0;  
@@ -104,7 +108,6 @@ html, body {
         transition: 0.2s;  
     }  
     .file-card:active { transform: scale(0.95); background: #f1f5f9; }   
-    body.modal-open { overflow: hidden; touch-action: none; }
 	
     .viewer-filmstrip {
         display: block;
@@ -130,12 +133,25 @@ html, body {
         user-select: none;
 	}
 
-    /* AI Markdown Rendering Styles */
+    /* 3. AI Markdown Rendering & Overflow Fixes */
+    .ai-markdown-content {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        word-break: break-word; 
+        max-width: 100%;
+    }
+    
+    .ai-markdown-content mjx-container {
+        max-width: 100% !important;
+        overflow-x: auto !important; 
+        overflow-y: hidden !important;
+    }
+
     .ai-markdown-content p { margin-bottom: 12px; }
     .ai-markdown-content ul { list-style-type: disc; margin-left: 20px; margin-bottom: 12px; }
     .ai-markdown-content ol { list-style-type: decimal; margin-left: 20px; margin-bottom: 12px; }
     .ai-markdown-content strong { color: #000000; font-weight: 700; }
-    .ai-markdown-content pre { background: #f1f5f9; padding: 10px; border-radius: 8px; overflow-x: auto; margin-bottom: 12px; font-size: 12px; }
+    .ai-markdown-content pre { background: #f1f5f9; padding: 10px; border-radius: 8px; overflow-x: auto; margin-bottom: 12px; font-size: 12px; max-width: 100%; }
     .ai-markdown-content code { background: #f1f5f9; padding: 2px 4px; border-radius: 4px; font-size: 12px; color: #dc2626; }
 
     /* FIXED ZOOM SYSTEM */
@@ -242,11 +258,9 @@ html, body {
     /* VIEWER MODAL ANIMATION */
     #viewerModal { 
         pointer-events: none; 
-        overflow: hidden; /* Lock viewport boundary context to solve side-scroll shifts */
     }
     #viewerModal.viewer-active { pointer-events: auto; }
 
-    /* Explicit target for top header panel sliding down */
     #viewerHeader {
         transform: translateY(-100%);
         transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
@@ -254,7 +268,6 @@ html, body {
     }
     #viewerModal.viewer-active #viewerHeader { transform: translateY(0%); }
 
-    /* Explicit target for canvas paper elements sliding up */
     #viewerBodyContent {
         transform: translateY(100%);
         transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
@@ -365,7 +378,8 @@ html, body {
     </div>
 
     <div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col md:flex-row overflow-hidden">  
-    <div class="flex-grow flex flex-col h-full bg-transparent relative"> <div id="viewerHeader" class="px-4 py-3 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110] min-h-[64px]">  
+    <div class="flex-grow flex flex-col h-full bg-transparent relative"> 
+            <div id="viewerHeader" class="px-4 py-3 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110] min-h-[64px]">  
 
                 <div class="flex-grow pr-3">  
                     <h2 id="viewingTitle" class="font-bold text-white uppercase text-xs tracking-wide leading-tight break-words max-w-full"></h2>  
@@ -485,7 +499,7 @@ let currentPages = [];
 let isAiPanelOpen = false;
 let isAiThinking = false;
 let aiChatHistory = []; 
-let cachedImageParts = []; // Global cache matrix storing loaded paper buffers
+let cachedImageParts = []; 
 let touchStartLine = 0;
 let activeDownloadData = null;
 
@@ -663,8 +677,8 @@ function openPaperByCode(code, batch) {
 
 function viewPaper(links, title) {
     currentPages = Array.isArray(links) ? links : [links];
-    cachedImageParts = [];            // Completely wipe past document images out of ram
-    aiChatHistory = [];               // Terminate existing conversation streams
+    cachedImageParts = [];            
+    aiChatHistory = [];               
     document.getElementById('viewingTitle').innerText = title;
     const filmstrip = document.getElementById('paperFilmstrip');
     
@@ -684,7 +698,7 @@ function viewPaper(links, title) {
 
 function closeViewer() {
     const modal = document.getElementById('viewerModal');
-    modal.classList.remove('viewer-active'); // Reverses animations smoothly
+    modal.classList.remove('viewer-active'); 
     document.body.classList.remove('modal-open');
     setTimeout(() => {
         modal.classList.add('hidden');
@@ -770,7 +784,6 @@ function initZoomForImage(img) {
     });
 }
 
-// System initialization scripts for context documents
 function openNotes(code) {
     const course = courseData.find(c => c.code === code);
     const list = document.getElementById('notesList');
@@ -901,7 +914,7 @@ function renderSessionChatHistory() {
         } else if(msg.role === 'assistant') {
             const formattedContent = marked.parse(msg.content);
             baseHTML += `
-                <div class="w-full px-2 py-4 mb-2 text-slate-800 text-[14px] leading-relaxed ai-markdown-content">
+                <div class="w-full px-2 py-4 mb-2 text-slate-800 text-[14px] leading-relaxed ai-markdown-content overflow-hidden">
                     ${formattedContent}
                 </div>`;
         }
@@ -950,7 +963,6 @@ async function sendQueryToAI() {
         `<div id="${thinkingId}" class="text-[10px] text-slate-400 text-center py-2 animate-pulse">AI is thinking...</div>`);
 
     try {
-        // Build base64 blocks only once per paper session trace
         if (cachedImageParts.length === 0 && currentPages.length > 0) {
             for (const url of currentPages) {
                 const dataUrl = await convertImageUrlToBase64(url);
@@ -960,7 +972,6 @@ async function sendQueryToAI() {
             }
         }
 
-        // Map payload architecture: inject image parts only into index 0
         const contents = aiChatHistory.map((item, index) => {
             let parts = (index === 0)
                 ? [...cachedImageParts, { text: item.content }]
