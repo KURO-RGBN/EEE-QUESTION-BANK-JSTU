@@ -367,7 +367,7 @@
             <div class="p-4 bg-white border-b border-slate-200 flex justify-between items-center">
                 <div class="flex items-center gap-2">
                     <i class="fa-solid fa-wand-magic-sparkles text-red-500"></i>
-                    <h3 class="font-black text-sm uppercase tracking-wider text-slate-900">Paper Assistant</h3>
+                    <h3 class="font-black text-sm uppercase tracking-wider text-slate-900">Vault Assistant</h3>
                 </div>
                 <div class="flex items-center gap-3">
                     <button onclick="openAiKeyModal()" class="text-slate-400 hover:text-slate-800 text-xs" title="API Settings">
@@ -957,8 +957,8 @@ async function sendQueryToAI() {
             body: JSON.stringify({ 
                 contents: contents,
                 system_instruction: { 
-                    parts: [{ text: `You are an expert Engineering Professor. You have been provided with multiple pages of an engineering exam paper. Always analyze the content across all provided pages. 
-                    - If asked to solve, show full step-by-step logic.
+                    parts: [{ text: `You are an expert Engineering Professor named Vault Assistant . You have been provided with multiple pages of an engineering exam paper. Always analyze the content across all provided pages. 
+                    - If asked to solve,state question and show full step-by-step logic.
                     - Use LaTeX ($...$) for math.
                     - If a question is unclear, ask for clarification.
                     - If casual, keep it under 2 lines.
