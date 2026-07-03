@@ -108,42 +108,43 @@
         user-select: none;
     }
 	/* Update these styles in your <style> section */
+/* 1. Main Background and Panel */
 #aiChatPanel {
-    background: #ffffff !important; /* White background */
-    border-left: 1px solid #e2e8f0;
+    background-color: #ffffff !important; /* Pure white background */
+    color: #000000 !important;           /* Black text */
 }
 
-/* Panel Header */
-#aiChatPanel .bg-zinc-900 {
-    background: #ffffff !important;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-#aiChatPanel h3, #aiChatPanel .text-zinc-200 { color: #1e293b !important; }
-
-/* User Message Bubble */
-.bg-purple-600 { 
-    background-color: #dc2626 !important; /* Red for User */
-}
-
-/* AI Message Bubble */
+/* 2. "How to use" instruction box */
 .bg-zinc-800 {
-    background-color: #f1f5f9 !important; /* Light Gray/White AI bubble */
-    border: 1px solid #e2e8f0 !important;
-    color: #1e293b !important; /* Black text */
+    background-color: #f8fafc !important; /* Very light gray/white box */
+    border: 1px solid #e2e8f0 !important; /* Soft border */
+    color: #1e293b !important;           /* Dark text for readability */
 }
 
-/* Input Area */
-#aiUserQuery {
-    background: #f8fafc !important;
-    color: #1e293b !important;
-    border: 1px solid #e2e8f0 !important;
+/* 3. Icon colors (Change purple to red) */
+/* This targets the icon in the header and the AI setup icon */
+.text-purple-500, .text-purple-600 {
+    color: #dc2626 !important; /* Red color */
 }
 
-/* Send Button */
+/* 4. AI Setup Modal (White/Red/Black theme) */
+.ai-setup-modal {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* 5. Buttons and Inputs */
 #aiSendBtn {
-    background-color: #dc2626 !important; /* Red Send Button */
+    background-color: #dc2626 !important; /* Red background for button */
+    color: #ffffff !important;
 }
+
+.input-field {
+    background-color: #f1f5f9 !important;
+    border: 1px solid #d1d5db !important;
+    color: #000000 !important;
+}
+
 
 
     /* FIXED ZOOM SYSTEM */
