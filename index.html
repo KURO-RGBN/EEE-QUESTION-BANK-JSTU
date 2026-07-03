@@ -30,25 +30,39 @@
     * { -webkit-tap-highlight-color: transparent; }  
 
     /* 1. Fixed Home Scroll Bug */
-    html {
-        width: 100vw;
-        overflow-x: hidden;
-    }
-    body {   
-        width: 100%;
-        overflow-x: hidden;
-        overscroll-behavior-y: contain;   
-        -webkit-overflow-scrolling: touch;  
-        user-select: none;  
-        color: #333333;  
-        font-family: sans-serif;  
-    } 
+    /* Reset the scrolling behavior */
+html {
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden;
+    /* Ensure the root doesn't lock */
+    overflow-y: auto;
+}
+
+body {   
+    width: 100%;
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: auto; /* Required for the home page to scroll */
+    -webkit-overflow-scrolling: touch;  
+    user-select: none;  
+    color: #333333;  
+    font-family: sans-serif;  
+    /* Remove overscroll-behavior-y: contain from here */
+} 
+
+/* Only apply scroll locks when a modal is ACTUALLY open */
+body.modal-open { 
+    overflow: hidden !important; 
+    height: 100%;
+}
+
 
     #appBody {
         width: 100%;
-        max-width: 100vw;
-        overflow-x: hidden;
-    }
+         }
 
     #viewerModal, #aiChatPanel {
         max-width: 100vw;
@@ -60,7 +74,7 @@
         overscroll-behavior: none; 
     }
 
-    body.modal-open { overflow: hidden; touch-action: none; }
+    
 	
     .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }  
       
