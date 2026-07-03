@@ -107,6 +107,44 @@
         display: block;
         user-select: none;
     }
+	/* Update these styles in your <style> section */
+#aiChatPanel {
+    background: #ffffff !important; /* White background */
+    border-left: 1px solid #e2e8f0;
+}
+
+/* Panel Header */
+#aiChatPanel .bg-zinc-900 {
+    background: #ffffff !important;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#aiChatPanel h3, #aiChatPanel .text-zinc-200 { color: #1e293b !important; }
+
+/* User Message Bubble */
+.bg-purple-600 { 
+    background-color: #dc2626 !important; /* Red for User */
+}
+
+/* AI Message Bubble */
+.bg-zinc-800 {
+    background-color: #f1f5f9 !important; /* Light Gray/White AI bubble */
+    border: 1px solid #e2e8f0 !important;
+    color: #1e293b !important; /* Black text */
+}
+
+/* Input Area */
+#aiUserQuery {
+    background: #f8fafc !important;
+    color: #1e293b !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+/* Send Button */
+#aiSendBtn {
+    background-color: #dc2626 !important; /* Red Send Button */
+}
+
 
     /* FIXED ZOOM SYSTEM */
     .zoom-wrapper {
@@ -949,7 +987,12 @@ async function sendQueryToAI() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    system_instruction: { parts: [{ text: "You are an engineering professor. Be concise. Reply to greetings normally. Wrap math in $...$." }] },
+                    system_instruction: { 
+    parts: [{ 
+        text: "You are an engineering professor. ONLY provide a step-by-step solution if the user specifically asks to solve or derive a problem. If the user says 'Hi', 'Hello', or anything casual, keep your response under 2 sentences and ask how you can help. Use LaTeX ($...$) for math." 
+    }] 
+}
+,
                     contents: contents
                 })
             });
