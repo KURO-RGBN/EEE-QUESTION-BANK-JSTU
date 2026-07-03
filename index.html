@@ -460,7 +460,7 @@ let currentPages = [];
 let isAiPanelOpen = false;
 let isAiThinking = false;
 let aiChatHistory = []; 
-let imageAttachedThisSession = false;
+let cachedImageParts = [];
 let touchStartLine = 0;
 let activeDownloadData = null;
 
@@ -638,8 +638,8 @@ function openPaperByCode(code, batch) {
 
 function viewPaper(links, title) {
     currentPages = Array.isArray(links) ? links : [links];
-	imageAttachedThisSession = false; // <-- ADD THIS
-    aiChatHistory = [];               // <-- ADD THIS
+	cachedImageParts = [];            // Instantly flushes old images out of memory
+    aiChatHistory = [];  
     document.getElementById('viewingTitle').innerText = title;
     const filmstrip = document.getElementById('paperFilmstrip');
     
@@ -920,45 +920,44 @@ async function sendQueryToAI() {
     isAiThinking = true;
     inputField.value = "";
     
-    // Add user message to history
+    // Push new message to standard context arrays
     aiChatHistory.push({ role: "user", content: userPromptText });
     renderSessionChatHistory();
 
-    // Show "Thinking..." inside the chat
+    // Spawn animated loader inside conversational stream
     const thinkingId = "thinking-msg";
     document.getElementById('aiChatMessages').insertAdjacentHTML('beforeend', 
         `<div id="${thinkingId}" class="text-[10px] text-slate-400 text-center py-2 animate-pulse">AI is thinking...</div>`);
 
     try {
-        let contents = [];
-        let imageParts = [];
-
-        // ONLY on the very first request, process ALL pages
-        if (!imageAttachedThisSession && currentPages.length > 0) {
+        // 1. Convert and cache all pages ONCE per document lifecycle
+        if (cachedImageParts.length === 0 && currentPages.length > 0) {
             for (const url of currentPages) {
                 const dataUrl = await convertImageUrlToBase64(url);
-                imageParts.push({ inlineData: { mimeType: "image/jpeg", data: dataUrl.split(',')[1] } });
+                cachedImageParts.push({ 
+                    inlineData: { mimeType: "image/jpeg", data: dataUrl.split(',')[1] } 
+                });
             }
-            imageAttachedThisSession = true;
         }
 
-        // Build history: Attach ALL images ONLY to the first user message
-        aiChatHistory.forEach((item, index) => {
-            let parts = [{ text: item.content }];
-            if (index === 0) {
-                parts = parts.concat(imageParts);
-            }
-            contents.push({ role: item.role === 'user' ? 'user' : 'model', parts: parts });
+        // 2. Generate content trace payload, embedding base64 blocks strictly on Turn 1
+        const contents = aiChatHistory.map((item, index) => {
+            let parts = (index === 0)
+                ? [...cachedImageParts, { text: item.content }]
+                : [{ text: item.content }];
+            
+            return { role: item.role === 'user' ? 'user' : 'model', parts: parts };
         });
 
+        // 3. Dispatch payload request
         const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 
                 contents: contents,
                 system_instruction: { 
-                    parts: [{ text: `You are an expert Engineering Professor named Vault Assistant . You have been provided with multiple pages of an engineering exam paper. Always analyze the content across all provided pages. 
-                    - If asked to solve,state question and show full step-by-step logic.
+                    parts: [{ text: `You are an expert Engineering Professor named Vault Assistant. You have been provided with multiple pages of an engineering exam paper. Always analyze the content across all provided pages. 
+                    - If asked to solve, state question and show full step-by-step logic.
                     - Use LaTeX ($...$) for math.
                     - If a question is unclear, ask for clarification.
                     - If casual, keep it under 2 lines.
@@ -981,6 +980,7 @@ async function sendQueryToAI() {
         renderSessionChatHistory();
     }
 }
+
 
 function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
 function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
