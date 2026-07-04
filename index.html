@@ -433,32 +433,40 @@ async function sendToGemini(userMessage, apiKey) {
 }
 
 async function sendToOpenRouter(userMessage, apiKey) {
-    const contents = aiChatHistory.map((item, index) => {
-        // 1. Setup the default text payload
-        let contentParts = [{ type: 'text', text: item.content }];
+    // Build messages array with system prompt + history
+    const messages = [{ role: "system", content: SYSTEM_PROMPT }];
 
-        // 2. Inject images if it's the user's first message and images exist
-        // This maps your Gemini `cachedImageParts` format to OpenRouter/OpenAI format
-        if (item.role === 'user' && index === 0 && !imageAttachedThisSession && typeof cachedImageParts !== 'undefined' && cachedImageParts.length > 0) {
-            cachedImageParts.forEach(img => {
-                if (img.inlineData) {
-                    contentParts.push({
-                        type: 'image_url',
-                        image_url: {
-                            // Construct the base64 data URI required by OpenRouter
-                            url: `data:${img.inlineData.mimeType};base64,${img.inlineData.data}`
-                        }
-                    });
-                }
-            });
+    // Prepare images as OpenRouter image_url objects
+    let images = [];
+    if (cachedImageParts.length > 0) {
+        images = cachedImageParts.map(part => ({
+            type: "image_url",
+            image_url: {
+                url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`
+            }
+        }));
+    }
+
+    // Map history – attach images to EVERY user message for continuity
+    const chatContents = aiChatHistory.map((item) => {
+        if (item.role === 'user') {
+            // If images exist, send as multimodal content
+            if (images.length > 0) {
+                return {
+                    role: 'user',
+                    content: [{ type: "text", text: item.content }, ...images]
+                };
+            } else {
+                return { role: 'user', content: item.content };
+            }
         }
-
-        return {
-            role: item.role === 'user' ? 'user' : 'assistant',
-            // OpenRouter accepts a string for text-only, but requires an array if sending images
-            content: contentParts.length > 1 ? contentParts : item.content
-        };
+        return { role: 'assistant', content: item.content };
     });
+
+    messages.push(...chatContents);
+
+    // Choose a reliable vision model (change as needed)
+    const model = 'google/gemini-2.0-flash-lite'; // or 'openai/gpt-4o-mini'
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -469,9 +477,8 @@ async function sendToOpenRouter(userMessage, apiKey) {
             'X-Title': 'EEE Vault JSTU'
         },
         body: JSON.stringify({
-            // Using a specific free model that guarantees vision (image) support
-            model: 'google/gemini-2.5-flash-free', 
-            messages: contents,
+            model: model,
+            messages: messages,
             max_tokens: 2000
         })
     });
