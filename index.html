@@ -11,158 +11,55 @@
     <link rel="apple-touch-icon" href="icon.jpeg">  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>  
-	
-	<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-
-	<script>		
-  window.MathJax = {
-    tex: {
-      inlineMath: [['$', '$'], ['\\(', '\\)']],
-      displayMath: [['$$', '$$'], ['\\[', '\\]']]
-    }
-  };
-</script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>		
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
 
 <style>  
     * { -webkit-tap-highlight-color: transparent; }  
-
-    /* 1. Fixed Home Scroll Bug */
-    /* Reset the scrolling behavior */
-html {
-    width: 100%;
-    height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-}
-
-body {   
-    width: 100%;
-    min-height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;  
-    user-select: none;  
-    color: #333333;  
-    font-family: sans-serif;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-}
-
-/* Only apply scroll locks when a modal is ACTUALLY open */
-body.modal-open { 
-    overflow: hidden !important; 
-    height: 100%;
-}
-
-
-    #appBody {
-        width: 100%;
-         }
-
-    #viewerModal, #aiChatPanel {
-        max-width: 100vw;
-        overflow-x: hidden;
-    }
-
-    /* 2. Stop Scroll Bleed to Background */
-    .viewer-filmstrip, #notesList, #aiChatMessages {
-        overscroll-behavior: none; 
-    }
-
     
-	
-    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }  
-      
-    .scroll-container {  
-        display: flex;  
-        overflow-x: auto;  
-        gap: 8px;  
-        padding-bottom: 8px;  
-        scroll-snap-type: x mandatory;  
-        -webkit-overflow-scrolling: touch;  
-    }  
+    html {
+        width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto;
+        scrollbar-width: none; -ms-overflow-style: none;
+    }
 
+    body {   
+        width: 100%; min-height: 100%; margin: 0; padding: 0; overflow-x: hidden; overflow-y: auto;
+        -webkit-overflow-scrolling: touch; user-select: none; color: #333333; font-family: sans-serif;
+        scrollbar-width: none; -ms-overflow-style: none;
+    }
+
+    body.modal-open { overflow: hidden !important; height: 100%; }
+    #appBody { width: 100%; }
+    #viewerModal, #aiChatPanel { max-width: 100vw; overflow-x: hidden; }
+    .viewer-filmstrip, #notesList, #aiChatMessages { overscroll-behavior: none; }
+    
+    .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }  
+    .scroll-container { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 8px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }  
     .scroll-container::-webkit-scrollbar { display: none; }  
 
-    .session-btn {  
-        flex: 0 0 85px;  
-        scroll-snap-align: start;  
-        background: rgba(0, 0, 0, 0.05);  
-        border: 1px solid rgba(0, 0, 0, 0.1);  
-        color: #4b5563;  
-        transition: all 0.2s ease;  
-    }  
+    .session-btn { flex: 0 0 85px; scroll-snap-align: start; background: rgba(0, 0, 0, 0.05); border: 1px solid rgba(0, 0, 0, 0.1); color: #4b5563; transition: all 0.2s ease; }  
+    .btn-available { background: rgba(220, 38, 38, 0.05) !important; border: 1px solid rgba(220, 38, 38, 0.3) !important; color: #dc2626 !important; }  
+    .btn-notes { background: rgba(255, 152, 0, 0.1) !important; border: 1px solid rgba(255, 152, 0, 0.4) !important; color: #ef6c00 !important; }  
 
-    .btn-available {  
-        background: rgba(220, 38, 38, 0.05) !important;  
-        border: 1px solid rgba(220, 38, 38, 0.3) !important;  
-        color: #dc2626 !important;  
-    }  
-
-    .btn-notes {  
-        background: rgba(255, 152, 0, 0.1) !important;  
-        border: 1px solid rgba(255, 152, 0, 0.4) !important;  
-        color: #ef6c00 !important;  
-    }  
-
-    .file-card {  
-        background: #f8fafc;  
-        border: 1px solid #e2e8f0;  
-        border-radius: 16px;  
-        padding: 16px;  
-        text-align: center;  
-        display: flex;  
-        flex-direction: column;  
-        align-items: center;  
-        transition: 0.2s;  
-    }  
+    .file-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }  
     .file-card:active { transform: scale(0.95); background: #f1f5f9; }   
-	
-    .viewer-filmstrip {
-        display: block;
-        width: 100%;
-        height: 100%;
-        overflow-y: auto;
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-        touch-action: pan-y;
-        scroll-behavior: smooth;
-    }
-
-    .viewer-page {
-        width: 100%;
-        display: block;
-        margin-bottom: 12px;
-    }
-
-    .viewer-page img {
-        width: 100%;
-        height: auto;
-        display: block;
-        user-select: none;
-	}
-
-    /* 3. AI Markdown Rendering & Overflow Fixes */
-    .ai-markdown-content {
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        word-break: break-word; 
-        max-width: 100%;
-    }
     
-    .ai-markdown-content mjx-container {
-        max-width: 100% !important;
-        overflow-x: auto !important; 
-        overflow-y: hidden !important;
-    }
+    .viewer-filmstrip { display: block; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; touch-action: pan-y; scroll-behavior: smooth; }
+    .viewer-page { width: 100%; display: block; margin-bottom: 12px; }
+    .viewer-page img { width: 100%; height: auto; display: block; user-select: none; }
 
+    /* AI Markdown Rendering */
+    .ai-markdown-content { word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
+    .ai-markdown-content mjx-container { max-width: 100% !important; overflow-x: auto !important; overflow-y: hidden !important; }
     .ai-markdown-content p { margin-bottom: 12px; }
     .ai-markdown-content ul { list-style-type: disc; margin-left: 20px; margin-bottom: 12px; }
     .ai-markdown-content ol { list-style-type: decimal; margin-left: 20px; margin-bottom: 12px; }
@@ -170,125 +67,32 @@ body.modal-open {
     .ai-markdown-content pre { background: #f1f5f9; padding: 10px; border-radius: 8px; overflow-x: auto; margin-bottom: 12px; font-size: 12px; max-width: 100%; }
     .ai-markdown-content code { background: #f1f5f9; padding: 2px 4px; border-radius: 4px; font-size: 12px; color: #dc2626; }
 
-    /* FIXED ZOOM SYSTEM */
-    .zoom-wrapper {
-        position: relative;
-        overflow: hidden;
-        touch-action: pan-y;
-    }
+    .zoom-wrapper { position: relative; overflow: hidden; touch-action: pan-y; }
+    .zoom-wrapper img { width: 100%; transform-origin: center center; will-change: transform; transition: transform 0.08s linear; }
 
-    .zoom-wrapper img {
-        width: 100%;
-        transform-origin: center center;
-        will-change: transform;
-        transition: transform 0.08s linear;
-    }
-
-    .modal-content-pop {
-        position: relative;
-        z-index: 130;
-        transform: scale(0.95);
-        opacity: 0;
-        transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s linear;
-        will-change: transform, opacity;
-    }
-
+    .modal-content-pop { position: relative; z-index: 130; transform: scale(0.95); opacity: 0; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s linear; will-change: transform, opacity; }
     .modal-overlay.active-sheet .modal-content-pop { transform: scale(1); opacity: 1; }
 
-    /* --- PREMIUM ANIMATION & SCROLL SYSTEM --- */
-    .modal-overlay {
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
-        backdrop-filter: blur(0px);
-        -webkit-backdrop-filter: blur(0px);
-    }
-
-    .modal-overlay.active-sheet {  
-        opacity: 1;  
-        pointer-events: auto;  
-        backdrop-filter: blur(8px);  
-        -webkit-backdrop-filter: blur(8px);  
-    }  
-
-    .modal-content-slide {   
-        position:relative;  
-        z-index:130;  
-        transform: translateY(100%);  
-        transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);  
-        will-change: transform;  
-        overscroll-behavior-y: contain;   
-    }  
-
+    .modal-overlay { opacity: 0; pointer-events: none; transition: opacity 0.4s ease, backdrop-filter 0.4s ease; backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+    .modal-overlay.active-sheet { opacity: 1; pointer-events: auto; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }  
+    .modal-content-slide { position:relative; z-index:130; transform: translateY(100%); transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; overscroll-behavior-y: contain; }  
     .modal-overlay.active-sheet .modal-content-slide { transform: translateY(0%); }  
 
-    /* --- PREMIUM DOWNLOAD ALERT STYLES --- */
-    .premium-alert-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
-        z-index: 20000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        pointer-events: none;
-    }
-
+    .premium-alert-overlay { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 20000; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; pointer-events: none; }
     .premium-alert-overlay.active { opacity: 1; pointer-events: auto; }
-
-    .premium-alert-card {
-        background: white;
-        width: 85%;
-        max-width: 320px;
-        padding: 24px;
-        border-radius: 28px;
-        text-align: center;
-        transform: scale(0.9);
-        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
+    .premium-alert-card { background: white; width: 85%; max-width: 320px; padding: 24px; border-radius: 28px; text-align: center; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .premium-alert-overlay.active .premium-alert-card { transform: scale(1); }
-
-    .alert-icon-circle {
-        width: 60px;
-        height: 60px;
-        background: #fee2e2;
-        color: #dc2626;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 16px;
-        font-size: 24px;
-    }
-
+    .alert-icon-circle { width: 60px; height: 60px; background: #fee2e2; color: #dc2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; }
     .alert-btn-group { display: flex; gap: 12px; margin-top: 24px; }
     .alert-btn { flex: 1; padding: 12px; border-radius: 14px; font-weight: 700; font-size: 14px; transition: all 0.2s; }
     .btn-cancel { background: #f1f5f9; color: #64748b; }
     .btn-confirm { background: #dc2626; color: white; }
 
-    /* VIEWER MODAL ANIMATION */
-    #viewerModal { 
-        pointer-events: none; 
-    }
+    #viewerModal { pointer-events: none; }
     #viewerModal.viewer-active { pointer-events: auto; }
-
-    #viewerHeader {
-        transform: translateY(-100%);
-        transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-        will-change: transform;
-    }
+    #viewerHeader { transform: translateY(-100%); transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
     #viewerModal.viewer-active #viewerHeader { transform: translateY(0%); }
-
-    #viewerBodyContent {
-        transform: translateY(100%);
-        transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
-        will-change: transform;
-    }
+    #viewerBodyContent { transform: translateY(100%); transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
     #viewerModal.viewer-active #viewerBodyContent { transform: translateY(0%); }
 
     #notesList { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }  
@@ -297,32 +101,11 @@ body.modal-open {
     #notesList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }  
     ::-webkit-scrollbar { width: 0px; height: 0px; }  
 
-    /* Premium Loader */
-    .loader-ring {
-        width: 22px;
-        height: 22px;
-        border: 3px solid rgba(220, 38, 38, 0.3);
-        border-top: 3px solid #dc2626;
-        border-radius: 50%;
-        animation: spin 0.8s linear infinite;
-    }
+    .loader-ring { width: 22px; height: 22px; border: 3px solid rgba(220, 38, 38, 0.3); border-top: 3px solid #dc2626; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-    /* Premium Glass Button Style */
-    .btn-premium-pdf {
-        background: rgba(16, 185, 129, 0.1);
-        border: 1px solid rgba(16, 185, 129, 0.4);
-        color: #10b981;
-        transition: all 0.3s ease;
-    }
-    .btn-premium-pdf:active {
-        background: rgba(16, 185, 129, 0.2);
-        transform: scale(0.95);
-    }
+    .btn-premium-pdf { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; transition: all 0.3s ease; }
+    .btn-premium-pdf:active { background: rgba(16, 185, 129, 0.2); transform: scale(0.95); }
 </style>
 </head>  
 
@@ -394,9 +177,8 @@ body.modal-open {
     </div>
 
     <div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col md:flex-row overflow-hidden">  
-    <div class="flex-grow flex flex-col h-full bg-transparent relative"> 
+        <div class="flex-grow flex flex-col h-full bg-transparent relative"> 
             <div id="viewerHeader" class="px-4 py-3 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110] min-h-[64px]">  
-
                 <div class="flex-grow pr-3">  
                     <h2 id="viewingTitle" class="font-bold text-white uppercase text-xs tracking-wide leading-tight break-words max-w-full"></h2>  
                 </div> 
@@ -419,30 +201,33 @@ body.modal-open {
         </div>  
 
         <div id="aiChatPanel" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white border-l border-slate-200 z-[120] translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
-            <div class="p-4 bg-white border-b border-slate-200 flex justify-between items-center">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-wand-magic-sparkles text-red-500"></i>
-                    <h3 class="font-black text-sm uppercase tracking-wider text-slate-900">Vault Assistant</h3>
+            <div class="p-4 bg-white border-b border-slate-200">
+                <div class="flex justify-between items-center mb-4">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-red-500"></i>
+                        <h3 class="font-black text-sm uppercase tracking-wider text-slate-900">Vault Assistant</h3>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="openAiKeyModal()" class="text-slate-400 hover:text-slate-800 text-xs" title="API Settings">
+                            <i class="fa-solid fa-gear"></i>
+                        </button>
+                        <button onclick="toggleAiPanel(false)" class="text-slate-400 hover:text-red-600">
+                            <i class="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3">
-                    <button onclick="openAiKeyModal()" class="text-slate-400 hover:text-slate-800 text-xs" title="API Settings">
-                        <i class="fa-solid fa-gear"></i>
-                    </button>
-                    <button onclick="toggleAiPanel(false)" class="text-slate-400 hover:text-red-600">
-                        <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-                </div>
+                <div id="apiSelectorContainer" style="margin-bottom: 0.5rem;"></div>
+                <div id="apiQuotaContainer"></div>
             </div>
 
-            <div id="aiChatMessages" class="flex-grow p-4 overflow-y-auto bg-white">
-                </div>
+            <div id="aiChatMessages" class="flex-grow p-4 overflow-y-auto bg-white"></div>
 
             <div class="p-4 bg-white border-t border-slate-200 space-y-2">
                 <div class="flex gap-2">
                     <input type="text" id="aiUserQuery" placeholder="Ask to solve Q1, derive formulas..." 
                            class="flex-grow bg-slate-50 text-slate-800 text-xs p-3 rounded-xl outline-none border border-slate-300 focus:border-red-500 transition-colors"
-                           onkeypress="if(event.key === 'Enter') sendQueryToAI()">
-                    <button onclick="sendQueryToAI()" id="aiSendBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 rounded-xl transition-all active:scale-95">
+                           onkeypress="if(event.key === 'Enter') handleUserQuery()">
+                    <button onclick="handleUserQuery()" id="aiSendBtn" class="bg-red-600 hover:bg-red-700 text-white px-4 rounded-xl transition-all active:scale-95">
                         <i class="fa-solid fa-paper-plane"></i>
                     </button>
                 </div>
@@ -451,25 +236,23 @@ body.modal-open {
     </div>
 
     <div id="aiKeyModal" class="fixed inset-0 bg-black/80 z-[30000] hidden flex items-center justify-center p-4">
-        <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl">
-            <div class="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">
-                <i class="fa-solid fa-key"></i>
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-sm w-full shadow-2xl overflow-y-auto max-h-[90vh]">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 bg-red-100 text-red-600 rounded-full flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-key"></i>
+                    </div>
+                    <h3 class="text-slate-900 font-black uppercase text-sm tracking-wide">API Provider Setup</h3>
+                </div>
+                <button onclick="closeAiKeyModal()" class="text-slate-400 hover:text-red-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <h3 class="text-slate-900 font-black uppercase text-sm tracking-wide mb-1">AI Setup</h3>
-            <p class="text-slate-500 text-xs mb-4">Enter your personal Gemini API key. Stored safely on your local device cache only.</p>
+            <p class="text-slate-500 text-xs mb-4">Add your personal Gemini, OpenRouter, or Local Ollama keys here. Stored safely on your local device cache only.</p>
             
-            <input type="password" id="aiApiKeyField" placeholder="sk-proj-... or AIza..." 
-                   class="w-full bg-slate-50 border border-slate-300 text-slate-900 text-xs p-3 rounded-xl outline-none mb-2 text-center focus:border-red-500">
+            <div id="apiSettingsContainer" class="text-sm text-left"></div>
             
-            <a href="https://aistudio.google.com/app/apikey" target="_blank" 
-   class="block text-[11px] text-red-600 font-bold hover:underline mb-5">
-   Get Free Gemini API Key here <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i>
-</a>
-
-
-            <div class="flex gap-2">
-                <button onclick="closeAiKeyModal()" class="flex-1 bg-slate-100 text-slate-500 font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider">Cancel</button>
-                <button onclick="saveAiKey()" class="flex-1 bg-red-600 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider shadow-lg shadow-red-600/20">Save Configuration</button>
+            <div class="mt-4">
+                 <a href="https://aistudio.google.com/app/apikey" target="_blank" class="block text-[11px] text-red-600 font-bold hover:underline mb-2">Get Free Gemini API Key <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
+                 <a href="https://openrouter.ai/keys" target="_blank" class="block text-[11px] text-blue-600 font-bold hover:underline">Get OpenRouter API Key <i class="fa-solid fa-arrow-up-right-from-square ml-0.5"></i></a>
             </div>
         </div>
     </div>
@@ -495,40 +278,274 @@ body.modal-open {
     </div>  
 
 <script>
-const semesters = [
-    { label: "All Semesters", value: "all" },
-    { label: "1st Year 1st Sem", value: "1st Year 1st Semester" },
-    { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" },
-    { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" },
-    { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" },
-    { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" },
-    { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" },
-    { label: "4th Year 1st Sem", value: "4th Year 1st Semester" },
-    { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" }
-];
+// ============================================================================
+// AI PROVIDER MANAGEMENT SYSTEM (Integrated)
+// ============================================================================
+const API_STORAGE_KEY = 'eeeVaultApisRegistry';
+const ACTIVE_API_KEY = 'eeeVaultActiveApi';
+const DAILY_QUOTA_KEY = 'eeeVaultDailyQuotas';
 
-let selectedSemValue = "all";
-let courseData = [];
-const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
-let currentPages = [];
+function loadApisFromStorage() { const stored = localStorage.getItem(API_STORAGE_KEY); return stored ? JSON.parse(stored) : {}; }
+function saveApisToStorage(apis) { localStorage.setItem(API_STORAGE_KEY, JSON.stringify(apis)); }
+function getActiveApiName() { return localStorage.getItem(ACTIVE_API_KEY) || null; }
+function setActiveApiName(name) { localStorage.setItem(ACTIVE_API_KEY, name); }
+function loadDailyQuotas() { const stored = localStorage.getItem(DAILY_QUOTA_KEY); return stored ? JSON.parse(stored) : {}; }
+function saveDailyQuotas(quotas) { localStorage.setItem(DAILY_QUOTA_KEY, JSON.stringify(quotas)); }
 
-let isAiPanelOpen = false;
-let isAiThinking = false;
-let aiChatHistory = []; 
-let cachedImageParts = []; 
-let touchStartLine = 0;
-let activeDownloadData = null;
+function addApi(name, type, apiKey) {
+    if (!name || !type || !apiKey) throw new Error('Name, type, and API key are required');
+    const apis = loadApisFromStorage();
+    if (apis[name]) throw new Error(`API "${name}" already exists. Use a different name.`);
+    if (type === 'gemini' && !apiKey.startsWith('AIza')) throw new Error('Invalid Gemini key (should start with AIza)');
+    if (type === 'openrouter' && !apiKey.startsWith('sk-')) throw new Error('Invalid OpenRouter key (should start with sk-)');
+    if (type === 'ollama' && !apiKey.includes('://')) throw new Error('Invalid Ollama URL (should be http://... )');
+
+    apis[name] = { type: type, key: apiKey, createdAt: new Date().toISOString(), status: 'active' };
+    saveApisToStorage(apis);
+    if (Object.keys(apis).length === 1) setActiveApiName(name);
+    return apis;
+}
+
+function deleteApi(name) {
+    const apis = loadApisFromStorage();
+    if (!apis[name]) throw new Error(`API "${name}" not found`);
+    delete apis[name];
+    saveApisToStorage(apis);
+    if (getActiveApiName() === name) {
+        const remaining = Object.keys(apis);
+        setActiveApiName(remaining.length > 0 ? remaining[0] : null);
+    }
+    return apis;
+}
+
+function getAllApis() { return loadApisFromStorage(); }
+function getActiveApi() {
+    const name = getActiveApiName();
+    if (!name) return null;
+    const apis = loadApisFromStorage();
+    return { name, ...apis[name] };
+}
+
+function switchApi(name) {
+    const apis = loadApisFromStorage();
+    if (!apis[name]) throw new Error(`API "${name}" not found`);
+    setActiveApiName(name);
+    return apis[name];
+}
+
+function recordApiUsage(apiName, requestCount = 1) {
+    const quotas = loadDailyQuotas();
+    const today = new Date().toDateString();
+    const quotaKey = `${apiName}_${today}`;
+    if (!quotas[quotaKey]) quotas[quotaKey] = { used: 0, resetTime: Date.now() + 86400000 };
+    quotas[quotaKey].used += requestCount;
+    saveDailyQuotas(quotas);
+    return quotas[quotaKey];
+}
+
+function getApiQuotaStatus(apiName) {
+    const apis = loadApisFromStorage();
+    const api = apis[apiName];
+    if (!api) return null;
+    const quotas = loadDailyQuotas();
+    const today = new Date().toDateString();
+    const quotaKey = `${apiName}_${today}`;
+    let limit = 50; 
+    if (api.type === 'ollama') limit = 999999; 
+    const used = quotas[quotaKey]?.used || 0;
+    const remaining = Math.max(0, limit - used);
+    const percentUsed = Math.round((used / limit) * 100);
+    return { apiName, type: api.type, used, limit, remaining, percentUsed, resetTime: quotas[quotaKey]?.resetTime || null, isExhausted: used >= limit };
+}
+
+async function sendQueryToAI(userMessage) {
+    const activeApi = getActiveApi();
+    if (!activeApi) throw new Error('No AI provider configured. Add one in Settings.');
+    const quotaStatus = getApiQuotaStatus(activeApi.name);
+    if (quotaStatus.isExhausted) throw new Error(`Daily limit reached for "${activeApi.name}". Switch to another API.`);
+
+    let response;
+    try {
+        if (activeApi.type === 'gemini') response = await sendToGemini(userMessage, activeApi.key);
+        else if (activeApi.type === 'openrouter') response = await sendToOpenRouter(userMessage, activeApi.key);
+        else if (activeApi.type === 'ollama') response = await sendToOllama(userMessage, activeApi.key);
+        else throw new Error(`Unknown API type: ${activeApi.type}`);
+        
+        recordApiUsage(activeApi.name, 1);
+        return response;
+    } catch (err) {
+        const errMsg = err.message || err.toString();
+        if (errMsg.includes('quota') || errMsg.includes('rate limit') || errMsg.includes('429')) {
+            const quotas = loadDailyQuotas();
+            const today = new Date().toDateString();
+            quotas[`${activeApi.name}_${today}`] = { used: quotaStatus.limit, resetTime: Date.now() + 86400000 };
+            saveDailyQuotas(quotas);
+            throw new Error(`${activeApi.name} has hit its limit. Switch to another API.`);
+        }
+        throw err;
+    }
+}
+
+async function sendToGemini(userMessage, apiKey) {
+    const contents = aiChatHistory.map((item, index) => {
+        let parts = [];
+        if (item.role === 'user') {
+            parts.push({ text: item.content });
+            if (index === 0 && cachedImageParts.length > 0) parts.push(...cachedImageParts);
+        }
+        return { role: item.role === 'user' ? 'user' : 'model', parts: parts.length > 0 ? parts : [{ text: item.content }] };
+    });
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: contents, system_instruction: { parts: [{ text: 'You are an expert engineering professor helping a student with the attached question paper image.' }] } })
+    });
+    if (!response.ok) { const err = await response.json().catch(()=>null); throw new Error(err?.error?.message || `HTTP ${response.status}`); }
+    const data = await response.json();
+    return data.candidates[0].content.parts[0].text;
+}
+
+async function sendToOpenRouter(userMessage, apiKey) {
+    let images = [];
+    if(aiChatHistory.length === 1 && cachedImageParts.length > 0) {
+        images = cachedImageParts.map(part => ({ type: "image_url", image_url: { url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}` }}));
+    }
+    
+    const contents = aiChatHistory.map(item => {
+        if(item.role === 'user' && images.length > 0) return { role: 'user', content: [{ type: "text", text: item.content }, ...images] };
+        return { role: item.role === 'user' ? 'user' : 'assistant', content: item.content };
+    });
+
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST', headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://eeevaultjstu.vercel.app', 'X-Title': 'EEE Vault JSTU' },
+        body: JSON.stringify({ model: 'openrouter/free', messages: contents })
+    });
+    if (!response.ok) { const err = await response.json().catch(()=>null); throw new Error(err?.error?.message || `HTTP ${response.status}`); }
+    const data = await response.json();
+    return data.choices[0].message.content;
+}
+
+async function sendToOllama(userMessage, serverUrl) {
+    const contents = aiChatHistory.map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: item.content }));
+    const response = await fetch(`${serverUrl}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'llama3.2-vision', messages: contents, stream: false }) });
+    if (!response.ok) throw new Error(`Ollama error: HTTP ${response.status}. Is the server running?`);
+    const data = await response.json();
+    return data.message.content;
+}
+
+// --- UI HELPERS ---
+function renderApiDropdown() {
+    const apis = getAllApis();
+    const activeApi = getActiveApiName();
+    const apiNames = Object.keys(apis);
+    if (apiNames.length === 0) return '<p class="text-[10px] text-red-500 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> No Provider Set</p>';
+    
+    let html = '<select id="aiProviderSelect" onchange="switchAiProviderUi()" class="w-full bg-slate-50 p-2 rounded-xl border border-slate-200 text-xs text-slate-700 outline-none">';
+    apiNames.forEach(name => {
+        const api = apis[name]; const status = getApiQuotaStatus(name); const selected = name === activeApi ? 'selected' : '';
+        const typeLabel = api.type.charAt(0).toUpperCase() + api.type.slice(1);
+        const quotaLabel = status.isExhausted ? ' [EXHAUSTED]' : ` [${status.remaining}]`;
+        html += `<option value="${name}" ${selected}>${name} (${typeLabel})${quotaLabel}</option>`;
+    });
+    return html + '</select>';
+}
+
+function switchAiProviderUi() {
+    const name = document.getElementById('aiProviderSelect').value;
+    switchApi(name);
+    updateApiDisplay();
+}
+
+function renderApiQuotaStatus() {
+    const activeApi = getActiveApi();
+    if (!activeApi) return '';
+    const status = getApiQuotaStatus(activeApi.name);
+    let color = 'bg-green-500'; if (status.percentUsed > 75) color = 'bg-amber-500'; if (status.percentUsed > 90) color = 'bg-red-500';
+    return `
+        <div class="mt-2 text-[10px] text-slate-500 flex items-center justify-between">
+            <span>Quota Usage</span>
+            <span class="font-bold">${status.used}/${status.limit}</span>
+        </div>
+        <div class="w-full h-1 bg-slate-200 rounded-full mt-1 overflow-hidden"><div class="h-full ${color} transition-all duration-300" style="width: ${status.percentUsed}%"></div></div>
+    `;
+}
+
+function renderApiSettings() {
+    const apis = getAllApis();
+    const apiNames = Object.keys(apis);
+    let html = `
+        <div class="space-y-4">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <h4 class="font-bold text-xs mb-2 text-slate-700">Add New Provider</h4>
+                <div class="space-y-2">
+                    <input type="text" id="apiName" placeholder="Name (e.g. Gemini Backup)" class="w-full text-xs p-2 rounded-lg border border-slate-300 outline-none" />
+                    <select id="apiType" class="w-full text-xs p-2 rounded-lg border border-slate-300 outline-none bg-white">
+                        <option value="">Select Protocol</option>
+                        <option value="gemini">Gemini Protocol</option>
+                        <option value="openrouter">OpenRouter Protocol</option>
+                        <option value="ollama">Local Ollama API</option>
+                    </select>
+                    <input type="password" id="apiKey" placeholder="API Key or Server URL" class="w-full text-xs p-2 rounded-lg border border-slate-300 outline-none" />
+                    <button onclick="addNewApiFromForm()" class="w-full bg-slate-800 text-white text-xs font-bold py-2 rounded-lg">Save Provider</button>
+                </div>
+            </div>
+            <div>
+                <h4 class="font-bold text-xs mb-2 text-slate-700">Saved Providers</h4>
+                ${apiNames.length === 0 ? '<p class="text-xs text-slate-400">No providers added yet.</p>' : `
+                    <div class="space-y-2 max-h-40 overflow-y-auto">
+                        ${apiNames.map(name => {
+                            const api = apis[name]; const status = getApiQuotaStatus(name); const isActive = name === getActiveApiName();
+                            return `
+                                <div class="p-3 ${isActive ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200'} border rounded-xl flex justify-between items-center">
+                                    <div>
+                                        <p class="font-bold text-xs text-slate-800">${name} ${isActive ? '<i class="fa-solid fa-circle-check text-blue-500 ml-1"></i>' : ''}</p>
+                                        <p class="text-[10px] text-slate-500">${api.type.toUpperCase()} • ${status.used}/${status.limit}</p>
+                                    </div>
+                                    <button onclick="deleteApiAndRefresh('${name}')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `}
+            </div>
+        </div>
+    `;
+    return html;
+}
+
+function addNewApiFromForm() {
+    try {
+        addApi(document.getElementById('apiName').value.trim(), document.getElementById('apiType').value, document.getElementById('apiKey').value.trim());
+        document.getElementById('apiSettingsContainer').innerHTML = renderApiSettings();
+        updateApiDisplay();
+    } catch (err) { alert(`Error: ${err.message}`); }
+}
+function deleteApiAndRefresh(name) {
+    if (confirm(`Delete "${name}"?`)) { try { deleteApi(name); document.getElementById('apiSettingsContainer').innerHTML = renderApiSettings(); updateApiDisplay(); } catch (err) { alert(`Error: ${err.message}`); } }
+}
+
+function updateApiDisplay() {
+    const selector = document.getElementById('apiSelectorContainer');
+    const quota = document.getElementById('apiQuotaContainer');
+    if(selector) selector.innerHTML = renderApiDropdown();
+    if(quota) quota.innerHTML = renderApiQuotaStatus();
+}
+
+// ============================================================================
+// APP LOGIC
+// ============================================================================
+const semesters = [ { label: "All Semesters", value: "all" }, { label: "1st Year 1st Sem", value: "1st Year 1st Semester" }, { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" }, { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" }, { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" }, { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" }, { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" }, { label: "4th Year 1st Sem", value: "4th Year 1st Semester" }, { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" } ];
+let selectedSemValue = "all"; let courseData = []; const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"]; let currentPages = [];
+let isAiPanelOpen = false; let isAiThinking = false; let aiChatHistory = []; let cachedImageParts = []; let touchStartLine = 0; let activeDownloadData = null;
 
 async function init() {
     try {
-        loadSavedKeyToField(); 
         const res = await fetch('data.json?t=' + Date.now());
         const data = await res.json();
         courseData = data.Course ? data.Course : data;
         renderCourses(courseData);
-    } catch (err) {
-        console.error("Data load failed", err);
-    }
+        updateApiDisplay(); // Init API UI
+    } catch (err) { console.error("Data load failed", err); }
 }
 
 function renderCourses(data) {
@@ -538,26 +555,12 @@ function renderCourses(data) {
         return `
             <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
                 <div class="flex flex-col gap-3">
-                    <div>
-                        <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span>
-                        <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3>
-                    </div>
+                    <div><span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span><h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3></div>
                     <div class="scroll-container">
-                        <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" 
-                                class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
-                            <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
-                            <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
-                        </button>
+                        <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}"><span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span><span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span></button>
                         ${batches.map(batch => {
-                            const link = course.links ? course.links[batch] : null;
-                            const isMissing = !link || (Array.isArray(link) && link.length === 0) || link === "missing";
-                            return `
-                                <button onclick="${isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`}" 
-                                        class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
-                                    <span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span>
-                                    <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span>
-                                </button>
-                            `;
+                            const link = course.links ? course.links[batch] : null; const isMissing = !link || (Array.isArray(link) && link.length === 0) || link === "missing";
+                            return `<button onclick="${isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`}" class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}"><span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span><span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span></button>`;
                         }).join('')}
                     </div>
                 </div>
@@ -566,464 +569,136 @@ function renderCourses(data) {
 }
 
 function confirmPdfDownload() {
-    const alertHTML = `
-        <div id="customAlert" class="premium-alert-overlay">
-            <div class="premium-alert-card">
-                <div class="alert-icon-circle"><i class="fa-solid fa-file-pdf"></i></div>
-                <h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Compile PDF?</h3>
-                <p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">Download all question pages compiled into a single A4 PDF file.</p>
-                <div class="alert-btn-group">
-                    <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
-                    <button class="alert-btn btn-confirm" onclick="executePdfDownload()">Start</button>
-                </div>
-            </div>
-        </div>
-    `;
-    document.body.insertAdjacentHTML('beforeend', alertHTML);
+    document.body.insertAdjacentHTML('beforeend', `<div id="customAlert" class="premium-alert-overlay"><div class="premium-alert-card"><div class="alert-icon-circle"><i class="fa-solid fa-file-pdf"></i></div><h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Compile PDF?</h3><p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">Download compiled A4 PDF.</p><div class="alert-btn-group"><button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button><button class="alert-btn btn-confirm" onclick="executePdfDownload()">Start</button></div></div></div>`);
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
 
 async function executePdfDownload() {
-    closeAlert();
-    const pdfBtn = document.getElementById('pdfBtn');
-    const headerLoader = document.getElementById('headerLoader');
-    pdfBtn.classList.add('hidden');
-    headerLoader.classList.remove('hidden');
-
+    closeAlert(); const pdfBtn = document.getElementById('pdfBtn'); const headerLoader = document.getElementById('headerLoader');
+    pdfBtn.classList.add('hidden'); headerLoader.classList.remove('hidden');
     try {
-        const currentTitle = document.getElementById('viewingTitle').innerText.trim();
-        let formattedName = currentTitle
-            .replace(/\s+-\s+/g, '_')
-            .replace(/\s+/g, '_')
-            .replace(/[^a-zA-Z0-9-_]/g, '');
-        const finalFileName = `${formattedName || 'session_papers'}.pdf`;
-
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-
+        const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
         for (let i = 0; i < currentPages.length; i++) {
             if (i > 0) pdf.addPage();
-            const cleanUrl = currentPages[i].replace(/^https?:\/\//, '');
-            const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}&output=jpg&q=80`;
-
-            const imgData = await new Promise((resolve, reject) => {
-                const img = new Image();
-                img.crossOrigin = 'Anonymous';
-                img.onload = () => {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    canvas.getContext('2d').drawImage(img, 0, 0);
-                    resolve(canvas.toDataURL('image/jpeg', 0.8));
-                };
-                img.onerror = () => reject(new Error(`Failed to process page ${i + 1}`));
-                img.src = proxyUrl;
-            });
-
-            const calcImg = new Image();
-            await new Promise((resolve) => { calcImg.onload = resolve; calcImg.src = imgData; });
-
-            let renderWidth = pdfWidth;
-            let renderHeight = (calcImg.height * pdfWidth) / calcImg.width;
-            if (renderHeight > pdfHeight) {
-                renderHeight = pdfHeight;
-                renderWidth = (calcImg.width * pdfHeight) / calcImg.height;
-            }
-            const xOffset = (pdfWidth - renderWidth) / 2;
-            const yOffset = (pdfHeight - renderHeight) / 2;
-            pdf.addImage(imgData, 'JPEG', xOffset, yOffset, renderWidth, renderHeight);
+            const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(currentPages[i].replace(/^https?:\/\//, ''))}&output=jpg&q=80`;
+            const imgData = await new Promise((res, rej) => { const img = new Image(); img.crossOrigin = 'Anonymous'; img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; canvas.getContext('2d').drawImage(img, 0, 0); res(canvas.toDataURL('image/jpeg', 0.8)); }; img.onerror = rej; img.src = proxyUrl; });
+            const calcImg = new Image(); await new Promise(r => { calcImg.onload = r; calcImg.src = imgData; });
+            let renderWidth = pdf.internal.pageSize.getWidth(); let renderHeight = (calcImg.height * renderWidth) / calcImg.width;
+            if (renderHeight > pdf.internal.pageSize.getHeight()) { renderHeight = pdf.internal.pageSize.getHeight(); renderWidth = (calcImg.width * renderHeight) / calcImg.height; }
+            pdf.addImage(imgData, 'JPEG', (pdf.internal.pageSize.getWidth() - renderWidth)/2, (pdf.internal.pageSize.getHeight() - renderHeight)/2, renderWidth, renderHeight);
         }
-
-        pdf.save(finalFileName);
-
-    } catch (err) {
-        console.error(err);
-        alert("Download layout error. Check internet connection or image source.");
-    } finally {
-        pdfBtn.classList.remove('hidden');
-        headerLoader.classList.add('hidden');
-    }
+        pdf.save(`${document.getElementById('viewingTitle').innerText.trim().replace(/\s+/g, '_')}.pdf`);
+    } catch (err) { alert("Download error."); } finally { pdfBtn.classList.remove('hidden'); headerLoader.classList.add('hidden'); }
 }
 
 function toggleSemModal(show) {
     const modal = document.getElementById('semModal');
-    if (show) {
-        renderSemOptions();
-        modal.classList.remove('hidden');
-        modal.offsetHeight;
-        modal.classList.add('active-sheet');
-    } else {
-        modal.classList.remove('active-sheet');
-        setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 200);
-    }
+    if (show) { renderSemOptions(); modal.classList.remove('hidden'); modal.offsetHeight; modal.classList.add('active-sheet'); } 
+    else { modal.classList.remove('active-sheet'); setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 200); }
 }
 
 function renderSemOptions() {
-    const container = document.getElementById('semOptionsList');
-    container.innerHTML = semesters.map(s => `
-        <button onclick="applyPremiumFilter('${s.value}', '${s.label}')" 
-            class="w-full flex items-center justify-between p-4 mb-2 rounded-2xl transition-all ${selectedSemValue === s.value ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-slate-50 text-slate-600 font-bold'}">
-            <span class="text-sm">${s.label}</span>
-            ${selectedSemValue === s.value ? '<i class="fa-solid fa-circle-check"></i>' : ''}
-        </button>`).join('');
+    document.getElementById('semOptionsList').innerHTML = semesters.map(s => `<button onclick="applyPremiumFilter('${s.value}', '${s.label}')" class="w-full flex items-center justify-between p-4 mb-2 rounded-2xl transition-all ${selectedSemValue === s.value ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-slate-50 text-slate-600 font-bold'}"><span class="text-sm">${s.label}</span>${selectedSemValue === s.value ? '<i class="fa-solid fa-circle-check"></i>' : ''}</button>`).join('');
 }
 
 function applyPremiumFilter(val, label) {
-    selectedSemValue = val;
-    document.getElementById('currentSemesterText').innerText = label;
-    toggleSemModal(false);
+    selectedSemValue = val; document.getElementById('currentSemesterText').innerText = label; toggleSemModal(false);
     const query = document.getElementById('mainSearch').value.toLowerCase();
-    const filtered = courseData.filter(c => 
-        (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
-        (selectedSemValue === "all" || c.semester === selectedSemValue)
-    );
-    renderCourses(filtered);
+    renderCourses(courseData.filter(c => (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) && (selectedSemValue === "all" || c.semester === selectedSemValue)));
 }
 
-document.getElementById('mainSearch').addEventListener('input', () => {
-    applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText);
-});
-
-function openPaperByCode(code, batch) {
-    const course = courseData.find(c => c.code === code);
-    if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`);
-}
+document.getElementById('mainSearch').addEventListener('input', () => applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText));
+function openPaperByCode(code, batch) { const course = courseData.find(c => c.code === code); if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`); }
 
 function viewPaper(links, title) {
-    currentPages = Array.isArray(links) ? links : [links];
-    cachedImageParts = [];            
-    aiChatHistory = [];               
-    document.getElementById('viewingTitle').innerText = title;
+    currentPages = Array.isArray(links) ? links : [links]; cachedImageParts = []; aiChatHistory = []; document.getElementById('viewingTitle').innerText = title;
     const filmstrip = document.getElementById('paperFilmstrip');
-    
-    filmstrip.innerHTML = currentPages.map(url => `
-        <div class="viewer-page">
-            <div class="zoom-wrapper">
-                <img src="${url}" loading="lazy" alt="Question Paper Page" onload="initZoomForImage(this)">
-            </div>
-        </div>`).join('');
-    
-    const modal = document.getElementById('viewerModal');
-    modal.classList.remove('hidden');
-    document.body.classList.add('modal-open');
-    requestAnimationFrame(() => modal.classList.add('viewer-active'));
-    filmstrip.scrollTop = 0;
+    filmstrip.innerHTML = currentPages.map(url => `<div class="viewer-page"><div class="zoom-wrapper"><img src="${url}" loading="lazy" alt="Page" onload="initZoomForImage(this)"></div></div>`).join('');
+    const modal = document.getElementById('viewerModal'); modal.classList.remove('hidden'); document.body.classList.add('modal-open'); requestAnimationFrame(() => modal.classList.add('viewer-active')); filmstrip.scrollTop = 0;
 }
 
 function closeViewer() {
-    const modal = document.getElementById('viewerModal');
-    modal.classList.remove('viewer-active'); 
-    document.body.classList.remove('modal-open');
-    setTimeout(() => {
-        modal.classList.add('hidden');
-        document.getElementById('paperFilmstrip').innerHTML = "";
-        currentPages = []; 
-        toggleAiPanel(false);
-    }, 550);
+    const modal = document.getElementById('viewerModal'); modal.classList.remove('viewer-active'); document.body.classList.remove('modal-open');
+    setTimeout(() => { modal.classList.add('hidden'); document.getElementById('paperFilmstrip').innerHTML = ""; currentPages = []; toggleAiPanel(false); }, 550);
 }
 
 function initZoomForImage(img) {
-    const wrapper = img.parentElement;
-    let scale = 1, lastScale = 1, panX = 0, panY = 0, startX = 0, startY = 0;
-    let startDist = 0, isPanning = false, lastTap = 0, originX = 0, originY = 0;
-    const MIN_SCALE = 1, MAX_SCALE = 5;
-
-    function update(mode = "instant") {
-        img.style.transition = mode === "animate" ? "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)" : "none";
-        img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
-    }
-
-    function clampPan() {
-        const limitX = Math.max(0, (img.offsetWidth * scale - wrapper.offsetWidth) / 2);
-        const limitY = Math.max(0, (img.offsetHeight * scale - wrapper.offsetHeight) / 2);
-        panX = Math.max(-limitX, Math.min(limitX, panX));
-        panY = Math.max(-limitY, Math.min(limitY, panY));
-    }
-
-    wrapper.addEventListener('touchstart', (e) => {
-        if (e.touches.length === 2) {
-            isPanning = false;
-            startDist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-            lastScale = scale;
-            const imgRect = img.getBoundingClientRect();
-            originX = ((e.touches[0].clientX + e.touches[1].clientX) / 2 - imgRect.left) / scale;
-            originY = ((e.touches[0].clientY + e.touches[1].clientY) / 2 - imgRect.top) / scale;
-        } else if (e.touches.length === 1) {
-            isPanning = true;
-            startX = e.touches[0].clientX - panX;
-            startY = e.touches[0].clientY - panY;
-        }
-    }, { passive: false });
-
-    wrapper.addEventListener('touchmove', (e) => {
-        if (e.touches.length === 2) {
-            e.preventDefault();
-            const dist = Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY);
-            scale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, lastScale * (dist / startDist)));
-            const rect = wrapper.getBoundingClientRect();
-            const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
-            const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
-            panX = midX - (originX * scale);
-            panY = midY - (originY * scale);
-            clampPan();
-            update("instant");
-        } else if (e.touches.length === 1 && isPanning && scale > 1) {
-            e.preventDefault();
-            panX = e.touches[0].clientX - startX;
-            panY = e.touches[0].clientY - startY;
-            clampPan();
-            update("instant");
-        }
-    }, { passive: false });
-
-    wrapper.addEventListener('touchend', (e) => {
-        const now = Date.now();
-        if (now - lastTap < 300 && e.changedTouches.length === 1) {
-            const rect = wrapper.getBoundingClientRect();
-            const touch = e.changedTouches[0];
-            if (scale > 1) {
-                scale = 1; panX = 0; panY = 0;
-            } else {
-                scale = 2.5;
-                const x = touch.clientX - rect.left;
-                const y = touch.clientY - rect.top;
-                panX = (rect.width / 2 - x) * (scale - 1);
-                panY = (rect.height / 2 - y) * (scale - 1);
-            }
-            clampPan();
-            update("animate");
-        }
-        lastTap = now;
-        isPanning = false;
-    });
+    const wrapper = img.parentElement; let scale = 1, lastScale = 1, panX = 0, panY = 0, startX = 0, startY = 0, startDist = 0, isPanning = false, lastTap = 0, originX = 0, originY = 0;
+    function clampPan() { const limitX = Math.max(0, (img.offsetWidth * scale - wrapper.offsetWidth)/2); const limitY = Math.max(0, (img.offsetHeight * scale - wrapper.offsetHeight)/2); panX = Math.max(-limitX, Math.min(limitX, panX)); panY = Math.max(-limitY, Math.min(limitY, panY)); }
+    function update(m) { img.style.transition = m === "animate" ? "transform 0.3s cubic-bezier(0.16,1,0.3,1)" : "none"; img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`; }
+    wrapper.addEventListener('touchstart', (e) => { if(e.touches.length === 2) { isPanning=false; startDist=Math.hypot(e.touches[0].pageX-e.touches[1].pageX, e.touches[0].pageY-e.touches[1].pageY); lastScale=scale; const r=img.getBoundingClientRect(); originX=((e.touches[0].clientX+e.touches[1].clientX)/2-r.left)/scale; originY=((e.touches[0].clientY+e.touches[1].clientY)/2-r.top)/scale; } else if(e.touches.length === 1) { isPanning=true; startX=e.touches[0].clientX-panX; startY=e.touches[0].clientY-panY; } }, {passive:false});
+    wrapper.addEventListener('touchmove', (e) => { if(e.touches.length === 2) { e.preventDefault(); scale=Math.max(1, Math.min(5, lastScale*(Math.hypot(e.touches[0].pageX-e.touches[1].pageX, e.touches[0].pageY-e.touches[1].pageY)/startDist))); const r=wrapper.getBoundingClientRect(); panX=(e.touches[0].clientX+e.touches[1].clientX)/2-r.left-(originX*scale); panY=(e.touches[0].clientY+e.touches[1].clientY)/2-r.top-(originY*scale); clampPan(); update("instant"); } else if(e.touches.length === 1 && isPanning && scale>1) { e.preventDefault(); panX=e.touches[0].clientX-startX; panY=e.touches[0].clientY-startY; clampPan(); update("instant"); } }, {passive:false});
+    wrapper.addEventListener('touchend', (e) => { const now=Date.now(); if(now-lastTap<300 && e.changedTouches.length===1) { if(scale>1){scale=1;panX=0;panY=0;}else{scale=2.5; const r=wrapper.getBoundingClientRect(); panX=(r.width/2-(e.changedTouches[0].clientX-r.left))*(scale-1); panY=(r.height/2-(e.changedTouches[0].clientY-r.top))*(scale-1);} clampPan(); update("animate"); } lastTap=now; isPanning=false; });
 }
 
 function openNotes(code) {
-    const course = courseData.find(c => c.code === code);
-    const list = document.getElementById('notesList');
-    const modal = document.getElementById('notesModal');
-    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
-    list.innerHTML = course.notes.map(note => `
-        <div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')">
-            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
-            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span>
-            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span>
-        </div>`).join('');
-    modal.classList.remove('hidden');
-    window.addEventListener('touchstart', handleTouchStart, { passive: false });
-    window.addEventListener('touchmove', handleTouchMove, { passive: false });
-    requestAnimationFrame(() => { modal.classList.add('active-sheet'); document.body.classList.add('modal-open'); });
+    const course = courseData.find(c => c.code === code); const modal = document.getElementById('notesModal'); document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+    document.getElementById('notesList').innerHTML = course.notes.map(note => `<div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')"><i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i><span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span><span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Download</span></div>`).join('');
+    modal.classList.remove('hidden'); window.addEventListener('touchstart', handleTouchStart, {passive:false}); window.addEventListener('touchmove', handleTouchMove, {passive:false}); requestAnimationFrame(() => { modal.classList.add('active-sheet'); document.body.classList.add('modal-open'); });
 }
+function closeNotes() { const modal = document.getElementById('notesModal'); modal.classList.remove('active-sheet'); document.body.classList.remove('modal-open'); window.removeEventListener('touchstart', handleTouchStart); window.removeEventListener('touchmove', handleTouchMove); setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500); }
+function confirmDownload(url, fileName) { activeDownloadData = {url, fileName}; document.body.insertAdjacentHTML('beforeend', `<div id="customAlert" class="premium-alert-overlay"><div class="premium-alert-card"><div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div><h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Download?</h3><p style="color: #64748b; font-size: 12px; line-height: 1.5;">${fileName}</p><div class="alert-btn-group"><button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button><button class="alert-btn btn-confirm" onclick="executeDownload()">Download</button></div></div></div>`); setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10); }
+function executeDownload() { if(!activeDownloadData)return; const a=document.createElement('a'); a.href=activeDownloadData.url; a.download=activeDownloadData.fileName; a.target='_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a); closeAlert(); }
+function closeAlert() { const el=document.getElementById('customAlert'); if(el){el.classList.remove('active');setTimeout(()=>el.remove(),300);} }
+function handleTouchStart(e) { touchStartLine=e.touches[0].pageY; }
+function handleTouchMove(e) { if(document.getElementById('notesList').scrollTop<=0 && e.touches[0].pageY>touchStartLine) if(e.cancelable) e.preventDefault(); }
 
-function closeNotes() {
-    const modal = document.getElementById('notesModal');
-    modal.classList.remove('active-sheet');
-    document.body.classList.remove('modal-open');
-    window.removeEventListener('touchstart', handleTouchStart);
-    window.removeEventListener('touchmove', handleTouchMove);
-    setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500);
-}
-let isDownloading = false;
-
-function confirmDownload(url, fileName) {
-    if (document.getElementById('customAlert')) return;
-    activeDownloadData = { url, fileName };
-
-    const alertHTML = `
-        <div id="customAlert" class="premium-alert-overlay">
-            <div class="premium-alert-card">
-                <div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                <h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Download Notes?</h3>
-                <p style="color: #64748b; font-size: 12px; line-height: 1.5;">${fileName}</p>
-                <div class="alert-btn-group">
-                    <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
-                    <button id="confirmDownloadBtn" class="alert-btn btn-confirm" onclick="executeDownload()">Download</button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', alertHTML);
-    setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
-}
-
-function executeDownload() {
-    if (!activeDownloadData) return;
-
-    const { url, fileName } = activeDownloadData;
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    a.target = '_blank';
-
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    closeAlert();
-}
-
-function closeAlert() {
-    const el = document.getElementById('customAlert');
-    if (el) { el.classList.remove('active'); setTimeout(() => el.remove(), 300); }
-}
-
-function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }
-function handleTouchMove(e) {
-    const list = document.getElementById('notesList');
-    if (list.scrollTop <= 0 && e.touches[0].pageY > touchStartLine) if (e.cancelable) e.preventDefault();
-}
-
-function toggleAiPanel(show) {
-    const panel = document.getElementById('aiChatPanel');
-    isAiPanelOpen = show;
-    if (show) {
-        panel.classList.remove('translate-x-full');
-        renderSessionChatHistory();
-    } else {
-        panel.classList.add('translate-x-full');
-    }
-}
-
-function openAiKeyModal() { document.getElementById('aiKeyModal').classList.remove('hidden'); }
-function closeAiKeyModal() { document.getElementById('aiKeyModal').classList.add('hidden'); }
-
-function saveAiKey() {
-    const keyVal = document.getElementById('aiApiKeyField').value.trim();
-    if(!keyVal) return alert("Key cannot be blank.");
-    localStorage.setItem('eeevault_openai_key', keyVal);
-    closeAiKeyModal();
-    appendSystemMessage("Configuration dynamic storage saved successfully.");
-}
-
-function loadSavedKeyToField() {
-    const saved = localStorage.getItem('eeevault_openai_key');
-    if (saved) document.getElementById('aiApiKeyField').value = saved;
-}
-
-function appendSystemMessage(text) {
-    const box = document.getElementById('aiChatMessages');
-    box.innerHTML += `<div class="text-[10px] text-slate-400 text-center py-1 uppercase tracking-widest"><i class="fa-solid fa-microchip mr-1"></i> ${text}</div>`;
-    box.scrollTop = box.scrollHeight;
-}
+function toggleAiPanel(show) { const panel = document.getElementById('aiChatPanel'); isAiPanelOpen = show; if(show){ panel.classList.remove('translate-x-full'); renderSessionChatHistory(); } else { panel.classList.add('translate-x-full'); } }
+function openAiKeyModal() { document.getElementById('apiSettingsContainer').innerHTML = renderApiSettings(); document.getElementById('aiKeyModal').classList.remove('hidden'); }
+function closeAiKeyModal() { document.getElementById('aiKeyModal').classList.add('hidden'); updateApiDisplay(); }
 
 function renderSessionChatHistory() {
     const container = document.getElementById('aiChatMessages');
-    
-    let baseHTML = `
-        <div class="bg-red-50 border border-red-100 rounded-2xl p-4 text-xs text-slate-600 space-y-2 mb-4">
-            <p class="font-bold text-red-600"><i class="fa-solid fa-circle-info mr-1"></i> How to use:</p>
-            <p>1. Ensure your Gemini API Key is saved in settings.</p>
-            <p>2. Ask anything about the currently displayed engineering question paper.</p>
-        </div>`;
-    
+    let baseHTML = `<div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-xs text-slate-600 space-y-2 mb-4"><p class="font-bold text-blue-600"><i class="fa-solid fa-circle-info mr-1"></i> System Active</p><p>Images are automatically sent to the selected AI provider.</p></div>`;
     aiChatHistory.forEach(msg => {
-        if(msg.role === 'user') {
-            baseHTML += `
-                <div class="flex justify-end p-2 mb-2">
-                    <div class="bg-red-600 text-white text-[13px] px-4 py-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] break-words">
-                        ${msg.displayContent || msg.content}
-                    </div>
-                </div>`;
-        } else if(msg.role === 'assistant') {
-            const formattedContent = marked.parse(msg.content);
-            baseHTML += `
-                <div class="w-full px-2 py-4 mb-2 text-slate-800 text-[14px] leading-relaxed ai-markdown-content overflow-hidden">
-                    ${formattedContent}
-                </div>`;
-        }
+        if(msg.role === 'user') baseHTML += `<div class="flex justify-end p-2 mb-2"><div class="bg-red-600 text-white text-[13px] px-4 py-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] break-words">${msg.content}</div></div>`;
+        else baseHTML += `<div class="w-full px-2 py-4 mb-2 text-slate-800 text-[14px] leading-relaxed ai-markdown-content overflow-hidden">${marked.parse(msg.content)}</div>`;
     });
-    
     container.innerHTML = baseHTML;
-    
-    if (window.MathJax) {
-        MathJax.typesetPromise([container]).catch((err) => console.log(err));
-    }
-    
+    if (window.MathJax) MathJax.typesetPromise([container]).catch(err => console.log(err));
     container.scrollTop = container.scrollHeight;
 }
 
 async function convertImageUrlToBase64(url) {
-    const cleanUrl = url.replace(/^https?:\/\//, '');
-    const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(cleanUrl)}&output=jpg&q=70`;
-    
-    const response = await fetch(proxyUrl);
-    const blob = await response.blob();
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(blob);
-    });
+    const res = await fetch(`https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&output=jpg&q=70`);
+    const blob = await res.blob();
+    return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); });
 }
-	
-async function sendQueryToAI() {
-    if (isAiThinking) return;
-    const key = localStorage.getItem('eeevault_openai_key')?.trim();
-    if (!key) { openAiKeyModal(); return; }
 
+// INTEGRATED NEW QUERY HANDLER
+async function handleUserQuery() {
+    if (isAiThinking) return;
     const inputField = document.getElementById('aiUserQuery');
     const userPromptText = inputField.value.trim();
     if (!userPromptText) return;
 
-    isAiThinking = true;
-    inputField.value = "";
-    
+    if (!getActiveApiName()) return openAiKeyModal();
+
+    isAiThinking = true; inputField.value = "";
     aiChatHistory.push({ role: "user", content: userPromptText });
     renderSessionChatHistory();
 
     const thinkingId = "thinking-msg";
-    document.getElementById('aiChatMessages').insertAdjacentHTML('beforeend', 
-        `<div id="${thinkingId}" class="text-[10px] text-slate-400 text-center py-2 animate-pulse">AI is thinking...</div>`);
+    document.getElementById('aiChatMessages').insertAdjacentHTML('beforeend', `<div id="${thinkingId}" class="text-[10px] text-slate-400 text-center py-2 animate-pulse">AI is thinking via ${getActiveApiName()}...</div>`);
 
     try {
         if (cachedImageParts.length === 0 && currentPages.length > 0) {
             for (const url of currentPages) {
                 const dataUrl = await convertImageUrlToBase64(url);
-                cachedImageParts.push({ 
-                    inlineData: { mimeType: "image/jpeg", data: dataUrl.split(',')[1] } 
-                });
+                cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: dataUrl.split(',')[1] } });
             }
         }
-
-        const contents = aiChatHistory.map((item, index) => {
-            let parts = (index === 0)
-                ? [...cachedImageParts, { text: item.content }]
-                : [{ text: item.content }];
-            
-            return { role: item.role === 'user' ? 'user' : 'model', parts: parts };
-        });
-
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${key}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                contents: contents,
-                system_instruction: { 
-                    parts: [{ text: `You are an expert Engineering Professor named Vault Assistant. You have been provided with multiple pages of an engineering exam paper. Always analyze the content across all provided pages. 
-                    - If asked to solve, state question and show full step-by-step logic.
-                    - Use LaTeX ($...$) for math.
-                    - If a question is unclear, ask for clarification.
-                    - If casual, keep it under 2 lines.
-                    - Maintain a professional, academic tone.` }] 
-                }
-            })
-        });
-
-        const data = await response.json();
-        if (data.error) throw new Error(data.error.message);
-
-        const aiAnswer = data.candidates[0].content.parts[0].text;
-        aiChatHistory.push({ role: "assistant", content: aiAnswer });
         
+        const response = await sendQueryToAI(userPromptText); // Uses the new system
+        aiChatHistory.push({ role: "assistant", content: response });
     } catch (err) {
-        aiChatHistory.push({ role: "assistant", content: `❌ API Error: ${err.message}` });
+        aiChatHistory.push({ role: "assistant", content: `❌ ${err.message}` });
+        if(err.message.includes("limit")) updateApiDisplay(); // Refresh limits UI
     } finally {
         document.getElementById(thinkingId)?.remove();
         isAiThinking = false;
         renderSessionChatHistory();
+        updateApiDisplay(); // Update quota bar
     }
 }
 
@@ -1032,7 +707,7 @@ function closeUpload() { document.getElementById('uploadModal').classList.add('h
 
 init();
 </script>
-	
 <script defer src="/_vercel/insights/script.js"></script>
 </body>  
 </html>
+
