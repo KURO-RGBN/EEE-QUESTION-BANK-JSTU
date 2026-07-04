@@ -406,28 +406,78 @@ async function sendToGemini(userMessage, apiKey) {
 }
 
 async function sendToOpenRouter(userMessage, apiKey) {
+    // FIX: Add system persona at the beginning
+    const messages = [
+        { role: "system", content: "You are an expert engineering professor helping a student with the attached question paper image." }
+    ];
+
+    // FIX: Grab images once
     let images = [];
-    if(aiChatHistory.length === 1 && cachedImageParts.length > 0) {
-        images = cachedImageParts.map(part => ({ type: "image_url", image_url: { url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}` }}));
+    if (cachedImageParts.length > 0) {
+        images = cachedImageParts.map(part => ({ 
+            type: "image_url", 
+            image_url: { url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}` }
+        }));
     }
     
-    const contents = aiChatHistory.map(item => {
-        if(item.role === 'user' && images.length > 0) return { role: 'user', content: [{ type: "text", text: item.content }, ...images] };
-        return { role: item.role === 'user' ? 'user' : 'assistant', content: item.content };
+    const chatContents = aiChatHistory.map((item, index) => {
+        // FIX: Ensure image is attached to the FIRST user message in history, regardless of history length
+        if (item.role === 'user') {
+            if (index === 0 && images.length > 0) {
+                return { role: 'user', content: [{ type: "text", text: item.content }, ...images] };
+            } else {
+                return { role: 'user', content: item.content };
+            }
+        }
+        return { role: 'assistant', content: item.content };
     });
 
+    messages.push(...chatContents);
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST', headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json', 'HTTP-Referer': 'https://eeevaultjstu.vercel.app', 'X-Title': 'EEE Vault JSTU' },
-        body: JSON.stringify({ model: 'openrouter/free', messages: contents })
+        method: 'POST', 
+        headers: { 
+            'Authorization': `Bearer ${apiKey}`, 
+            'Content-Type': 'application/json', 
+            'HTTP-Referer': 'https://eeevaultjstu.vercel.app', 
+            'X-Title': 'EEE Vault JSTU' 
+        },
+        body: JSON.stringify({ model: 'openrouter/free', messages: messages })
     });
+    
     if (!response.ok) { const err = await response.json().catch(()=>null); throw new Error(err?.error?.message || `HTTP ${response.status}`); }
     const data = await response.json();
     return data.choices[0].message.content;
 }
 
 async function sendToOllama(userMessage, serverUrl) {
-    const contents = aiChatHistory.map(item => ({ role: item.role === 'user' ? 'user' : 'assistant', content: item.content }));
-    const response = await fetch(`${serverUrl}/api/chat`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ model: 'llama3.2-vision', messages: contents, stream: false }) });
+    // FIX: Apply system persona to Ollama as well to maintain consistency
+    const messages = [
+        { role: "system", content: "You are an expert engineering professor helping a student with the attached question paper image." }
+    ];
+
+    let base64Images = [];
+    if (cachedImageParts.length > 0) {
+        base64Images = cachedImageParts.map(part => part.inlineData.data);
+    }
+
+    const chatContents = aiChatHistory.map((item, index) => {
+        let msg = { role: item.role === 'user' ? 'user' : 'assistant', content: item.content };
+        // FIX: Attach image array directly to the first user message for Ollama compatibility
+        if (item.role === 'user' && index === 0 && base64Images.length > 0) {
+            msg.images = base64Images;
+        }
+        return msg;
+    });
+
+    messages.push(...chatContents);
+
+    const response = await fetch(`${serverUrl}/api/chat`, { 
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' }, 
+        body: JSON.stringify({ model: 'llama3.2-vision', messages: messages, stream: false }) 
+    });
+    
     if (!response.ok) throw new Error(`Ollama error: HTTP ${response.status}. Is the server running?`);
     const data = await response.json();
     return data.message.content;
@@ -710,4 +760,5 @@ init();
 <script defer src="/_vercel/insights/script.js"></script>
 </body>  
 </html>
+
 
