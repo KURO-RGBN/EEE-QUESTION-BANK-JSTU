@@ -289,6 +289,7 @@ const SYSTEM_PROMPT = `You are an expert Engineering Professor named Vault Assis
 - Use LaTeX ($...$) for math.
 - If a question is unclear, ask for clarification.
 - If casual, keep it under 2 lines.
+-Treat each new user message as a fresh request, unless it explicitly refers to a previous question.
 - Maintain a professional, academic tone.`;
 
 function loadApisFromStorage() { const stored = localStorage.getItem(API_STORAGE_KEY); return stored ? JSON.parse(stored) : {}; }
@@ -737,7 +738,7 @@ function closeAiKeyModal() { document.getElementById('aiKeyModal').classList.add
 
 function renderSessionChatHistory() {
     const container = document.getElementById('aiChatMessages');
-    let baseHTML = `<div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 text-xs text-slate-600 space-y-2 mb-4"><p class="font-bold text-blue-600"><i class="fa-solid fa-circle-info mr-1"></i> System Active</p><p>Images are automatically sent to the selected AI provider.</p></div>`;
+    let baseHTML = `<div class="bg-blue-50 border border-red-100 rounded-2xl p-4 text-xs text-slate-600 space-y-2 mb-4"><p class="font-bold text-red-600"><i class="fa-solid fa-circle-info mr-1"></i>How to use</p><p>Set Your Api keys(Gemini recommended)  In the Settings.Save and use multiple Api to Get more Usage(If using free tier) .</p></div>`;
     aiChatHistory.forEach(msg => {
         if(msg.role === 'user') baseHTML += `<div class="flex justify-end p-2 mb-2"><div class="bg-red-600 text-white text-[13px] px-4 py-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] break-words">${msg.content}</div></div>`;
         else baseHTML += `<div class="w-full px-2 py-4 mb-2 text-slate-800 text-[14px] leading-relaxed ai-markdown-content overflow-hidden">${marked.parse(msg.content)}</div>`;
