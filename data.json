@@ -904,5 +904,39 @@
       },
       "notes": []
     }
+  ],
+  "Library": [
+    {
+      "id": "lib-001",
+      "title": "Electric Circuits",
+      "author": "Charles K. Alexander, Matthew N. O. Sadiku",
+      "edition": "7th Edition",
+      "category": "Electrical Circuit",
+      "url": "https://raw.githubusercontent.com/KURO-RGBN/EEE-SESSION-24-25/main/Copy%20of%20Electric%20Circuits%20-Alexander%207th%20edition-%20(1).pdf"
+    },
+    {
+      "id": "lib-002",
+      "title": "Principles of Electronics",
+      "author": "V.K. Mehta, Rohit Mehta",
+      "edition": "11th Edition",
+      "category": "Electronic Device and Circuit",
+      "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/1-2/vk-mehta-principles-of-electronics.pdf"
+    },
+    {
+      "id": "lib-003",
+      "title": "Digital Fundamentals",
+      "author": "Thomas L. Floyd",
+      "edition": "11th Edition",
+      "category": "Digital Electronics",
+      "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/DIGITAL_ELECTRONICS-by-Flyod.pdf"
+    },
+    {
+      "id": "lib-004",
+      "title": "Linear Algebra",
+      "author": "Unknown Author",
+      "edition": "3rd Edition",
+      "category": "Mathematics",
+      "url": "https://raw.githubusercontent.com/KURO-RGBN/NOTES-STORAGE-01/main/1-2/linear%20algebra.pdf"
+    }
   ]
 }
