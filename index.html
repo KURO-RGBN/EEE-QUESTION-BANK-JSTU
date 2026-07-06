@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">   
 <head>  
     <meta charset="UTF-8">  
@@ -40,7 +40,7 @@
     body.modal-open { overflow: hidden !important; height: 100%; }
     #appBody { width: 100%; }
     #viewerModal, #aiChatPanel { max-width: 100vw; overflow-x: hidden; }
-    .viewer-filmstrip, #notesList, #aiChatMessages { overscroll-behavior: none; }
+    .viewer-filmstrip, #notesList, #libraryList, #aiChatMessages { overscroll-behavior: none; }
     
     .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }  
     .scroll-container { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 8px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }  
@@ -95,10 +95,10 @@
     #viewerBodyContent { transform: translateY(100%); transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
     #viewerModal.viewer-active #viewerBodyContent { transform: translateY(0%); }
 
-    #notesList { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }  
+    #notesList, #libraryList { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }  
     #appBody { transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-    #notesList::-webkit-scrollbar { width: 4px; }  
-    #notesList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }  
+    #notesList::-webkit-scrollbar, #libraryList::-webkit-scrollbar { width: 4px; }  
+    #notesList::-webkit-scrollbar-thumb, #libraryList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }  
     ::-webkit-scrollbar { width: 0px; height: 0px; }  
 
     .loader-ring { width: 22px; height: 22px; border: 3px solid rgba(220, 38, 38, 0.3); border-top: 3px solid #dc2626; border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -134,10 +134,13 @@
                     <i class="fa-solid fa-search absolute left-4 top-4 text-slate-400"></i>  
                     <input type="text" id="mainSearch" placeholder="Search Title or Code..." class="w-full pl-12 pr-4 py-3 rounded-2xl border-none bg-slate-100 outline-none">  
                 </div>  
-                <div class="relative">  
-                    <button onclick="toggleSemModal(true)" class="w-full flex items-center justify-between bg-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]">  
-                        <span id="currentSemesterText" class="font-bold text-slate-800">All Semesters</span>  
-                        <i class="fa-solid fa-chevron-down text-slate-400"></i>  
+                <div class="grid grid-cols-3 gap-2">  
+                    <button onclick="toggleSemModal(true)" class="col-span-2 flex items-center justify-between bg-slate-100 p-4 rounded-2xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]">  
+                        <span id="currentSemesterText" class="font-bold text-slate-800 text-sm truncate">All Semesters</span>  
+                        <i class="fa-solid fa-chevron-down text-slate-400 shrink-0 ml-1"></i>  
+                    </button>
+                    <button onclick="openLibrary()" class="col-span-1 flex items-center justify-center bg-red-600 text-white p-4 rounded-2xl shadow-sm hover:bg-red-700 hover:shadow-md transition-all active:scale-[0.98] font-bold text-sm">
+                        <i class="fa-solid fa-book mr-1 md:inline hidden"></i> Library
                     </button>
                 </div>  
             </div>  
@@ -173,6 +176,26 @@
                 </button>  
             </div>  
             <div id="notesList" class="grid grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pb-8"></div>  
+        </div>  
+    </div>
+
+    <div id="libraryModal" onclick="if(event.target === this) closeLibrary()" class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">  
+        <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">  
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>  
+            <div class="flex justify-between items-center mb-4">  
+                <div>  
+                    <h3 class="text-slate-900 font-black text-xl uppercase tracking-tight">E-Book Library</h3>  
+                    <p class="text-slate-500 text-xs font-bold uppercase">Engineering References</p>  
+                </div>  
+                <button onclick="closeLibrary()" class="bg-slate-100 p-3 rounded-full text-slate-500 active:scale-90 transition-transform">  
+                    <i class="fa-solid fa-xmark"></i>  
+                </button>  
+            </div>  
+            <div class="relative mb-4">
+                <i class="fa-solid fa-magnifying-glass absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                <input type="text" id="librarySearch" placeholder="Search textbook title or author..." class="w-full pl-11 pr-4 py-3 rounded-xl bg-slate-50 border border-slate-200 outline-none focus:border-red-500 text-sm transition-colors">
+            </div>
+            <div id="libraryList" class="grid grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto pb-8"></div>  
         </div>  
     </div>
 
@@ -304,7 +327,6 @@ function addApi(name, type, apiKey) {
     const apis = loadApisFromStorage();
     if (apis[name]) throw new Error(`API "${name}" already exists. Use a different name.`);
     
-    // FIX: Allow AQ for newer Google keys
     if (type === 'gemini' && (!apiKey.startsWith('AIza') && !apiKey.startsWith('AQ'))) {
         throw new Error('Invalid Gemini key (should start with AIza or AQ)');
     }
@@ -369,10 +391,6 @@ function getApiQuotaStatus(apiName) {
     return { apiName, type: api.type, used, limit, remaining, percentUsed, resetTime: quotas[quotaKey]?.resetTime || null, isExhausted: used >= limit };
 }
 
-// ----------------------------------------------------------------------------
-// API ROUTING & IMAGE PERSISTENCE FIXES
-// ----------------------------------------------------------------------------
-
 async function sendQueryToAI(userMessage) {
     const activeApi = getActiveApi();
     if (!activeApi) throw new Error('No AI provider configured. Add one in Settings.');
@@ -404,25 +422,16 @@ async function sendQueryToAI(userMessage) {
 async function sendToGemini(userMessage, apiKey) {
     const contents = aiChatHistory.map((item) => {
         let parts = [{ text: item.content }];
-        
-        // FIX: Attach image to EVERY user message so Gemini never forgets
         if (item.role === 'user' && cachedImageParts.length > 0) {
             parts.push(...cachedImageParts);
         }
-        
-        return { 
-            role: item.role === 'user' ? 'user' : 'model', 
-            parts: parts 
-        };
+        return { role: item.role === 'user' ? 'user' : 'model', parts: parts };
     });
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
         method: 'POST', 
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            contents: contents, 
-            system_instruction: { parts: [{ text: SYSTEM_PROMPT }] } 
-        })
+        body: JSON.stringify({ contents: contents, system_instruction: { parts: [{ text: SYSTEM_PROMPT }] } })
     });
     
     if (!response.ok) { 
@@ -432,21 +441,17 @@ async function sendToGemini(userMessage, apiKey) {
     const data = await response.json();
     return data.candidates[0].content.parts[0].text;
 }
+
 async function sendToOpenRouter(userMessage, apiKey) {
     const messages = [{ role: "system", content: SYSTEM_PROMPT }];
-
-    // Prepare images
     let images = [];
     if (typeof cachedImageParts !== 'undefined' && cachedImageParts.length > 0) {
         images = cachedImageParts.map(part => ({
             type: "image_url",
-            image_url: {
-                url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`
-            }
+            image_url: { url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}` }
         }));
     }
 
-    // Map history
     const chatContents = aiChatHistory.map((item, index) => {
         if (item.role === 'user') {
             if (index === aiChatHistory.length - 1 && images.length > 0) {
@@ -456,11 +461,7 @@ async function sendToOpenRouter(userMessage, apiKey) {
         }
         return { role: 'assistant', content: item.content };
     });
-
     messages.push(...chatContents);
-
-    // FIXED: Using a highly stable, free Vision model
-    const model = 'openrouter/free';
 
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -470,30 +471,19 @@ async function sendToOpenRouter(userMessage, apiKey) {
             'HTTP-Referer': 'https://eeevaultjstu.vercel.app',
             'X-Title': 'EEE Vault JSTU'
         },
-        body: JSON.stringify({
-            model: model,
-            messages: messages,
-            max_tokens: 2000
-        })
+        body: JSON.stringify({ model: 'openrouter/free', messages: messages, max_tokens: 2000 })
     });
 
     if (!response.ok) {
         const errData = await response.json().catch(() => null);
         throw new Error(errData?.error?.message || `OpenRouter Error: ${response.status}`);
     }
-
     const data = await response.json();
     return data.choices[0].message.content;
 }
-
-
-
-
-    
     
 async function sendToOllama(userMessage, serverUrl) {
     const messages = [{ role: "system", content: SYSTEM_PROMPT }];
-
     let base64Images = [];
     if (cachedImageParts.length > 0) {
         base64Images = cachedImageParts.map(part => part.inlineData.data);
@@ -501,14 +491,9 @@ async function sendToOllama(userMessage, serverUrl) {
 
     const chatContents = aiChatHistory.map((item) => {
         let msg = { role: item.role === 'user' ? 'user' : 'assistant', content: item.content };
-        
-        // FIX: Attach image to EVERY user message so Ollama never forgets
-        if (item.role === 'user' && base64Images.length > 0) {
-            msg.images = base64Images;
-        }
+        if (item.role === 'user' && base64Images.length > 0) msg.images = base64Images;
         return msg;
     });
-
     messages.push(...chatContents);
 
     const response = await fetch(`${serverUrl}/api/chat`, { 
@@ -522,7 +507,6 @@ async function sendToOllama(userMessage, serverUrl) {
     return data.message.content;
 }
 
-// --- UI HELPERS ---
 function renderApiDropdown() {
     const apis = getAllApis();
     const activeApi = getActiveApiName();
@@ -624,16 +608,19 @@ function updateApiDisplay() {
 // APP LOGIC
 // ============================================================================
 const semesters = [ { label: "All Semesters", value: "all" }, { label: "1st Year 1st Sem", value: "1st Year 1st Semester" }, { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" }, { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" }, { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" }, { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" }, { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" }, { label: "4th Year 1st Sem", value: "4th Year 1st Semester" }, { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" } ];
-let selectedSemValue = "all"; let courseData = []; const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"]; let currentPages = [];
-let isAiPanelOpen = false; let isAiThinking = false; let aiChatHistory = []; let cachedImageParts = []; let touchStartLine = 0; let activeDownloadData = null;
+let selectedSemValue = "all"; let courseData = []; let libraryData = []; const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"]; let currentPages = [];
+let isAiPanelOpen = false; let isAiThinking = false; let aiChatHistory = []; let cachedImageParts = []; let touchStartLine = 0; let libTouchStartLine = 0; let activeDownloadData = null;
 
 async function init() {
     try {
         const res = await fetch('data.json?t=' + Date.now());
         const data = await res.json();
         courseData = data.Course ? data.Course : data;
+        libraryData = data.Library ? data.Library : [];
         renderCourses(courseData);
-        updateApiDisplay(); // Init API UI
+        updateApiDisplay();
+        
+        document.getElementById('librarySearch').addEventListener('input', filterLibraryBooks);
     } catch (err) { console.error("Data load failed", err); }
 }
 
@@ -726,6 +713,56 @@ function openNotes(code) {
     modal.classList.remove('hidden'); window.addEventListener('touchstart', handleTouchStart, {passive:false}); window.addEventListener('touchmove', handleTouchMove, {passive:false}); requestAnimationFrame(() => { modal.classList.add('active-sheet'); document.body.classList.add('modal-open'); });
 }
 function closeNotes() { const modal = document.getElementById('notesModal'); modal.classList.remove('active-sheet'); document.body.classList.remove('modal-open'); window.removeEventListener('touchstart', handleTouchStart); window.removeEventListener('touchmove', handleTouchMove); setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500); }
+
+// ============================================================================
+// LIBRARY UI MANAGEMENT METHODS
+// ============================================================================
+function openLibrary() {
+    const modal = document.getElementById('libraryModal');
+    document.getElementById('librarySearch').value = '';
+    renderLibraryBooks(libraryData);
+    modal.classList.remove('hidden');
+    window.addEventListener('touchstart', handleLibTouchStart, {passive:false});
+    window.addEventListener('touchmove', handleLibTouchMove, {passive:false});
+    requestAnimationFrame(() => { modal.classList.add('active-sheet'); document.body.classList.add('modal-open'); });
+}
+
+function closeLibrary() {
+    const modal = document.getElementById('libraryModal');
+    modal.classList.remove('active-sheet');
+    document.body.classList.remove('modal-open');
+    window.removeEventListener('touchstart', handleLibTouchStart);
+    window.removeEventListener('touchmove', handleLibTouchMove);
+    setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500);
+}
+
+function renderLibraryBooks(books) {
+    const container = document.getElementById('libraryList');
+    if(books.length === 0) {
+        container.innerHTML = `<div class="col-span-2 text-center text-slate-400 py-8 text-xs font-medium">No reference books found</div>`;
+        return;
+    }
+    container.innerHTML = books.map(book => `
+        <div class="file-card" onclick="confirmDownload('${book.url}', '${book.title}.pdf')">
+            <i class="fa-solid fa-book-open text-3xl text-red-600 mb-2"></i>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${book.title}</span>
+            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider truncate max-w-full">${book.author || 'Reference'}</span>
+        </div>
+    `).join('');
+}
+
+function filterLibraryBooks() {
+    const query = document.getElementById('librarySearch').value.toLowerCase();
+    const filtered = libraryData.filter(b => 
+        b.title.toLowerCase().includes(query) || 
+        (b.author && b.author.toLowerCase().includes(query))
+    );
+    renderLibraryBooks(filtered);
+}
+
+function handleLibTouchStart(e) { libTouchStartLine = e.touches[0].pageY; }
+function handleLibTouchMove(e) { if(document.getElementById('libraryList').scrollTop <= 0 && e.touches[0].pageY > libTouchStartLine) if(e.cancelable) e.preventDefault(); }
+
 function confirmDownload(url, fileName) { activeDownloadData = {url, fileName}; document.body.insertAdjacentHTML('beforeend', `<div id="customAlert" class="premium-alert-overlay"><div class="premium-alert-card"><div class="alert-icon-circle"><i class="fa-solid fa-cloud-arrow-down"></i></div><h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Download?</h3><p style="color: #64748b; font-size: 12px; line-height: 1.5;">${fileName}</p><div class="alert-btn-group"><button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button><button class="alert-btn btn-confirm" onclick="executeDownload()">Download</button></div></div></div>`); setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10); }
 function executeDownload() { if(!activeDownloadData)return; const a=document.createElement('a'); a.href=activeDownloadData.url; a.download=activeDownloadData.fileName; a.target='_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a); closeAlert(); }
 function closeAlert() { const el=document.getElementById('customAlert'); if(el){el.classList.remove('active');setTimeout(()=>el.remove(),300);} }
@@ -745,7 +782,6 @@ function renderSessionChatHistory() {
     });
     container.innerHTML = baseHTML;
     
-    // FIX: Re-append thinking animation if the panel is reopened while waiting
     if (isAiThinking) {
         container.insertAdjacentHTML('beforeend', `<div id="thinking-msg" class="text-[10px] text-slate-400 text-center py-2 animate-pulse">AI is thinking via ${getActiveApiName()}...</div>`);
     }
@@ -760,7 +796,6 @@ async function convertImageUrlToBase64(url) {
     return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); });
 }
 
-// INTEGRATED NEW QUERY HANDLER
 async function handleUserQuery() {
     if (isAiThinking) return;
     const inputField = document.getElementById('aiUserQuery');
@@ -781,17 +816,17 @@ async function handleUserQuery() {
             }
         }
         
-        const response = await sendQueryToAI(userPromptText); // Uses the new system
+        const response = await sendQueryToAI(userPromptText);
         aiChatHistory.push({ role: "assistant", content: response });
     } catch (err) {
         aiChatHistory.push({ role: "assistant", content: `❌ ${err.message}` });
-        if(err.message.includes("limit")) updateApiDisplay(); // Refresh limits UI
+        if(err.message.includes("limit")) updateApiDisplay();
     } finally {
         const thinkingNode = document.getElementById('thinking-msg');
         if(thinkingNode) thinkingNode.remove();
         isAiThinking = false;
         renderSessionChatHistory();
-        updateApiDisplay(); // Update quota bar
+        updateApiDisplay();
     }
 }
 
@@ -803,3 +838,4 @@ init();
 <script defer src="/_vercel/insights/script.js"></script>
 </body>  
 </html>
+
