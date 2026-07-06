@@ -79,16 +79,12 @@ body.modal-open {
     display: block; 
     width: 100%; 
     height: 100%; 
-    overflow-y: auto; 
+    overflow-y: scroll;  /* Change from auto to scroll */
     overflow-x: hidden; 
     -webkit-overflow-scrolling: touch;
-    /* Change none to auto or contain to allow the browser to resolve the gesture */
-    overscroll-behavior-y: contain; 
-    /* Ensure the browser knows this area handles pan gestures */
-    touch-action: pan-y;
+    overscroll-behavior-y: auto;  /* Change from contain to auto */
+    touch-action: manipulation;  /* Change from pan-y to manipulation */
 }
-
-
     .viewer-page { width: 100%; display: block; margin-bottom: 12px; }
     .viewer-page img, .viewer-page canvas { width: 100%; height: auto; display: block; user-select: none; }
 
@@ -355,6 +351,21 @@ function resetViewerState() {
     document.getElementById('pdfBtn').classList.remove('hidden');
 }
 
+    
+function initFilmstripScroll() {
+    const filmstrip = document.getElementById('paperFilmstrip');
+    
+    // Allow immediate scroll without momentum delay
+    filmstrip.addEventListener('wheel', (e) => {
+        // Allow wheel scrolling (desktop)
+    }, { passive: true });
+    
+    // Fix for iOS momentum scrolling
+    filmstrip.style.webkitOverflowScrolling = 'touch';
+    
+    // Ensure scroll is enabled from the start
+    filmstrip.scrollTop = 0;
+}
 // ============================================================================
 // AI PROVIDER MANAGEMENT SYSTEM (Integrated)
 // ============================================================================
@@ -797,11 +808,25 @@ function openPaperByCode(code, batch) { const course = courseData.find(c => c.co
 
 function viewPaper(links, title) {
     resetViewerState();
-    isViewingPdf = false; // It's a semester paper, send everything
-    currentPages = Array.isArray(links) ? links : [links]; cachedImageParts = []; aiChatHistory = []; document.getElementById('viewingTitle').innerText = title;
+    isViewingPdf = false;
+    currentPages = Array.isArray(links) ? links : [links];
+    cachedImageParts = [];
+    aiChatHistory = [];
+    document.getElementById('viewingTitle').innerText = title;
     const filmstrip = document.getElementById('paperFilmstrip');
     filmstrip.innerHTML = currentPages.map(url => `<div class="viewer-page"><div class="zoom-wrapper"><img src="${url}" loading="lazy" alt="Page" onload="initZoomForImage(this)"></div></div>`).join('');
-    const modal = document.getElementById('viewerModal'); modal.classList.remove('hidden'); document.body.classList.add('modal-open'); lockBodyScroll(); requestAnimationFrame(() => modal.classList.add('viewer-active')); filmstrip.scrollTop = 0;
+    
+    const modal = document.getElementById('viewerModal');
+    modal.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    lockBodyScroll();
+    
+    // ADD THIS LINE
+    requestAnimationFrame(() => {
+        initFilmstripScroll();
+        modal.classList.add('viewer-active');
+    });
+    filmstrip.scrollTop = 0;
 }
 
 function closeViewer() {
