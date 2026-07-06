@@ -30,6 +30,11 @@
 <style>  
     * { -webkit-tap-highlight-color: transparent; }  
     
+    html, body {
+        /* Prevents the browser from triggering pull-to-refresh */
+        overscroll-behavior-y: none;
+    }
+
     html {
         width: 100%; height: 100%; overflow-x: hidden; overflow-y: auto;
         scrollbar-width: none; -ms-overflow-style: none;
@@ -57,8 +62,12 @@
 
     .file-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 16px; text-align: center; display: flex; flex-direction: column; align-items: center; transition: 0.2s; }  
     .file-card:active { transform: scale(0.95); background: #f1f5f9; }   
-    .viewer-filmstrip { display: block; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
-
+    
+    .viewer-filmstrip { 
+        display: block; width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; 
+        -webkit-overflow-scrolling: touch; scroll-behavior: smooth;
+        padding-top: 1px; padding-bottom: 1px; /* Prevents the "hit boundary" browser scroll lock */
+    }
 
     .viewer-page { width: 100%; display: block; margin-bottom: 12px; }
     .viewer-page img, .viewer-page canvas { width: 100%; height: auto; display: block; user-select: none; }
@@ -623,7 +632,42 @@ function updateApiDisplay() {
 // ============================================================================
 const semesters = [ { label: "All Semesters", value: "all" }, { label: "1st Year 1st Sem", value: "1st Year 1st Semester" }, { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" }, { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" }, { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" }, { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" }, { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" }, { label: "4th Year 1st Sem", value: "4th Year 1st Semester" }, { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" } ];
 let selectedSemValue = "all"; let courseData = []; let libraryData = []; const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"]; let currentPages = [];
-let isAiPanelOpen = false; let isAiThinking = false; let aiChatHistory = []; let cachedImageParts = []; let touchStartLine = 0; let libTouchStartLine = 0; let activeDownloadData = null;
+let isAiPanelOpen = false; let isAiThinking = false; let aiChatHistory = []; let cachedImageParts = []; let touchStartLine = 0; let libTouchStartLine = 0; let activeDownloadData = null; let isViewingPdf = false;
+
+function lockBodyScroll() {
+    document.body.style.overflow = 'hidden';
+    document.body.style.height = '100%';
+}
+
+function unlockBodyScroll() {
+    document.body.style.overflow = '';
+    document.body.style.height = '';
+}
+
+function getCurrentVisiblePageIndex() {
+    const filmstrip = document.getElementById('paperFilmstrip');
+    const pages = filmstrip.querySelectorAll('.viewer-page');
+    if (!pages || pages.length <= 1) return 0;
+    
+    const containerScrollTop = filmstrip.scrollTop;
+    const containerHeight = filmstrip.clientHeight;
+    const containerCenter = containerScrollTop + (containerHeight / 2);
+    
+    let targetIndex = 0;
+    let minDistance = Infinity;
+    
+    pages.forEach((page, index) => {
+        const pageTop = page.offsetTop;
+        const pageCenter = pageTop + (page.clientHeight / 2);
+        const distance = Math.abs(pageCenter - containerCenter);
+        
+        if (distance < minDistance) {
+            minDistance = distance;
+            targetIndex = index;
+        }
+    });
+    return targetIndex;
+}
 
 async function init() {
     try {
@@ -707,14 +751,15 @@ document.getElementById('mainSearch').addEventListener('input', () => applyPremi
 function openPaperByCode(code, batch) { const course = courseData.find(c => c.code === code); if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`); }
 
 function viewPaper(links, title) {
+    isViewingPdf = false; // It's a semester paper, send everything
     currentPages = Array.isArray(links) ? links : [links]; cachedImageParts = []; aiChatHistory = []; document.getElementById('viewingTitle').innerText = title;
     const filmstrip = document.getElementById('paperFilmstrip');
     filmstrip.innerHTML = currentPages.map(url => `<div class="viewer-page"><div class="zoom-wrapper"><img src="${url}" loading="lazy" alt="Page" onload="initZoomForImage(this)"></div></div>`).join('');
-    const modal = document.getElementById('viewerModal'); modal.classList.remove('hidden'); document.body.classList.add('modal-open'); requestAnimationFrame(() => modal.classList.add('viewer-active')); filmstrip.scrollTop = 0;
+    const modal = document.getElementById('viewerModal'); modal.classList.remove('hidden'); document.body.classList.add('modal-open'); lockBodyScroll(); requestAnimationFrame(() => modal.classList.add('viewer-active')); filmstrip.scrollTop = 0;
 }
 
 function closeViewer() {
-    const modal = document.getElementById('viewerModal'); modal.classList.remove('viewer-active'); document.body.classList.remove('modal-open');
+    const modal = document.getElementById('viewerModal'); modal.classList.remove('viewer-active'); document.body.classList.remove('modal-open'); unlockBodyScroll();
     setTimeout(() => { modal.classList.add('hidden'); document.getElementById('paperFilmstrip').innerHTML = ""; currentPages = []; toggleAiPanel(false); }, 550);
 }
 
@@ -826,9 +871,11 @@ async function executeViewPdf() {
     const modal = document.getElementById('viewerModal'); 
     modal.classList.remove('hidden'); 
     document.body.classList.add('modal-open'); 
+    lockBodyScroll();
     requestAnimationFrame(() => modal.classList.add('viewer-active'));
     
     try {
+        isViewingPdf = true; // It's a textbook/PDF, switch to single-page scanning
         const loadingTask = pdfjsLib.getDocument(url);
         const pdf = await loadingTask.promise;
         filmstrip.innerHTML = ''; 
@@ -914,13 +961,30 @@ async function handleUserQuery() {
     renderSessionChatHistory();
 
     try {
-        if (cachedImageParts.length === 0 && currentPages.length > 0) {
-            for (const url of currentPages) {
-                if (url.startsWith('data:image')) {
-                    cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: url.split(',')[1] } });
-                } else {
-                    const dataUrl = await convertImageUrlToBase64(url);
-                    cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: dataUrl.split(',')[1] } });
+        if (isViewingPdf) {
+            // PDF Textbook Mode: Dynamic context payload extraction
+            cachedImageParts = []; // Wipe previous message's image context
+            const currentPageIndex = getCurrentVisiblePageIndex();
+            const activePageData = currentPages[currentPageIndex];
+            
+            if (activePageData && activePageData.startsWith('data:image')) {
+                cachedImageParts.push({ 
+                    inlineData: { 
+                        mimeType: "image/jpeg", 
+                        data: activePageData.split(',')[1] 
+                    } 
+                });
+            }
+        } else {
+            // Original Semester Paper Mode: Bulk append complete set
+            if (cachedImageParts.length === 0 && currentPages.length > 0) {
+                for (const url of currentPages) {
+                    if (url.startsWith('data:image')) {
+                        cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: url.split(',')[1] } });
+                    } else {
+                        const dataUrl = await convertImageUrlToBase64(url);
+                        cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: dataUrl.split(',')[1] } });
+                    }
                 }
             }
         }
@@ -947,5 +1011,3 @@ init();
 <script defer src="/_vercel/insights/script.js"></script>
 </body>  
 </html>
-
-
