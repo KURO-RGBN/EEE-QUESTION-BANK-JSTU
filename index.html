@@ -344,6 +344,17 @@ body.modal-open {
     </div>  
 
 <script>
+    
+function resetViewerState() {
+    currentPages = [];
+    cachedImageParts = [];
+    aiChatHistory = [];
+    document.getElementById('paperFilmstrip').innerHTML = "";
+    document.getElementById('viewingTitle').innerText = "";
+    document.getElementById('headerLoader').classList.add('hidden');
+    document.getElementById('pdfBtn').classList.remove('hidden');
+}
+
 // ============================================================================
 // AI PROVIDER MANAGEMENT SYSTEM (Integrated)
 // ============================================================================
@@ -737,6 +748,11 @@ function confirmPdfDownload() {
 }
 
 async function executePdfDownload() {
+    const url = activeDownloadData.url;
+    const title = activeDownloadData.fileName;
+    closeAlert();
+    
+    resetViewerState(); 
     closeAlert(); const pdfBtn = document.getElementById('pdfBtn'); const headerLoader = document.getElementById('headerLoader');
     pdfBtn.classList.add('hidden'); headerLoader.classList.remove('hidden');
     try {
@@ -780,6 +796,7 @@ document.getElementById('mainSearch').addEventListener('input', () => applyPremi
 function openPaperByCode(code, batch) { const course = courseData.find(c => c.code === code); if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`); }
 
 function viewPaper(links, title) {
+    resetViewerState();
     isViewingPdf = false; // It's a semester paper, send everything
     currentPages = Array.isArray(links) ? links : [links]; cachedImageParts = []; aiChatHistory = []; document.getElementById('viewingTitle').innerText = title;
     const filmstrip = document.getElementById('paperFilmstrip');
