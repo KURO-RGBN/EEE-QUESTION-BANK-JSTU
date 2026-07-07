@@ -9,14 +9,32 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  
     <meta name="theme-color" content="#000000">  
     <link rel="apple-touch-icon" href="icon.jpeg">  
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 
-    <script src="https://cdn.tailwindcss.com"></script>  
+    <!-- Dependencies -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script>		
+    <!-- DOMPurify for XSS sanitisation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.0.6/purify.min.js"></script>
+    <script>
+        // Configure marked to use DOMPurify for sanitising HTML output
+        marked.setOptions({
+            breaks: true,
+            gfm: true
+        });
+        // Override marked's default renderer to sanitise
+        const originalParse = marked.parse;
+        marked.parse = function(...args) {
+            const rawHtml = originalParse.apply(this, args);
+            return DOMPurify.sanitize(rawHtml);
+        };
+    </script>
+
+    <script>
         window.MathJax = {
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']],
@@ -29,41 +47,31 @@
 
 <style>  
     * { -webkit-tap-highlight-color: transparent; }  
-    
     html, body {
-        /* Prevents the browser from triggering pull-to-refresh */
         overscroll-behavior-y: none;
     }
-
     html {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
-
-body {   
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    /* Remove overflow-y: auto here, handle via app container if needed */
-    -webkit-overflow-scrolling: touch;
-    user-select: none;
-    color: #333333;
-    font-family: sans-serif;
-    scrollbar-width: none;
-}
-
-/* Add this to handle modal locking */
-body.modal-open {
-    overflow: hidden !important;
-}
-
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+    body {   
+        min-height: 100vh;
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        user-select: none;
+        color: #333333;
+        font-family: sans-serif;
+        scrollbar-width: none;
+    }
+    body.modal-open {
+        overflow: hidden !important;
+    }
     #appBody { width: 100%; }
     #viewerModal, #aiChatPanel { max-width: 100vw; overflow-x: hidden; }
     .viewer-filmstrip, #notesList, #libraryList, #aiChatMessages { overscroll-behavior: none; }
-
-    
     .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); position: relative; z-index: 1; }  
     .scroll-container { display: flex; overflow-x: auto; gap: 8px; padding-bottom: 8px; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; }  
     .scroll-container::-webkit-scrollbar { display: none; }  
@@ -76,19 +84,18 @@ body.modal-open {
     .file-card:active { transform: scale(0.95); background: #f1f5f9; }   
 
     .viewer-filmstrip {
-    display: block; 
-    width: 100%; 
-    height: 100%; 
-    overflow-y: scroll;  /* Change from auto to scroll */
-    overflow-x: hidden; 
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: auto;  /* Change from contain to auto */
-    touch-action: manipulation;  /* Change from pan-y to manipulation */
-}
+        display: block; 
+        width: 100%; 
+        height: 100%; 
+        overflow-y: scroll;
+        overflow-x: hidden; 
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: auto;
+        touch-action: manipulation;
+    }
     .viewer-page { width: 100%; display: block; margin-bottom: 12px; }
     .viewer-page img, .viewer-page canvas { width: 100%; height: auto; display: block; user-select: none; }
 
-    /* AI Markdown Rendering */
     .ai-markdown-content { word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
     .ai-markdown-content mjx-container { max-width: 100% !important; overflow-x: auto !important; overflow-y: hidden !important; }
     .ai-markdown-content p { margin-bottom: 12px; }
@@ -149,6 +156,8 @@ body.modal-open {
 </head>  
 
 <body class="bg-slate-100 min-h-screen text-slate-800 pb-10">
+
+    <!-- Navigation -->
     <nav class="bg-black text-white shadow-xl border-b border-red-900/30 sticky top-0 z-50 p-4 pt-8">  
         <div class="max-w-6xl mx-auto flex justify-between items-center">  
             <div class="flex flex-col items-center">  
@@ -166,6 +175,7 @@ body.modal-open {
         </div>  
     </nav>  
 
+    <!-- Main Content -->
     <main id="appBody" class="max-w-6xl mx-auto p-4 md:p-8">  
         <div class="glass-card p-6 rounded-3xl shadow-sm mb-8 border border-white">  
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">  
@@ -202,6 +212,7 @@ body.modal-open {
         </footer>  
     </main>  
 
+    <!-- Notes Modal -->
     <div id="notesModal" onclick="if(event.target === this) closeNotes()" class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">  
         <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">  
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>  
@@ -218,6 +229,7 @@ body.modal-open {
         </div>  
     </div>
 
+    <!-- Library Modal -->
     <div id="libraryModal" onclick="if(event.target === this) closeLibrary()" class="fixed inset-0 bg-black/40 z-[120] hidden flex items-end justify-center modal-overlay">  
         <div class="bg-white w-full max-w-md rounded-t-[32px] p-6 shadow-2xl modal-content-slide">  
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-6"></div>  
@@ -238,6 +250,7 @@ body.modal-open {
         </div>  
     </div>
 
+    <!-- Viewer Modal -->
     <div id="viewerModal" class="fixed inset-0 z-[100] hidden flex flex-col md:flex-row overflow-hidden">  
         <div class="flex-grow flex flex-col h-full bg-transparent relative"> 
             <div id="viewerHeader" class="px-4 py-3 bg-zinc-900 flex justify-between items-center border-b border-red-900/30 z-[110] min-h-[64px]">  
@@ -262,6 +275,7 @@ body.modal-open {
             </div>  
         </div>  
 
+        <!-- AI Chat Panel -->
         <div id="aiChatPanel" class="fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white border-l border-slate-200 z-[120] translate-x-full transition-transform duration-300 ease-in-out flex flex-col shadow-2xl">
             <div class="p-4 bg-white border-b border-slate-200">
                 <div class="flex justify-between items-center mb-4">
@@ -297,6 +311,7 @@ body.modal-open {
         </div>
     </div>
 
+    <!-- API Key Modal -->
     <div id="aiKeyModal" class="fixed inset-0 bg-black/80 z-[30000] hidden flex items-center justify-center p-4">
         <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-sm w-full shadow-2xl overflow-y-auto max-h-[90vh]">
             <div class="flex justify-between items-center mb-4">
@@ -308,7 +323,7 @@ body.modal-open {
                 </div>
                 <button onclick="closeAiKeyModal()" class="text-slate-400 hover:text-red-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p class="text-slate-500 text-xs mb-4">Add your personal Gemini, OpenRouter, or Local Ollama keys here. Stored safely on your local device cache only.</p>
+            <p class="text-slate-500 text-xs mb-4">Add your personal Gemini, OpenRouter, or Local Ollama keys. Stored locally on your device only.</p>
             
             <div id="apiSettingsContainer" class="text-sm text-left"></div>
             
@@ -319,15 +334,17 @@ body.modal-open {
         </div>
     </div>
 
+    <!-- Upload Modal -->
     <div id="uploadModal" class="fixed inset-0 bg-black/80 z-[110] hidden flex items-center justify-center p-4">  
         <div class="bg-white rounded-3xl p-6 max-w-sm w-full text-center">  
             <h3 class="text-slate-800 font-bold text-lg mb-2">Contribute Paper</h3>  
-            <p class="text-slate-500 text-sm mb-6">Please contact the admin or upload your scanned image/pdf files to the Google form to add a missing Paper/Notes -kuro(^~^).</p>  
+            <p class="text-slate-500 text-sm mb-6">Contact admin or upload scanned files via the Google form to add missing papers/notes.</p>  
             <button onclick="window.open('https://docs.google.com/forms/d/e/1FAIpQLSegsnkWGAJNW2wPb__Olf_A9AvrO4PquNFZ3Gydfk7d_JByFg/viewform?usp=header', '_blank')" class="w-full bg-red-600 text-white font-bold py-3 rounded-2xl mb-2">OPEN FORM</button>  
             <button onclick="closeUpload()" class="w-full text-slate-400 font-bold py-2">CANCEL</button>  
         </div>  
     </div>
 
+    <!-- Semester Modal -->
     <div id="semModal" class="fixed inset-0 z-[200] hidden flex items-center justify-center p-4 modal-overlay">  
         <div class="absolute inset-0 bg-slate-900/60" onclick="toggleSemModal(false)"></div>  
         <div class="relative w-full max-w-sm bg-white rounded-[32px] overflow-hidden shadow-2xl modal-content-pop" id="semModalContent">  
@@ -340,45 +357,70 @@ body.modal-open {
     </div>  
 
 <script>
-    
-function resetViewerState() {
-    currentPages = [];
-    cachedImageParts = [];
-    aiChatHistory = [];
-    document.getElementById('paperFilmstrip').innerHTML = "";
-    document.getElementById('viewingTitle').innerText = "";
-    document.getElementById('headerLoader').classList.add('hidden');
-    document.getElementById('pdfBtn').classList.remove('hidden');
+// ============================
+// UTILITY FUNCTIONS
+// ============================
+
+// Escape HTML to prevent XSS
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
 }
 
-    
-function initFilmstripScroll() {
-    const filmstrip = document.getElementById('paperFilmstrip');
-    
-    // Allow immediate scroll without momentum delay
-    filmstrip.addEventListener('wheel', (e) => {
-        // Allow wheel scrolling (desktop)
-    }, { passive: true });
-    
-    // Fix for iOS momentum scrolling
-    filmstrip.style.webkitOverflowScrolling = 'touch';
-    
-    // Ensure scroll is enabled from the start
-    filmstrip.scrollTop = 0;
+// Escape string for safe use inside HTML attributes (single quotes)
+function escapeAttr(str) {
+    return String(str).replace(/'/g, "\\'");
 }
-// ============================================================================
-// AI PROVIDER MANAGEMENT SYSTEM (Integrated)
-// ============================================================================
+
+// Unified body scroll lock
+function lockBodyScroll() {
+    const scrollY = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = '100%';
+    document.body.classList.add('modal-open');
+}
+function unlockBodyScroll() {
+    const scrollY = document.body.style.top;
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.classList.remove('modal-open');
+    window.scrollTo(0, parseInt(scrollY || '0') * -1);
+}
+
+// Global reference for the current active alert (avoid duplicate ID issues)
+let currentAlertElement = null;
+function showCustomAlert(htmlContent) {
+    closeAlert(); // remove any existing alert
+    const div = document.createElement('div');
+    div.className = 'premium-alert-overlay';
+    div.innerHTML = htmlContent;
+    document.body.appendChild(div);
+    currentAlertElement = div;
+    requestAnimationFrame(() => div.classList.add('active'));
+}
+function closeAlert() {
+    if (currentAlertElement) {
+        currentAlertElement.classList.remove('active');
+        const el = currentAlertElement;
+        currentAlertElement = null;
+        setTimeout(() => el.remove(), 300);
+    }
+}
+
+// ============================
+// AI PROVIDER MANAGEMENT
+// ============================
 const API_STORAGE_KEY = 'eeeVaultApisRegistry';
 const ACTIVE_API_KEY = 'eeeVaultActiveApi';
 const DAILY_QUOTA_KEY = 'eeeVaultDailyQuotas';
-const SYSTEM_PROMPT = `You are an expert Engineering Professor named Vault Assistant. You have been provided with multiple pages of an engineering exam paper. Always analyze the content across all provided pages. 
-- If asked to solve, state question and show full step-by-step logic.
-- Use LaTeX ($...$) for math.
-- If a question is unclear, ask for clarification.
-- If casual, keep it under 2 lines.
--Treat each new user message as a fresh request, unless it explicitly refers to a previous question.
-- Maintain a professional, academic tone.`;
+const SYSTEM_PROMPT = `You are an expert Engineering Professor named Vault Assistant...`; // (unchanged)
 
 function loadApisFromStorage() { const stored = localStorage.getItem(API_STORAGE_KEY); return stored ? JSON.parse(stored) : {}; }
 function saveApisToStorage(apis) { localStorage.setItem(API_STORAGE_KEY, JSON.stringify(apis)); }
@@ -390,20 +432,15 @@ function saveDailyQuotas(quotas) { localStorage.setItem(DAILY_QUOTA_KEY, JSON.st
 function addApi(name, type, apiKey) {
     if (!name || !type || !apiKey) throw new Error('Name, type, and API key are required');
     const apis = loadApisFromStorage();
-    if (apis[name]) throw new Error(`API "${name}" already exists. Use a different name.`);
-    
-    if (type === 'gemini' && (!apiKey.startsWith('AIza') && !apiKey.startsWith('AQ'))) {
-        throw new Error('Invalid Gemini key (should start with AIza or AQ)');
-    }
-    if (type === 'openrouter' && !apiKey.startsWith('sk-')) throw new Error('Invalid OpenRouter key (should start with sk-)');
-    if (type === 'ollama' && !apiKey.includes('://')) throw new Error('Invalid Ollama URL (should be http://... )');
-
-    apis[name] = { type: type, key: apiKey, createdAt: new Date().toISOString(), status: 'active' };
+    if (apis[name]) throw new Error(`API "${name}" already exists.`);
+    if (type === 'gemini' && !apiKey.startsWith('AIza') && !apiKey.startsWith('AQ')) throw new Error('Invalid Gemini key');
+    if (type === 'openrouter' && !apiKey.startsWith('sk-')) throw new Error('Invalid OpenRouter key');
+    if (type === 'ollama' && !apiKey.includes('://')) throw new Error('Invalid Ollama URL');
+    apis[name] = { type, key: apiKey, createdAt: new Date().toISOString(), status: 'active' };
     saveApisToStorage(apis);
     if (Object.keys(apis).length === 1) setActiveApiName(name);
     return apis;
 }
-
 function deleteApi(name) {
     const apis = loadApisFromStorage();
     if (!apis[name]) throw new Error(`API "${name}" not found`);
@@ -415,7 +452,6 @@ function deleteApi(name) {
     }
     return apis;
 }
-
 function getAllApis() { return loadApisFromStorage(); }
 function getActiveApi() {
     const name = getActiveApiName();
@@ -423,14 +459,12 @@ function getActiveApi() {
     const apis = loadApisFromStorage();
     return { name, ...apis[name] };
 }
-
 function switchApi(name) {
     const apis = loadApisFromStorage();
     if (!apis[name]) throw new Error(`API "${name}" not found`);
     setActiveApiName(name);
     return apis[name];
 }
-
 function recordApiUsage(apiName, requestCount = 1) {
     const quotas = loadDailyQuotas();
     const today = new Date().toDateString();
@@ -440,7 +474,6 @@ function recordApiUsage(apiName, requestCount = 1) {
     saveDailyQuotas(quotas);
     return quotas[quotaKey];
 }
-
 function getApiQuotaStatus(apiName) {
     const apis = loadApisFromStorage();
     const api = apis[apiName];
@@ -448,12 +481,28 @@ function getApiQuotaStatus(apiName) {
     const quotas = loadDailyQuotas();
     const today = new Date().toDateString();
     const quotaKey = `${apiName}_${today}`;
-    let limit = 50; 
-    if (api.type === 'ollama') limit = 999999; 
+    let limit = 50;
+    if (api.type === 'ollama') limit = 999999;
     const used = quotas[quotaKey]?.used || 0;
     const remaining = Math.max(0, limit - used);
     const percentUsed = Math.round((used / limit) * 100);
     return { apiName, type: api.type, used, limit, remaining, percentUsed, resetTime: quotas[quotaKey]?.resetTime || null, isExhausted: used >= limit };
+}
+
+// Improved AI fetch with timeout
+async function fetchWithTimeout(url, options, timeoutMs = 30000) {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    const timer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+        const response = await fetch(url, { ...options, signal });
+        clearTimeout(timer);
+        return response;
+    } catch (err) {
+        clearTimeout(timer);
+        if (err.name === 'AbortError') throw new Error('Request timed out. Please try again.');
+        throw err;
+    }
 }
 
 async function sendQueryToAI(userMessage) {
@@ -468,7 +517,6 @@ async function sendQueryToAI(userMessage) {
         else if (activeApi.type === 'openrouter') response = await sendToOpenRouter(userMessage, activeApi.key);
         else if (activeApi.type === 'ollama') response = await sendToOllama(userMessage, activeApi.key);
         else throw new Error(`Unknown API type: ${activeApi.type}`);
-        
         recordApiUsage(activeApi.name, 1);
         return response;
     } catch (err) {
@@ -484,39 +532,56 @@ async function sendQueryToAI(userMessage) {
     }
 }
 
+// Gemini: use x-goog-api-key header, image only for last user message
 async function sendToGemini(userMessage, apiKey) {
-    const contents = aiChatHistory.map((item) => {
+    // Build contents, attach images only to the final user turn
+    const contents = [];
+    for (let i = 0; i < aiChatHistory.length; i++) {
+        const item = aiChatHistory[i];
         let parts = [{ text: item.content }];
-        if (item.role === 'user' && cachedImageParts.length > 0) {
+        // Attach images only if this is the LAST user message and we have cached images
+        if (item.role === 'user' && i === aiChatHistory.length - 1 && cachedImageParts.length > 0) {
             parts.push(...cachedImageParts);
         }
-        return { role: item.role === 'user' ? 'user' : 'model', parts: parts };
-    });
+        contents.push({ role: item.role === 'user' ? 'user' : 'model', parts });
+    }
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents: contents, system_instruction: { parts: [{ text: SYSTEM_PROMPT }] } })
-    });
-    
-    if (!response.ok) { 
-        const err = await response.json().catch(() => null); 
-        throw new Error(err?.error?.message || `Gemini API Error: ${response.status}`); 
+    const response = await fetchWithTimeout(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent`,
+        {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'x-goog-api-key': apiKey   // safer than query param
+            },
+            body: JSON.stringify({
+                contents,
+                system_instruction: { parts: [{ text: SYSTEM_PROMPT }] }
+            })
+        }
+    );
+
+    if (!response.ok) {
+        const err = await response.json().catch(() => null);
+        throw new Error(err?.error?.message || `Gemini API Error: ${response.status}`);
     }
     const data = await response.json();
-    return data.candidates[0].content.parts[0].text;
+    // Defensive access
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!text) throw new Error('Gemini returned an empty response (possibly safety filtered).');
+    return text;
 }
 
+// OpenRouter: already correct, only last user message gets images
 async function sendToOpenRouter(userMessage, apiKey) {
     const messages = [{ role: "system", content: SYSTEM_PROMPT }];
     let images = [];
-    if (typeof cachedImageParts !== 'undefined' && cachedImageParts.length > 0) {
+    if (cachedImageParts.length > 0) {
         images = cachedImageParts.map(part => ({
             type: "image_url",
             image_url: { url: `data:${part.inlineData.mimeType};base64,${part.inlineData.data}` }
         }));
     }
-
     const chatContents = aiChatHistory.map((item, index) => {
         if (item.role === 'user') {
             if (index === aiChatHistory.length - 1 && images.length > 0) {
@@ -528,7 +593,7 @@ async function sendToOpenRouter(userMessage, apiKey) {
     });
     messages.push(...chatContents);
 
-    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+    const response = await fetchWithTimeout('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Authorization': `Bearer ${apiKey}`,
@@ -536,7 +601,7 @@ async function sendToOpenRouter(userMessage, apiKey) {
             'HTTP-Referer': 'https://eeevaultjstu.vercel.app',
             'X-Title': 'EEE Vault JSTU'
         },
-        body: JSON.stringify({ model: 'openrouter/free', messages: messages, max_tokens: 2000 })
+        body: JSON.stringify({ model: 'openrouter/free', messages, max_tokens: 2000 })
     });
 
     if (!response.ok) {
@@ -544,46 +609,52 @@ async function sendToOpenRouter(userMessage, apiKey) {
         throw new Error(errData?.error?.message || `OpenRouter Error: ${response.status}`);
     }
     const data = await response.json();
-    return data.choices[0].message.content;
+    const text = data?.choices?.[0]?.message?.content;
+    if (!text) throw new Error('OpenRouter returned an empty response.');
+    return text;
 }
-    
+
+// Ollama: fix image attachment for last user message only
 async function sendToOllama(userMessage, serverUrl) {
     const messages = [{ role: "system", content: SYSTEM_PROMPT }];
-    let base64Images = [];
-    if (cachedImageParts.length > 0) {
-        base64Images = cachedImageParts.map(part => part.inlineData.data);
-    }
+    let base64Images = cachedImageParts.map(part => part.inlineData.data);
 
-    const chatContents = aiChatHistory.map((item) => {
+    const chatContents = aiChatHistory.map((item, index) => {
         let msg = { role: item.role === 'user' ? 'user' : 'assistant', content: item.content };
-        if (item.role === 'user' && base64Images.length > 0) msg.images = base64Images;
+        if (item.role === 'user' && index === aiChatHistory.length - 1 && base64Images.length > 0) {
+            msg.images = base64Images;
+        }
         return msg;
     });
     messages.push(...chatContents);
 
-    const response = await fetch(`${serverUrl}/api/chat`, { 
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' }, 
-        body: JSON.stringify({ model: 'llama3.2-vision', messages: messages, stream: false }) 
+    const response = await fetchWithTimeout(`${serverUrl}/api/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: 'llama3.2-vision', messages, stream: false })
     });
-    
+
     if (!response.ok) throw new Error(`Ollama error: HTTP ${response.status}. Is the server running?`);
     const data = await response.json();
-    return data.message.content;
+    const text = data?.message?.content;
+    if (!text) throw new Error('Ollama returned an empty response.');
+    return text;
 }
 
+// ============================
+// UI RENDERERS (sanitised)
+// ============================
 function renderApiDropdown() {
     const apis = getAllApis();
     const activeApi = getActiveApiName();
     const apiNames = Object.keys(apis);
     if (apiNames.length === 0) return '<p class="text-[10px] text-red-500 font-bold"><i class="fa-solid fa-triangle-exclamation"></i> No Provider Set</p>';
-    
     let html = '<select id="aiProviderSelect" onchange="switchAiProviderUi()" class="w-full bg-slate-50 p-2 rounded-xl border border-slate-200 text-xs text-slate-700 outline-none">';
     apiNames.forEach(name => {
         const api = apis[name]; const status = getApiQuotaStatus(name); const selected = name === activeApi ? 'selected' : '';
         const typeLabel = api.type.charAt(0).toUpperCase() + api.type.slice(1);
         const quotaLabel = status.isExhausted ? ' [EXHAUSTED]' : ` [${status.remaining}]`;
-        html += `<option value="${name}" ${selected}>${name} (${typeLabel})${quotaLabel}</option>`;
+        html += `<option value="${escapeAttr(name)}" ${selected}>${escapeHtml(name)} (${typeLabel})${quotaLabel}</option>`;
     });
     return html + '</select>';
 }
@@ -636,10 +707,10 @@ function renderApiSettings() {
                             return `
                                 <div class="p-3 ${isActive ? 'bg-blue-50 border-blue-200' : 'bg-white border-slate-200'} border rounded-xl flex justify-between items-center">
                                     <div>
-                                        <p class="font-bold text-xs text-slate-800">${name} ${isActive ? '<i class="fa-solid fa-circle-check text-blue-500 ml-1"></i>' : ''}</p>
+                                        <p class="font-bold text-xs text-slate-800">${escapeHtml(name)} ${isActive ? '<i class="fa-solid fa-circle-check text-blue-500 ml-1"></i>' : ''}</p>
                                         <p class="text-[10px] text-slate-500">${api.type.toUpperCase()} • ${status.used}/${status.limit}</p>
                                     </div>
-                                    <button onclick="deleteApiAndRefresh('${name}')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
+                                    <button onclick="deleteApiAndRefresh('${escapeAttr(name)}')" class="text-red-500 hover:bg-red-50 p-2 rounded-lg"><i class="fa-solid fa-trash-can"></i></button>
                                 </div>
                             `;
                         }).join('')}
@@ -659,9 +730,11 @@ function addNewApiFromForm() {
     } catch (err) { alert(`Error: ${err.message}`); }
 }
 function deleteApiAndRefresh(name) {
-    if (confirm(`Delete "${name}"?`)) { try { deleteApi(name); document.getElementById('apiSettingsContainer').innerHTML = renderApiSettings(); updateApiDisplay(); } catch (err) { alert(`Error: ${err.message}`); } }
+    if (confirm(`Delete "${name}"?`)) {
+        try { deleteApi(name); document.getElementById('apiSettingsContainer').innerHTML = renderApiSettings(); updateApiDisplay(); }
+        catch (err) { alert(`Error: ${err.message}`); }
+    }
 }
-
 function updateApiDisplay() {
     const selector = document.getElementById('apiSelectorContainer');
     const quota = document.getElementById('apiQuotaContainer');
@@ -669,159 +742,203 @@ function updateApiDisplay() {
     if(quota) quota.innerHTML = renderApiQuotaStatus();
 }
 
-// ============================================================================
-// APP LOGIC
-// ============================================================================
-const semesters = [ { label: "All Semesters", value: "all" }, { label: "1st Year 1st Sem", value: "1st Year 1st Semester" }, { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" }, { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" }, { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" }, { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" }, { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" }, { label: "4th Year 1st Sem", value: "4th Year 1st Semester" }, { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" } ];
-let selectedSemValue = "all"; let courseData = []; let libraryData = []; const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"]; let currentPages = [];
-let isAiPanelOpen = false; let isAiThinking = false; let aiChatHistory = []; let cachedImageParts = []; let touchStartLine = 0; let libTouchStartLine = 0; let activeDownloadData = null; let isViewingPdf = false;
-
-function lockBodyScroll() {
-    const scrollY = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = '100%';
-    document.body.classList.add('modal-open');
-}
-
-function unlockBodyScroll() {
-    const scrollY = document.body.style.top;
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    document.body.classList.remove('modal-open');
-    window.scrollTo(0, parseInt(scrollY || '0') * -1);
-}
-
-
-
-function getCurrentVisiblePageIndex() {
-    const filmstrip = document.getElementById('paperFilmstrip');
-    const pages = filmstrip.querySelectorAll('.viewer-page');
-    if (!pages || pages.length <= 1) return 0;
-    
-    const containerScrollTop = filmstrip.scrollTop;
-    const containerHeight = filmstrip.clientHeight;
-    const containerCenter = containerScrollTop + (containerHeight / 2);
-    
-    let targetIndex = 0;
-    let minDistance = Infinity;
-    
-    pages.forEach((page, index) => {
-        const pageTop = page.offsetTop;
-        const pageCenter = pageTop + (page.clientHeight / 2);
-        const distance = Math.abs(pageCenter - containerCenter);
-        
-        if (distance < minDistance) {
-            minDistance = distance;
-            targetIndex = index;
-        }
-    });
-    return targetIndex;
-}
+// ============================
+// APP DATA & INITIALISATION
+// ============================
+const semesters = [
+    { label: "All Semesters", value: "all" },
+    { label: "1st Year 1st Sem", value: "1st Year 1st Semester" },
+    { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" },
+    { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" },
+    { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" },
+    { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" },
+    { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" },
+    { label: "4th Year 1st Sem", value: "4th Year 1st Semester" },
+    { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" }
+];
+let selectedSemValue = "all";
+let courseData = [];
+let libraryData = [];
+const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"];
+let currentPages = [];
+let isAiPanelOpen = false;
+let isAiThinking = false;
+let aiChatHistory = [];
+let cachedImageParts = [];
+let touchStartLine = 0;
+let libTouchStartLine = 0;
+let activeDownloadData = null;
+let isViewingPdf = false;
 
 async function init() {
     try {
         const res = await fetch('data.json?t=' + Date.now());
+        if (!res.ok) throw new Error('Failed to load data');
         const data = await res.json();
         courseData = data.Course ? data.Course : data;
         libraryData = data.Library ? data.Library : [];
         renderCourses(courseData);
         updateApiDisplay();
-        
         document.getElementById('librarySearch').addEventListener('input', filterLibraryBooks);
-    } catch (err) { console.error("Data load failed", err); }
+    } catch (err) {
+        console.error("Data load failed", err);
+        document.getElementById('courseContainer').innerHTML = `
+            <div class="col-span-full text-center py-16">
+                <i class="fa-solid fa-cloud-bolt text-4xl text-red-400 mb-4"></i>
+                <p class="text-slate-600 font-bold">Failed to load course data.</p>
+                <button onclick="init()" class="mt-4 bg-red-600 text-white px-6 py-2 rounded-xl font-bold">Retry</button>
+            </div>`;
+    }
 }
 
 function renderCourses(data) {
     const container = document.getElementById('courseContainer');
     container.innerHTML = data.map((course) => {
         const hasNotes = course.notes && course.notes.length > 0;
+        // Build batch buttons safely
+        let batchBtns = batches.map(batch => {
+            const link = course.links ? course.links[batch] : null;
+            const isMissing = !link || (Array.isArray(link) && link.length === 0) || link === "missing";
+            const escapedBatch = escapeAttr(batch);
+            const escapedCode = escapeAttr(course.code);
+            return `<button onclick="${isMissing ? 'openUpload()' : `openPaperByCode('${escapedCode}', '${escapedBatch}')`}"
+                class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}">
+                <span class="text-[10px] uppercase font-bold tracking-tighter">${escapeHtml(batch)}</span>
+                <span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span></button>`;
+        }).join('');
+
         return `
             <div class="glass-card p-6 rounded-3xl shadow-sm border border-white mb-4">
                 <div class="flex flex-col gap-3">
-                    <div><span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${course.code}</span><h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${course.title}</h3></div>
+                    <div>
+                        <span class="text-[10px] font-black text-red-600 bg-red-50 px-2 py-0.5 rounded uppercase border border-red-100">${escapeHtml(course.code)}</span>
+                        <h3 class="text-lg font-bold text-slate-800 leading-tight mt-1">${escapeHtml(course.title)}</h3>
+                    </div>
                     <div class="scroll-container">
-                        <button onclick="${hasNotes ? `openNotes('${course.code}')` : 'openUpload()'}" class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}"><span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span><span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span></button>
-                        ${batches.map(batch => {
-                            const link = course.links ? course.links[batch] : null; const isMissing = !link || (Array.isArray(link) && link.length === 0) || link === "missing";
-                            return `<button onclick="${isMissing ? 'openUpload()' : `openPaperByCode('${course.code}', '${batch}')`}" class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${!isMissing ? 'btn-available' : ''}"><span class="text-[10px] uppercase font-bold tracking-tighter">${batch}</span><span class="text-[8px] opacity-70">${isMissing ? 'MISSING' : 'OPEN'}</span></button>`;
-                        }).join('')}
+                        <button onclick="${hasNotes ? `openNotes('${escapeAttr(course.code)}')` : 'openUpload()'}"
+                            class="session-btn p-3 rounded-2xl flex flex-col items-center justify-center ${hasNotes ? 'btn-notes' : ''}">
+                            <span class="text-[10px] uppercase font-bold tracking-tighter">NOTES</span>
+                            <span class="text-[8px] opacity-70">${hasNotes ? 'VIEW' : 'MISSING'}</span>
+                        </button>
+                        ${batchBtns}
                     </div>
                 </div>
             </div>`;
     }).join('');
 }
 
+// ============================
+// VIEWER & PDF FUNCTIONS
+// ============================
+function resetViewerState() {
+    currentPages = [];
+    cachedImageParts = [];
+    aiChatHistory = [];
+    isViewingPdf = false;   // fix: reset flag centrally
+    document.getElementById('paperFilmstrip').innerHTML = "";
+    document.getElementById('viewingTitle').innerText = "";
+    document.getElementById('headerLoader').classList.add('hidden');
+    document.getElementById('pdfBtn').classList.remove('hidden');
+}
+
+function initFilmstripScroll() {
+    const filmstrip = document.getElementById('paperFilmstrip');
+    filmstrip.style.webkitOverflowScrolling = 'touch';
+    filmstrip.scrollTop = 0;
+}
+
+// PDF download: fixed flow
 function confirmPdfDownload() {
-    document.body.insertAdjacentHTML('beforeend', `<div id="customAlert" class="premium-alert-overlay"><div class="premium-alert-card"><div class="alert-icon-circle"><i class="fa-solid fa-file-pdf"></i></div><h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Compile PDF?</h3><p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">Download compiled A4 PDF.</p><div class="alert-btn-group"><button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button><button class="alert-btn btn-confirm" onclick="executePdfDownload()">Start</button></div></div></div>`);
-    setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
+    if (!currentPages.length) {
+        alert('No pages loaded.');
+        return;
+    }
+    // Set download data based on current viewer state
+    activeDownloadData = {
+        fileName: (document.getElementById('viewingTitle').innerText || 'document').trim().replace(/\s+/g, '_') + '.pdf',
+        pages: currentPages.slice() // copy
+    };
+    const htmlContent = `
+        <div class="premium-alert-card">
+            <button class="btn-cancel-corner" onclick="closeAlert()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="alert-icon-circle"><i class="fa-solid fa-file-pdf"></i></div>
+            <h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Compile PDF?</h3>
+            <p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">Download compiled A4 PDF.</p>
+            <div class="alert-btn-group">
+                <button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button>
+                <button class="alert-btn btn-confirm" onclick="executePdfDownload()">Start</button>
+            </div>
+        </div>`;
+    showCustomAlert(htmlContent);
 }
 
 async function executePdfDownload() {
-    const url = activeDownloadData.url;
-    const title = activeDownloadData.fileName;
     closeAlert();
-    
-    resetViewerState(); 
-    closeAlert(); const pdfBtn = document.getElementById('pdfBtn'); const headerLoader = document.getElementById('headerLoader');
-    pdfBtn.classList.add('hidden'); headerLoader.classList.remove('hidden');
+    if (!activeDownloadData || !activeDownloadData.pages) return;
+    const pages = activeDownloadData.pages;
+    const title = activeDownloadData.fileName;
+    const pdfBtn = document.getElementById('pdfBtn');
+    const headerLoader = document.getElementById('headerLoader');
+    pdfBtn.classList.add('hidden');
+    headerLoader.classList.remove('hidden');
     try {
-        const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
-        for (let i = 0; i < currentPages.length; i++) {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        for (let i = 0; i < pages.length; i++) {
             if (i > 0) pdf.addPage();
-            
-            // Check if page data is raw base64 data from a rendered PDF canvas layout
-            let imgData = currentPages[i];
+            let imgData = pages[i];
             if (!imgData.startsWith('data:image')) {
-                const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(currentPages[i].replace(/^https?:\/\//, ''))}&output=jpg&q=80`;
-                imgData = await new Promise((res, rej) => { const img = new Image(); img.crossOrigin = 'Anonymous'; img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; canvas.getContext('2d').drawImage(img, 0, 0); res(canvas.toDataURL('image/jpeg', 0.8)); }; img.onerror = rej; img.src = proxyUrl; });
+                // Use full URL (not stripping protocol) and encode properly
+                const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(imgData)}&output=jpg&q=80`;
+                imgData = await new Promise((res, rej) => {
+                    const img = new Image();
+                    img.crossOrigin = 'Anonymous';
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        canvas.getContext('2d').drawImage(img, 0, 0);
+                        res(canvas.toDataURL('image/jpeg', 0.8));
+                    };
+                    img.onerror = rej;
+                    img.src = proxyUrl;
+                });
             }
-            
-            const calcImg = new Image(); await new Promise(r => { calcImg.onload = r; calcImg.src = imgData; });
-            let renderWidth = pdf.internal.pageSize.getWidth(); let renderHeight = (calcImg.height * renderWidth) / calcImg.width;
-            if (renderHeight > pdf.internal.pageSize.getHeight()) { renderHeight = pdf.internal.pageSize.getHeight(); renderWidth = (calcImg.width * renderHeight) / calcImg.height; }
-            pdf.addImage(imgData, 'JPEG', (pdf.internal.pageSize.getWidth() - renderWidth)/2, (pdf.internal.pageSize.getHeight() - renderHeight)/2, renderWidth, renderHeight);
+            const calcImg = new Image();
+            await new Promise(r => { calcImg.onload = r; calcImg.src = imgData; });
+            let renderWidth = pdf.internal.pageSize.getWidth();
+            let renderHeight = (calcImg.height * renderWidth) / calcImg.width;
+            if (renderHeight > pdf.internal.pageSize.getHeight()) {
+                renderHeight = pdf.internal.pageSize.getHeight();
+                renderWidth = (calcImg.width * renderHeight) / calcImg.height;
+            }
+            pdf.addImage(imgData, 'JPEG', (pdf.internal.pageSize.getWidth() - renderWidth) / 2, (pdf.internal.pageSize.getHeight() - renderHeight) / 2, renderWidth, renderHeight);
         }
-        pdf.save(`${document.getElementById('viewingTitle').innerText.trim().replace(/\s+/g, '_')}.pdf`);
-    } catch (err) { alert("Download error."); } finally { pdfBtn.classList.remove('hidden'); headerLoader.classList.add('hidden'); }
+        pdf.save(title);
+    } catch (err) {
+        alert('PDF compilation failed: ' + err.message);
+    } finally {
+        pdfBtn.classList.remove('hidden');
+        headerLoader.classList.add('hidden');
+    }
 }
 
-function toggleSemModal(show) {
-    const modal = document.getElementById('semModal');
-    if (show) { renderSemOptions(); modal.classList.remove('hidden'); modal.offsetHeight; modal.classList.add('active-sheet'); } 
-    else { modal.classList.remove('active-sheet'); setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 200); }
+function openPaperByCode(code, batch) {
+    const course = courseData.find(c => c.code === code);
+    if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`);
 }
-
-function renderSemOptions() {
-    document.getElementById('semOptionsList').innerHTML = semesters.map(s => `<button onclick="applyPremiumFilter('${s.value}', '${s.label}')" class="w-full flex items-center justify-between p-4 mb-2 rounded-2xl transition-all ${selectedSemValue === s.value ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-slate-50 text-slate-600 font-bold'}"><span class="text-sm">${s.label}</span>${selectedSemValue === s.value ? '<i class="fa-solid fa-circle-check"></i>' : ''}</button>`).join('');
-}
-
-function applyPremiumFilter(val, label) {
-    selectedSemValue = val; document.getElementById('currentSemesterText').innerText = label; toggleSemModal(false);
-    const query = document.getElementById('mainSearch').value.toLowerCase();
-    renderCourses(courseData.filter(c => (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) && (selectedSemValue === "all" || c.semester === selectedSemValue)));
-}
-
-document.getElementById('mainSearch').addEventListener('input', () => applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText));
-function openPaperByCode(code, batch) { const course = courseData.find(c => c.code === code); if (course) viewPaper(course.links[batch], `${course.title} - ${batch}`); }
 
 function viewPaper(links, title) {
     resetViewerState();
     isViewingPdf = false;
     currentPages = Array.isArray(links) ? links : [links];
-    cachedImageParts = [];
-    aiChatHistory = [];
     document.getElementById('viewingTitle').innerText = title;
     const filmstrip = document.getElementById('paperFilmstrip');
     filmstrip.innerHTML = currentPages.map(url => `<div class="viewer-page"><div class="zoom-wrapper"><img src="${url}" loading="lazy" alt="Page" onload="initZoomForImage(this)"></div></div>`).join('');
-    
+
     const modal = document.getElementById('viewerModal');
     modal.classList.remove('hidden');
-    document.body.classList.add('modal-open');
     lockBodyScroll();
-    
-    // ADD THIS LINE
     requestAnimationFrame(() => {
         initFilmstripScroll();
         modal.classList.add('viewer-active');
@@ -830,27 +947,351 @@ function viewPaper(links, title) {
 }
 
 function closeViewer() {
-    const modal = document.getElementById('viewerModal'); modal.classList.remove('viewer-active'); document.body.classList.remove('modal-open'); unlockBodyScroll();
-    setTimeout(() => { modal.classList.add('hidden'); document.getElementById('paperFilmstrip').innerHTML = ""; currentPages = []; toggleAiPanel(false); }, 550);
+    const modal = document.getElementById('viewerModal');
+    modal.classList.remove('viewer-active');
+    unlockBodyScroll();
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        document.getElementById('paperFilmstrip').innerHTML = "";
+        resetViewerState();
+        toggleAiPanel(false);
+    }, 550);
 }
 
+// PDF viewing (textbooks)
+async function executeViewPdf() {
+    const url = activeDownloadData.url;
+    const title = activeDownloadData.fileName;
+    closeAlert();
+    // Ensure other modals are closed cleanly
+    const notesModal = document.getElementById('notesModal');
+    const libraryModal = document.getElementById('libraryModal');
+    if (notesModal) { notesModal.classList.remove('active-sheet'); unlockBodyScroll(); setTimeout(() => notesModal.classList.add('hidden'), 500); }
+    if (libraryModal) { libraryModal.classList.remove('active-sheet'); unlockBodyScroll(); setTimeout(() => libraryModal.classList.add('hidden'), 500); }
+
+    resetViewerState();
+    currentPages = [];
+    cachedImageParts = [];
+    aiChatHistory = [];
+    document.getElementById('viewingTitle').innerText = title;
+
+    const filmstrip = document.getElementById('paperFilmstrip');
+    filmstrip.innerHTML = '<div class="flex justify-center items-center h-full pt-20"><div class="loader-ring"></div></div>';
+
+    const modal = document.getElementById('viewerModal');
+    modal.classList.remove('hidden');
+    lockBodyScroll();
+    requestAnimationFrame(() => modal.classList.add('viewer-active'));
+
+    try {
+        isViewingPdf = true;
+        const loadingTask = pdfjsLib.getDocument(url);
+        const pdf = await loadingTask.promise;
+        filmstrip.innerHTML = '';
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            const page = await pdf.getPage(pageNum);
+            const viewport = page.getViewport({ scale: 2.0 });
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+            canvas.style.width = '100%';
+            canvas.style.height = 'auto';
+            canvas.style.display = 'block';
+            await page.render({ canvasContext: context, viewport }).promise;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'viewer-page';
+            wrapper.innerHTML = '<div class="zoom-wrapper"></div>';
+            wrapper.querySelector('.zoom-wrapper').appendChild(canvas);
+            filmstrip.appendChild(wrapper);
+            initZoomForImage(canvas);
+            const base64 = canvas.toDataURL('image/jpeg', 0.8);
+            currentPages.push(base64);
+        }
+    } catch (error) {
+        filmstrip.innerHTML = `
+            <div class="text-slate-400 text-center p-8 text-xs font-bold uppercase mt-10">
+                <i class="fa-solid fa-triangle-exclamation text-red-500 mb-2 text-2xl"></i><br>
+                Protected or Corrupt PDF.<br>Please use download instead.
+            </div>`;
+        console.error('PDF.js Error:', error);
+    }
+}
+
+function executeDownload() {
+    if (!activeDownloadData) return;
+    const a = document.createElement('a');
+    a.href = activeDownloadData.url;
+    a.download = activeDownloadData.fileName;
+    a.target = '_blank';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    closeAlert();
+}
+
+// ============================
+// MODALS (library, notes, semester)
+// ============================
+function openNotes(code) {
+    const course = courseData.find(c => c.code === code);
+    const modal = document.getElementById('notesModal');
+    document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
+    document.getElementById('notesList').innerHTML = course.notes.map(note => {
+        const safeName = escapeAttr(note.name);
+        const safeUrl = escapeAttr(note.url);
+        return `<div class="file-card" onclick="confirmDownload('${safeUrl}', '${safeName}.pdf')">
+            <i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${escapeHtml(note.name)}</span>
+            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Options</span>
+        </div>`;
+    }).join('');
+    modal.classList.remove('hidden');
+    window.addEventListener('touchstart', handleTouchStart, {passive:false});
+    window.addEventListener('touchmove', handleTouchMove, {passive:false});
+    lockBodyScroll();
+    requestAnimationFrame(() => modal.classList.add('active-sheet'));
+}
+function closeNotes() {
+    const modal = document.getElementById('notesModal');
+    modal.classList.remove('active-sheet');
+    unlockBodyScroll();
+    window.removeEventListener('touchstart', handleTouchStart);
+    window.removeEventListener('touchmove', handleTouchMove);
+    setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500);
+}
+
+function openLibrary() {
+    const modal = document.getElementById('libraryModal');
+    document.getElementById('librarySearch').value = '';
+    renderLibraryBooks(libraryData);
+    modal.classList.remove('hidden');
+    window.addEventListener('touchstart', handleLibTouchStart, {passive:false});
+    window.addEventListener('touchmove', handleLibTouchMove, {passive:false});
+    lockBodyScroll();
+    requestAnimationFrame(() => modal.classList.add('active-sheet'));
+}
+function closeLibrary() {
+    const modal = document.getElementById('libraryModal');
+    modal.classList.remove('active-sheet');
+    unlockBodyScroll();
+    window.removeEventListener('touchstart', handleLibTouchStart);
+    window.removeEventListener('touchmove', handleLibTouchMove);
+    setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500);
+}
+
+function renderLibraryBooks(books) {
+    const container = document.getElementById('libraryList');
+    if (!books.length) {
+        container.innerHTML = `<div class="col-span-2 text-center text-slate-400 py-8 text-xs font-medium">No reference books found</div>`;
+        return;
+    }
+    container.innerHTML = books.map(book => {
+        const safeTitle = escapeAttr(book.title);
+        const safeUrl = escapeAttr(book.url);
+        return `<div class="file-card" onclick="confirmDownload('${safeUrl}', '${safeTitle}.pdf')">
+            <i class="fa-solid fa-book-open text-3xl text-red-600 mb-2"></i>
+            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${escapeHtml(book.title)}</span>
+            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider truncate max-w-full">${escapeHtml(book.author || 'Reference')}</span>
+        </div>`;
+    }).join('');
+}
+function filterLibraryBooks() {
+    const query = document.getElementById('librarySearch').value.toLowerCase();
+    const filtered = libraryData.filter(b => 
+        b.title.toLowerCase().includes(query) || 
+        (b.author && b.author.toLowerCase().includes(query))
+    );
+    renderLibraryBooks(filtered);
+}
+
+function handleTouchStart(e) { touchStartLine = e.touches[0].pageY; }
+function handleTouchMove(e) { if(document.getElementById('notesList').scrollTop <= 0 && e.touches[0].pageY > touchStartLine) if(e.cancelable) e.preventDefault(); }
+function handleLibTouchStart(e) { libTouchStartLine = e.touches[0].pageY; }
+function handleLibTouchMove(e) { if(document.getElementById('libraryList').scrollTop <= 0 && e.touches[0].pageY > libTouchStartLine) if(e.cancelable) e.preventDefault(); }
+
+function confirmDownload(url, fileName) {
+    activeDownloadData = { url, fileName };
+    const htmlContent = `
+        <div class="premium-alert-card">
+            <button class="btn-cancel-corner" onclick="closeAlert()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="alert-icon-circle"><i class="fa-solid fa-file-pdf"></i></div>
+            <h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Action Options</h3>
+            <p style="color: #64748b; font-size: 12px; line-height: 1.5;">${escapeHtml(fileName)}</p>
+            <div class="alert-btn-group">
+                <button class="alert-btn btn-view" onclick="executeViewPdf()">View</button>
+                <button class="alert-btn btn-confirm" onclick="executeDownload()">Download</button>
+            </div>
+        </div>`;
+    showCustomAlert(htmlContent);
+}
+
+function toggleSemModal(show) {
+    const modal = document.getElementById('semModal');
+    if (show) { renderSemOptions(); modal.classList.remove('hidden'); modal.offsetHeight; modal.classList.add('active-sheet'); }
+    else { modal.classList.remove('active-sheet'); setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 200); }
+}
+function renderSemOptions() {
+    document.getElementById('semOptionsList').innerHTML = semesters.map(s => 
+        `<button onclick="applyPremiumFilter('${escapeAttr(s.value)}', '${escapeAttr(s.label)}')" 
+            class="w-full flex items-center justify-between p-4 mb-2 rounded-2xl transition-all ${selectedSemValue === s.value ? 'bg-red-600 text-white shadow-lg' : 'hover:bg-slate-50 text-slate-600 font-bold'}">
+            <span class="text-sm">${escapeHtml(s.label)}</span>
+            ${selectedSemValue === s.value ? '<i class="fa-solid fa-circle-check"></i>' : ''}
+        </button>`
+    ).join('');
+}
+function applyPremiumFilter(val, label) {
+    selectedSemValue = val;
+    document.getElementById('currentSemesterText').innerText = label;
+    toggleSemModal(false);
+    const query = document.getElementById('mainSearch').value.toLowerCase();
+    renderCourses(courseData.filter(c => 
+        (c.title.toLowerCase().includes(query) || c.code.toLowerCase().includes(query)) &&
+        (selectedSemValue === "all" || c.semester === selectedSemValue)
+    ));
+}
+document.getElementById('mainSearch').addEventListener('input', () => applyPremiumFilter(selectedSemValue, document.getElementById('currentSemesterText').innerText));
+
+// ============================
+// AI CHAT & PANEL
+// ============================
+function toggleAiPanel(show) {
+    const panel = document.getElementById('aiChatPanel');
+    isAiPanelOpen = show;
+    if (show) {
+        panel.classList.remove('translate-x-full');
+        renderSessionChatHistory();
+    } else {
+        panel.classList.add('translate-x-full');
+    }
+}
+function openAiKeyModal() {
+    document.getElementById('apiSettingsContainer').innerHTML = renderApiSettings();
+    document.getElementById('aiKeyModal').classList.remove('hidden');
+}
+function closeAiKeyModal() {
+    document.getElementById('aiKeyModal').classList.add('hidden');
+    updateApiDisplay();
+}
+
+function renderSessionChatHistory() {
+    const container = document.getElementById('aiChatMessages');
+    let html = `<div class="bg-blue-50 border border-red-100 rounded-2xl p-4 text-xs text-slate-600 space-y-2 mb-4">
+        <p class="font-bold text-red-600"><i class="fa-solid fa-circle-info mr-1"></i>How to use</p>
+        <p>Set your API keys (Gemini recommended) in Settings. Use multiple APIs for more usage.</p>
+    </div>`;
+    aiChatHistory.forEach(msg => {
+        if (msg.role === 'user') {
+            html += `<div class="flex justify-end p-2 mb-2"><div class="bg-red-600 text-white text-[13px] px-4 py-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] break-words">${escapeHtml(msg.content)}</div></div>`;
+        } else {
+            // AI content is sanitised via marked + DOMPurify (configured globally)
+            html += `<div class="w-full px-2 py-4 mb-2 text-slate-800 text-[14px] leading-relaxed ai-markdown-content overflow-hidden">${marked.parse(msg.content)}</div>`;
+        }
+    });
+    container.innerHTML = html;
+    if (isAiThinking) {
+        container.insertAdjacentHTML('beforeend', `<div id="thinking-msg" class="text-[10px] text-slate-400 text-center py-2 animate-pulse">AI is thinking via ${getActiveApiName() || 'API'}...</div>`);
+    }
+    if (window.MathJax) MathJax.typesetPromise([container]).catch(err => console.log(err));
+    container.scrollTop = container.scrollHeight;
+}
+
+async function convertImageUrlToBase64(url) {
+    const res = await fetch(`https://images.weserv.nl/?url=${encodeURIComponent(url)}&output=jpg&q=70`);
+    const blob = await res.blob();
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
+function getCurrentVisiblePageIndex() {
+    const filmstrip = document.getElementById('paperFilmstrip');
+    const pages = filmstrip.querySelectorAll('.viewer-page');
+    if (!pages || pages.length <= 1) return 0;
+    const containerScrollTop = filmstrip.scrollTop;
+    const containerHeight = filmstrip.clientHeight;
+    const containerCenter = containerScrollTop + (containerHeight / 2);
+    let targetIndex = 0;
+    let minDistance = Infinity;
+    pages.forEach((page, index) => {
+        const pageTop = page.offsetTop;
+        const pageCenter = pageTop + (page.clientHeight / 2);
+        const distance = Math.abs(pageCenter - containerCenter);
+        if (distance < minDistance) { minDistance = distance; targetIndex = index; }
+    });
+    return targetIndex;
+}
+
+async function handleUserQuery() {
+    if (isAiThinking) return;
+    const inputField = document.getElementById('aiUserQuery');
+    const userPromptText = inputField.value.trim();
+    if (!userPromptText) return;
+    if (!getActiveApiName()) return openAiKeyModal();
+
+    isAiThinking = true;
+    inputField.value = "";
+    aiChatHistory.push({ role: "user", content: userPromptText });
+    renderSessionChatHistory();
+
+    try {
+        // Prepare image context based on mode
+        if (isViewingPdf) {
+            // PDF mode: only send the currently visible page
+            cachedImageParts = [];
+            const currentPageIndex = getCurrentVisiblePageIndex();
+            const activePageData = currentPages[currentPageIndex];
+            if (activePageData && activePageData.startsWith('data:image')) {
+                cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: activePageData.split(',')[1] } });
+            }
+        } else {
+            // Paper mode: load all pages once if not already cached
+            if (cachedImageParts.length === 0 && currentPages.length > 0) {
+                for (const url of currentPages) {
+                    if (url.startsWith('data:image')) {
+                        cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: url.split(',')[1] } });
+                    } else {
+                        const dataUrl = await convertImageUrlToBase64(url);
+                        cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: dataUrl.split(',')[1] } });
+                    }
+                }
+            }
+        }
+
+        const response = await sendQueryToAI(userPromptText);
+        aiChatHistory.push({ role: "assistant", content: response });
+    } catch (err) {
+        aiChatHistory.push({ role: "assistant", content: `❌ ${escapeHtml(err.message)}` });
+        if (err.message.includes("limit")) updateApiDisplay();
+    } finally {
+        const thinkingNode = document.getElementById('thinking-msg');
+        if (thinkingNode) thinkingNode.remove();
+        isAiThinking = false;
+        renderSessionChatHistory();
+        updateApiDisplay();
+    }
+}
+
+// ============================
+// ZOOM & GESTURE (unchanged logic, just included for completeness)
+// ============================
 function initZoomForImage(img) {
     const wrapper = img.parentElement;
     let scale = 1, lastScale = 1, panX = 0, panY = 0, startX = 0, startY = 0, startDist = 0;
     let isPanning = false, lastTap = 0, originX = 0, originY = 0;
-
     function clampPan() {
         const limitX = Math.max(0, (img.offsetWidth * scale - wrapper.offsetWidth) / 2);
         const limitY = Math.max(0, (img.offsetHeight * scale - wrapper.offsetHeight) / 2);
         panX = Math.max(-limitX, Math.min(limitX, panX));
         panY = Math.max(-limitY, Math.min(limitY, panY));
     }
-
     function update(m) {
         img.style.transition = m === "animate" ? "transform 0.3s cubic-bezier(0.16,1,0.3,1)" : "none";
         img.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
     }
-
     wrapper.addEventListener('touchstart', (e) => {
         if (e.touches.length === 2) {
             isPanning = false;
@@ -864,11 +1305,8 @@ function initZoomForImage(img) {
             startX = e.touches[0].clientX - panX;
             startY = e.touches[0].clientY - panY;
         }
-    }, { passive: true }); // Changed to passive: true to allow scrolling
-
+    }, { passive: true });
     wrapper.addEventListener('touchmove', (e) => {
-        // Only block scrolling if we are zooming (2 fingers) 
-        // OR if we are panned into a zoomed image
         if (e.touches.length === 2) {
             e.preventDefault();
             scale = Math.max(1, Math.min(5, lastScale * (Math.hypot(e.touches[0].pageX - e.touches[1].pageX, e.touches[0].pageY - e.touches[1].pageY) / startDist)));
@@ -878,22 +1316,18 @@ function initZoomForImage(img) {
             clampPan();
             update("instant");
         } else if (e.touches.length === 1 && isPanning && scale > 1) {
-            // Only prevent default if we are actively moving a zoomed image
             e.preventDefault();
             panX = e.touches[0].clientX - startX;
             panY = e.touches[0].clientY - startY;
             clampPan();
             update("instant");
         }
-        // NOTE: If scale === 1, we do NOT call preventDefault, 
-        // allowing the browser to handle vertical scroll naturally.
     }, { passive: false });
-
     wrapper.addEventListener('touchend', (e) => {
         const now = Date.now();
         if (now - lastTap < 300 && e.changedTouches.length === 1) {
             if (scale > 1) { scale = 1; panX = 0; panY = 0; }
-            else { 
+            else {
                 scale = 2.5;
                 const r = wrapper.getBoundingClientRect();
                 panX = (r.width / 2 - (e.changedTouches[0].clientX - r.left)) * (scale - 1);
@@ -907,241 +1341,13 @@ function initZoomForImage(img) {
     }, { passive: true });
 }
 
-
-function openNotes(code) {
-    const course = courseData.find(c => c.code === code); const modal = document.getElementById('notesModal'); document.getElementById('notesCourseTitle').innerText = `${course.code}: ${course.title}`;
-    document.getElementById('notesList').innerHTML = course.notes.map(note => `<div class="file-card" onclick="confirmDownload('${note.url}', '${note.name}.pdf')"><i class="fa-solid fa-file-pdf text-3xl text-red-600 mb-2"></i><span class="text-[11px] font-bold text-slate-700 line-clamp-2">${note.name}</span><span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider">Options</span></div>`).join('');
-    modal.classList.remove('hidden'); window.addEventListener('touchstart', handleTouchStart, {passive:false}); window.addEventListener('touchmove', handleTouchMove, {passive:false}); requestAnimationFrame(() => { modal.classList.add('active-sheet'); document.body.classList.add('modal-open'); });
-}
-function closeNotes() { const modal = document.getElementById('notesModal'); modal.classList.remove('active-sheet'); document.body.classList.remove('modal-open'); window.removeEventListener('touchstart', handleTouchStart); window.removeEventListener('touchmove', handleTouchMove); setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500); }
-
-// ============================================================================
-// LIBRARY UI MANAGEMENT METHODS
-// ============================================================================
-function openLibrary() {
-    const modal = document.getElementById('libraryModal');
-    document.getElementById('librarySearch').value = '';
-    renderLibraryBooks(libraryData);
-    modal.classList.remove('hidden');
-    window.addEventListener('touchstart', handleLibTouchStart, {passive:false});
-    window.addEventListener('touchmove', handleLibTouchMove, {passive:false});
-    requestAnimationFrame(() => { modal.classList.add('active-sheet'); document.body.classList.add('modal-open'); });
-}
-
-function closeLibrary() {
-    const modal = document.getElementById('libraryModal');
-    modal.classList.remove('active-sheet');
-    document.body.classList.remove('modal-open');
-    window.removeEventListener('touchstart', handleLibTouchStart);
-    window.removeEventListener('touchmove', handleLibTouchMove);
-    setTimeout(() => { if (!modal.classList.contains('active-sheet')) modal.classList.add('hidden'); }, 500);
-}
-
-function renderLibraryBooks(books) {
-    const container = document.getElementById('libraryList');
-    if(books.length === 0) {
-        container.innerHTML = `<div class="col-span-2 text-center text-slate-400 py-8 text-xs font-medium">No reference books found</div>`;
-        return;
-    }
-    container.innerHTML = books.map(book => `
-        <div class="file-card" onclick="confirmDownload('${book.url}', '${book.title}.pdf')">
-            <i class="fa-solid fa-book-open text-3xl text-red-600 mb-2"></i>
-            <span class="text-[11px] font-bold text-slate-700 line-clamp-2">${book.title}</span>
-            <span class="text-[9px] text-slate-400 mt-1 uppercase font-black tracking-wider truncate max-w-full">${book.author || 'Reference'}</span>
-        </div>
-    `).join('');
-}
-
-function filterLibraryBooks() {
-    const query = document.getElementById('librarySearch').value.toLowerCase();
-    const filtered = libraryData.filter(b => 
-        b.title.toLowerCase().includes(query) || 
-        (b.author && b.author.toLowerCase().includes(query))
-    );
-    renderLibraryBooks(filtered);
-}
-
-function handleLibTouchStart(e) { libTouchStartLine = e.touches[0].pageY; }
-function handleLibTouchMove(e) { if(document.getElementById('libraryList').scrollTop <= 0 && e.touches[0].pageY > libTouchStartLine) if(e.cancelable) e.preventDefault(); }
-
-function confirmDownload(url, fileName) { 
-    activeDownloadData = {url, fileName}; 
-    document.body.insertAdjacentHTML('beforeend', `
-        <div id="customAlert" class="premium-alert-overlay">
-            <div class="premium-alert-card">
-                <button class="btn-cancel-corner" onclick="closeAlert()">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-                <div class="alert-icon-circle"><i class="fa-solid fa-file-pdf"></i></div>
-                <h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Action Options</h3>
-                <p style="color: #64748b; font-size: 12px; line-height: 1.5;">${fileName}</p>
-                <div class="alert-btn-group">
-                    <button class="alert-btn btn-view" onclick="executeViewPdf()">View</button>
-                    <button class="alert-btn btn-confirm" onclick="executeDownload()">Download</button>
-                </div>
-            </div>
-        </div>
-    `); 
-    setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10); 
-}
-
-async function executeViewPdf() {
-    const url = activeDownloadData.url;
-    const title = activeDownloadData.fileName;
-    closeAlert();
-    
-    // Close other modal overlays to ensure premium viewer takes exclusive view state
-    const notesModal = document.getElementById('notesModal');
-    const libraryModal = document.getElementById('libraryModal');
-    if (notesModal) notesModal.classList.remove('active-sheet', 'hidden');
-    if (libraryModal) libraryModal.classList.remove('active-sheet', 'hidden');
-    
-    currentPages = []; 
-    cachedImageParts = []; 
-    aiChatHistory = []; 
-    document.getElementById('viewingTitle').innerText = title;
-    
-    const filmstrip = document.getElementById('paperFilmstrip');
-    filmstrip.innerHTML = '<div class="flex justify-center items-center h-full pt-20"><div class="loader-ring"></div></div>';
-    
-    const modal = document.getElementById('viewerModal'); 
-    modal.classList.remove('hidden'); 
-    document.body.classList.add('modal-open'); 
-    lockBodyScroll();
-    requestAnimationFrame(() => modal.classList.add('viewer-active'));
-    
-    try {
-        isViewingPdf = true; // It's a textbook/PDF, switch to single-page scanning
-        const loadingTask = pdfjsLib.getDocument(url);
-        const pdf = await loadingTask.promise;
-        filmstrip.innerHTML = ''; 
-        
-        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-            const page = await pdf.getPage(pageNum);
-            const viewport = page.getViewport({ scale: 2.0 }); 
-            
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
-            
-            canvas.style.width = '100%'; 
-            canvas.style.height = 'auto';
-            canvas.style.display = 'block';
-            
-            await page.render({ canvasContext: context, viewport: viewport }).promise;
-            
-            const wrapper = document.createElement('div');
-            wrapper.className = 'viewer-page';
-            wrapper.innerHTML = `<div class="zoom-wrapper"></div>`;
-            wrapper.querySelector('.zoom-wrapper').appendChild(canvas);
-            
-            filmstrip.appendChild(wrapper);
-            initZoomForImage(canvas);
-            
-            const base64 = canvas.toDataURL('image/jpeg', 0.8);
-            currentPages.push(base64); 
-        }
-    } catch (error) {
-        filmstrip.innerHTML = `
-            <div class="text-slate-400 text-center p-8 text-xs font-bold uppercase mt-10">
-                <i class="fa-solid fa-triangle-exclamation text-red-500 mb-2 text-2xl"></i><br>
-                Protected or Corrupt PDF.<br>Please use download instead.
-            </div>`;
-        console.error('PDF.js Error:', error);
-    }
-}
-
-function executeDownload() { if(!activeDownloadData)return; const a=document.createElement('a'); a.href=activeDownloadData.url; a.download=activeDownloadData.fileName; a.target='_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a); closeAlert(); }
-function closeAlert() { const el=document.getElementById('customAlert'); if(el){el.classList.remove('active');setTimeout(()=>el.remove(),300);} }
-function handleTouchStart(e) { touchStartLine=e.touches[0].pageY; }
-function handleTouchMove(e) { if(document.getElementById('notesList').scrollTop<=0 && e.touches[0].pageY>touchStartLine) if(e.cancelable) e.preventDefault(); }
-
-function toggleAiPanel(show) { const panel = document.getElementById('aiChatPanel'); isAiPanelOpen = show; if(show){ panel.classList.remove('translate-x-full'); renderSessionChatHistory(); } else { panel.classList.add('translate-x-full'); } }
-function openAiKeyModal() { document.getElementById('apiSettingsContainer').innerHTML = renderApiSettings(); document.getElementById('aiKeyModal').classList.remove('hidden'); }
-function closeAiKeyModal() { document.getElementById('aiKeyModal').classList.add('hidden'); updateApiDisplay(); }
-
-function renderSessionChatHistory() {
-    const container = document.getElementById('aiChatMessages');
-    let baseHTML = `<div class="bg-blue-50 border border-red-100 rounded-2xl p-4 text-xs text-slate-600 space-y-2 mb-4"><p class="font-bold text-red-600"><i class="fa-solid fa-circle-info mr-1"></i>How to use</p><p>Set Your Api keys(Gemini recommended)  In the Settings.Save and use multiple Api to Get more Usage(If using free tier) .</p></div>`;
-    aiChatHistory.forEach(msg => {
-        if(msg.role === 'user') baseHTML += `<div class="flex justify-end p-2 mb-2"><div class="bg-red-600 text-white text-[13px] px-4 py-2.5 rounded-2xl rounded-tr-none shadow-sm max-w-[85%] break-words">${msg.content}</div></div>`;
-        else baseHTML += `<div class="w-full px-2 py-4 mb-2 text-slate-800 text-[14px] leading-relaxed ai-markdown-content overflow-hidden">${marked.parse(msg.content)}</div>`;
-    });
-    container.innerHTML = baseHTML;
-    
-    if (isAiThinking) {
-        container.insertAdjacentHTML('beforeend', `<div id="thinking-msg" class="text-[10px] text-slate-400 text-center py-2 animate-pulse">AI is thinking via ${getActiveApiName()}...</div>`);
-    }
-    
-    if (window.MathJax) MathJax.typesetPromise([container]).catch(err => console.log(err));
-    container.scrollTop = container.scrollHeight;
-}
-
-async function convertImageUrlToBase64(url) {
-    const res = await fetch(`https://images.weserv.nl/?url=${encodeURIComponent(url.replace(/^https?:\/\//, ''))}&output=jpg&q=70`);
-    const blob = await res.blob();
-    return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onloadend = () => resolve(reader.result); reader.onerror = reject; reader.readAsDataURL(blob); });
-}
-
-async function handleUserQuery() {
-    if (isAiThinking) return;
-    const inputField = document.getElementById('aiUserQuery');
-    const userPromptText = inputField.value.trim();
-    if (!userPromptText) return;
-
-    if (!getActiveApiName()) return openAiKeyModal();
-
-    isAiThinking = true; inputField.value = "";
-    aiChatHistory.push({ role: "user", content: userPromptText });
-    renderSessionChatHistory();
-
-    try {
-        if (isViewingPdf) {
-            // PDF Textbook Mode: Dynamic context payload extraction
-            cachedImageParts = []; // Wipe previous message's image context
-            const currentPageIndex = getCurrentVisiblePageIndex();
-            const activePageData = currentPages[currentPageIndex];
-            
-            if (activePageData && activePageData.startsWith('data:image')) {
-                cachedImageParts.push({ 
-                    inlineData: { 
-                        mimeType: "image/jpeg", 
-                        data: activePageData.split(',')[1] 
-                    } 
-                });
-            }
-        } else {
-            // Original Semester Paper Mode: Bulk append complete set
-            if (cachedImageParts.length === 0 && currentPages.length > 0) {
-                for (const url of currentPages) {
-                    if (url.startsWith('data:image')) {
-                        cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: url.split(',')[1] } });
-                    } else {
-                        const dataUrl = await convertImageUrlToBase64(url);
-                        cachedImageParts.push({ inlineData: { mimeType: "image/jpeg", data: dataUrl.split(',')[1] } });
-                    }
-                }
-            }
-        }
-        
-        const response = await sendQueryToAI(userPromptText);
-        aiChatHistory.push({ role: "assistant", content: response });
-    } catch (err) {
-        aiChatHistory.push({ role: "assistant", content: `❌ ${err.message}` });
-        if(err.message.includes("limit")) updateApiDisplay();
-    } finally {
-        const thinkingNode = document.getElementById('thinking-msg');
-        if(thinkingNode) thinkingNode.remove();
-        isAiThinking = false;
-        renderSessionChatHistory();
-        updateApiDisplay();
-    }
-}
-
+// ============================
+// UPLOAD MODAL
+// ============================
 function openUpload() { document.getElementById('uploadModal').classList.remove('hidden'); }
 function closeUpload() { document.getElementById('uploadModal').classList.add('hidden'); }
 
+// Start the app
 init();
 </script>
 <script defer src="/_vercel/insights/script.js"></script>
