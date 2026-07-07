@@ -2,7 +2,7 @@
 <html lang="en">   
 <head>  
     <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, viewport-fit=cover">  
     <title>EEE Vault JSTU</title>  
     <link rel="manifest" href="manifest.json">  
     <meta name="apple-mobile-web-app-capable" content="yes">  
@@ -28,38 +28,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
 
 <style>  
-    * { -webkit-tap-highlight-color: transparent; }  
-    
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }  
+
     html, body {
         /* Prevents the browser from triggering pull-to-refresh */
         overscroll-behavior-y: none;
+        /* Hard lock against page-level pinch/double-tap zoom drift and any
+           horizontal overflow that would otherwise produce a right-side scrollbar */
+        touch-action: pan-y;
+        overflow-x: hidden;
+        max-width: 100vw;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 
     html {
-    height: 100%;
-    margin: 0;
-    padding: 0;
-}
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
 
-body {   
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    /* Remove overflow-y: auto here, handle via app container if needed */
-    -webkit-overflow-scrolling: touch;
-    user-select: none;
-    color: #333333;
-    font-family: sans-serif;
-    scrollbar-width: none;
-}
+    html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; height: 0; }
 
-/* Add this to handle modal locking */
-body.modal-open {
-    overflow: hidden !important;
-}
+    body {   
+        min-height: 100vh;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        -webkit-overflow-scrolling: touch;
+        user-select: none;
+        color: #333333;
+        font-family: sans-serif;
+    }
 
-    #appBody { width: 100%; }
+    /* Add this to handle modal locking */
+    body.modal-open {
+        overflow: hidden !important;
+    }
+
+    #appBody { width: 100%; max-width: 100vw; overflow-x: hidden; }
     #viewerModal, #aiChatPanel { max-width: 100vw; overflow-x: hidden; }
     .viewer-filmstrip, #notesList, #libraryList, #aiChatMessages { overscroll-behavior: none; }
 
@@ -76,17 +83,20 @@ body.modal-open {
     .file-card:active { transform: scale(0.95); background: #f1f5f9; }   
 
     .viewer-filmstrip {
-    display: block; 
-    width: 100%; 
-    height: 100%; 
-    overflow-y: scroll;  /* Change from auto to scroll */
-    overflow-x: hidden; 
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior-y: auto;  /* Change from contain to auto */
-    touch-action: manipulation;  /* Change from pan-y to manipulation */
-}
+        display: block; 
+        width: 100%; 
+        height: 100%; 
+        overflow-y: scroll;
+        overflow-x: hidden; 
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior-y: auto;
+        touch-action: pan-y;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .viewer-filmstrip::-webkit-scrollbar { display: none; width: 0; height: 0; }
     .viewer-page { width: 100%; display: block; margin-bottom: 12px; }
-    .viewer-page img, .viewer-page canvas { width: 100%; height: auto; display: block; user-select: none; }
+    .viewer-page img, .viewer-page canvas { width: 100%; height: auto; display: block; user-select: none; max-width: 100%; }
 
     /* AI Markdown Rendering */
     .ai-markdown-content { word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
@@ -98,7 +108,7 @@ body.modal-open {
     .ai-markdown-content pre { background: #f1f5f9; padding: 10px; border-radius: 8px; overflow-x: auto; margin-bottom: 12px; font-size: 12px; max-width: 100%; }
     .ai-markdown-content code { background: #f1f5f9; padding: 2px 4px; border-radius: 4px; font-size: 12px; color: #dc2626; }
 
-    .zoom-wrapper { position: relative; overflow: hidden; touch-action: pan-y; }
+    .zoom-wrapper { position: relative; overflow: hidden; touch-action: none; }
     .zoom-wrapper img, .zoom-wrapper canvas { width: 100%; transform-origin: center center; will-change: transform; transition: transform 0.08s linear; }
 
     .modal-content-pop { position: relative; z-index: 130; transform: scale(0.95); opacity: 0; transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.15s linear; will-change: transform, opacity; }
@@ -134,10 +144,9 @@ body.modal-open {
     #viewerBodyContent { transform: translateY(100%); transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1); will-change: transform; }
     #viewerModal.viewer-active #viewerBodyContent { transform: translateY(0%); }
 
-    #notesList, #libraryList { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; }  
+    #notesList, #libraryList { overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch; scrollbar-width: none; -ms-overflow-style: none; }  
     #appBody { transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-    #notesList::-webkit-scrollbar, #libraryList::-webkit-scrollbar { width: 4px; }  
-    #notesList::-webkit-scrollbar-thumb, #libraryList::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }  
+    #notesList::-webkit-scrollbar, #libraryList::-webkit-scrollbar { display: none; width: 0; height: 0; }  
     ::-webkit-scrollbar { width: 0px; height: 0px; }  
 
     .loader-ring { width: 22px; height: 22px; border: 3px solid rgba(220, 38, 38, 0.3); border-top: 3px solid #dc2626; border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -145,6 +154,7 @@ body.modal-open {
 
     .btn-premium-pdf { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; transition: all 0.3s ease; }
     .btn-premium-pdf:active { background: rgba(16, 185, 129, 0.2); transform: scale(0.95); }
+    .btn-premium-pdf[disabled] { opacity: 0.4; pointer-events: none; }
 </style>
 </head>  
 
@@ -340,15 +350,37 @@ body.modal-open {
     </div>  
 
 <script>
+
+// ============================================================================
+// GLOBAL ZOOM LOCK (prevents whole-page pinch-zoom / double-tap-zoom drift)
+// ============================================================================
+document.addEventListener('gesturestart', (e) => e.preventDefault());
+document.addEventListener('gesturechange', (e) => e.preventDefault());
+document.addEventListener('gestureend', (e) => e.preventDefault());
+// Block double-tap-to-zoom at the document level, but let the per-image
+// zoom-wrapper handlers (which call preventDefault themselves) do their job.
+let __lastTouchEnd = 0;
+document.addEventListener('touchend', (e) => {
+    const now = Date.now();
+    if (now - __lastTouchEnd <= 300) {
+        e.preventDefault();
+    }
+    __lastTouchEnd = now;
+}, { passive: false });
+
     
 function resetViewerState() {
     currentPages = [];
     cachedImageParts = [];
     aiChatHistory = [];
+    isViewingPdf = false;
+    isAiThinking = false;
     document.getElementById('paperFilmstrip').innerHTML = "";
     document.getElementById('viewingTitle').innerText = "";
     document.getElementById('headerLoader').classList.add('hidden');
-    document.getElementById('pdfBtn').classList.remove('hidden');
+    const pdfBtn = document.getElementById('pdfBtn');
+    pdfBtn.classList.remove('hidden');
+    pdfBtn.removeAttribute('disabled');
 }
 
     
@@ -674,7 +706,7 @@ function updateApiDisplay() {
 // ============================================================================
 const semesters = [ { label: "All Semesters", value: "all" }, { label: "1st Year 1st Sem", value: "1st Year 1st Semester" }, { label: "1st Year 2nd Sem", value: "1st Year 2nd Semester" }, { label: "2nd Year 1st Sem", value: "2nd Year 1st Semester" }, { label: "2nd Year 2nd Sem", value: "2nd Year 2nd Semester" }, { label: "3rd Year 1st Sem", value: "3rd Year 1st Semester" }, { label: "3rd Year 2nd Sem", value: "3rd Year 2nd Semester" }, { label: "4th Year 1st Sem", value: "4th Year 1st Semester" }, { label: "4th Year 2nd Sem", value: "4th Year 2nd Semester" } ];
 let selectedSemValue = "all"; let courseData = []; let libraryData = []; const batches = ["20-21", "21-22", "22-23", "23-24", "24-25"]; let currentPages = [];
-let isAiPanelOpen = false; let isAiThinking = false; let aiChatHistory = []; let cachedImageParts = []; let touchStartLine = 0; let libTouchStartLine = 0; let activeDownloadData = null; let isViewingPdf = false;
+let isAiPanelOpen = false; let isAiThinking = false; let aiChatHistory = []; let cachedImageParts = []; let touchStartLine = 0; let libTouchStartLine = 0; let activeDownloadData = null; let isViewingPdf = false; let isRenderingPdf = false;
 
 function lockBodyScroll() {
     const scrollY = window.scrollY;
@@ -754,27 +786,31 @@ function renderCourses(data) {
 }
 
 function confirmPdfDownload() {
+    // Guard: don't offer to compile a PDF while pages are still being rendered/streamed
+    if (isRenderingPdf || currentPages.length === 0) return;
     document.body.insertAdjacentHTML('beforeend', `<div id="customAlert" class="premium-alert-overlay"><div class="premium-alert-card"><div class="alert-icon-circle"><i class="fa-solid fa-file-pdf"></i></div><h3 style="color: #1a1a1b; font-weight: 800; margin-bottom: 8px;">Compile PDF?</h3><p style="color: #64748b; font-size: 12px; margin-bottom: 20px;">Download compiled A4 PDF.</p><div class="alert-btn-group"><button class="alert-btn btn-cancel" onclick="closeAlert()">Cancel</button><button class="alert-btn btn-confirm" onclick="executePdfDownload()">Start</button></div></div></div>`);
     setTimeout(() => document.getElementById('customAlert').classList.add('active'), 10);
 }
 
 async function executePdfDownload() {
-    const url = activeDownloadData.url;
-    const title = activeDownloadData.fileName;
+    // Snapshot the pages/title up front so we never touch mutable global state mid-export
+    const pagesSnapshot = currentPages.slice();
+    const titleSnapshot = document.getElementById('viewingTitle').innerText.trim();
     closeAlert();
-    
-    resetViewerState(); 
-    closeAlert(); const pdfBtn = document.getElementById('pdfBtn'); const headerLoader = document.getElementById('headerLoader');
+
+    if (pagesSnapshot.length === 0) return;
+
+    const pdfBtn = document.getElementById('pdfBtn'); const headerLoader = document.getElementById('headerLoader');
     pdfBtn.classList.add('hidden'); headerLoader.classList.remove('hidden');
     try {
         const { jsPDF } = window.jspdf; const pdf = new jsPDF('p', 'mm', 'a4');
-        for (let i = 0; i < currentPages.length; i++) {
+        for (let i = 0; i < pagesSnapshot.length; i++) {
             if (i > 0) pdf.addPage();
             
             // Check if page data is raw base64 data from a rendered PDF canvas layout
-            let imgData = currentPages[i];
+            let imgData = pagesSnapshot[i];
             if (!imgData.startsWith('data:image')) {
-                const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(currentPages[i].replace(/^https?:\/\//, ''))}&output=jpg&q=80`;
+                const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(pagesSnapshot[i].replace(/^https?:\/\//, ''))}&output=jpg&q=80`;
                 imgData = await new Promise((res, rej) => { const img = new Image(); img.crossOrigin = 'Anonymous'; img.onload = () => { const canvas = document.createElement('canvas'); canvas.width = img.width; canvas.height = img.height; canvas.getContext('2d').drawImage(img, 0, 0); res(canvas.toDataURL('image/jpeg', 0.8)); }; img.onerror = rej; img.src = proxyUrl; });
             }
             
@@ -783,7 +819,7 @@ async function executePdfDownload() {
             if (renderHeight > pdf.internal.pageSize.getHeight()) { renderHeight = pdf.internal.pageSize.getHeight(); renderWidth = (calcImg.width * renderHeight) / calcImg.height; }
             pdf.addImage(imgData, 'JPEG', (pdf.internal.pageSize.getWidth() - renderWidth)/2, (pdf.internal.pageSize.getHeight() - renderHeight)/2, renderWidth, renderHeight);
         }
-        pdf.save(`${document.getElementById('viewingTitle').innerText.trim().replace(/\s+/g, '_')}.pdf`);
+        pdf.save(`${(titleSnapshot || 'document').replace(/\s+/g, '_')}.pdf`);
     } catch (err) { alert("Download error."); } finally { pdfBtn.classList.remove('hidden'); headerLoader.classList.add('hidden'); }
 }
 
@@ -810,8 +846,6 @@ function viewPaper(links, title) {
     resetViewerState();
     isViewingPdf = false;
     currentPages = Array.isArray(links) ? links : [links];
-    cachedImageParts = [];
-    aiChatHistory = [];
     document.getElementById('viewingTitle').innerText = title;
     const filmstrip = document.getElementById('paperFilmstrip');
     filmstrip.innerHTML = currentPages.map(url => `<div class="viewer-page"><div class="zoom-wrapper"><img src="${url}" loading="lazy" alt="Page" onload="initZoomForImage(this)"></div></div>`).join('');
@@ -821,7 +855,6 @@ function viewPaper(links, title) {
     document.body.classList.add('modal-open');
     lockBodyScroll();
     
-    // ADD THIS LINE
     requestAnimationFrame(() => {
         initFilmstripScroll();
         modal.classList.add('viewer-active');
@@ -831,7 +864,11 @@ function viewPaper(links, title) {
 
 function closeViewer() {
     const modal = document.getElementById('viewerModal'); modal.classList.remove('viewer-active'); document.body.classList.remove('modal-open'); unlockBodyScroll();
-    setTimeout(() => { modal.classList.add('hidden'); document.getElementById('paperFilmstrip').innerHTML = ""; currentPages = []; toggleAiPanel(false); }, 550);
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        toggleAiPanel(false);
+        resetViewerState();
+    }, 550);
 }
 
 function initZoomForImage(img) {
@@ -864,7 +901,7 @@ function initZoomForImage(img) {
             startX = e.touches[0].clientX - panX;
             startY = e.touches[0].clientY - panY;
         }
-    }, { passive: true }); // Changed to passive: true to allow scrolling
+    }, { passive: true });
 
     wrapper.addEventListener('touchmove', (e) => {
         // Only block scrolling if we are zooming (2 fingers) 
@@ -966,6 +1003,7 @@ function handleLibTouchMove(e) { if(document.getElementById('libraryList').scrol
 
 function confirmDownload(url, fileName) { 
     activeDownloadData = {url, fileName}; 
+    closeAlert();
     document.body.insertAdjacentHTML('beforeend', `
         <div id="customAlert" class="premium-alert-overlay">
             <div class="premium-alert-card">
@@ -989,18 +1027,27 @@ async function executeViewPdf() {
     const url = activeDownloadData.url;
     const title = activeDownloadData.fileName;
     closeAlert();
-    
+
+    // Fully reset viewer/AI state before switching into PDF mode (this was previously
+    // skipped here, leaving stale currentPages/aiChatHistory/isViewingPdf/pdfBtn state
+    // behind from whatever was viewed before).
+    resetViewerState();
+    isViewingPdf = true;
+    isRenderingPdf = true;
+
     // Close other modal overlays to ensure premium viewer takes exclusive view state
     const notesModal = document.getElementById('notesModal');
     const libraryModal = document.getElementById('libraryModal');
     if (notesModal) notesModal.classList.remove('active-sheet', 'hidden');
     if (libraryModal) libraryModal.classList.remove('active-sheet', 'hidden');
-    
-    currentPages = []; 
-    cachedImageParts = []; 
-    aiChatHistory = []; 
+
     document.getElementById('viewingTitle').innerText = title;
-    
+
+    // Disable PDF export while the source is still being rendered page-by-page,
+    // so a user can't trigger a compile against a half-populated currentPages array.
+    const pdfBtn = document.getElementById('pdfBtn');
+    pdfBtn.setAttribute('disabled', 'true');
+
     const filmstrip = document.getElementById('paperFilmstrip');
     filmstrip.innerHTML = '<div class="flex justify-center items-center h-full pt-20"><div class="loader-ring"></div></div>';
     
@@ -1008,10 +1055,12 @@ async function executeViewPdf() {
     modal.classList.remove('hidden'); 
     document.body.classList.add('modal-open'); 
     lockBodyScroll();
-    requestAnimationFrame(() => modal.classList.add('viewer-active'));
+    requestAnimationFrame(() => {
+        initFilmstripScroll();
+        modal.classList.add('viewer-active');
+    });
     
     try {
-        isViewingPdf = true; // It's a textbook/PDF, switch to single-page scanning
         const loadingTask = pdfjsLib.getDocument(url);
         const pdf = await loadingTask.promise;
         filmstrip.innerHTML = ''; 
@@ -1049,11 +1098,14 @@ async function executeViewPdf() {
                 Protected or Corrupt PDF.<br>Please use download instead.
             </div>`;
         console.error('PDF.js Error:', error);
+    } finally {
+        isRenderingPdf = false;
+        pdfBtn.removeAttribute('disabled');
     }
 }
 
 function executeDownload() { if(!activeDownloadData)return; const a=document.createElement('a'); a.href=activeDownloadData.url; a.download=activeDownloadData.fileName; a.target='_blank'; document.body.appendChild(a); a.click(); document.body.removeChild(a); closeAlert(); }
-function closeAlert() { const el=document.getElementById('customAlert'); if(el){el.classList.remove('active');setTimeout(()=>el.remove(),300);} }
+function closeAlert() { document.querySelectorAll('#customAlert').forEach(el => { el.classList.remove('active'); setTimeout(() => el.remove(), 300); }); }
 function handleTouchStart(e) { touchStartLine=e.touches[0].pageY; }
 function handleTouchMove(e) { if(document.getElementById('notesList').scrollTop<=0 && e.touches[0].pageY>touchStartLine) if(e.cancelable) e.preventDefault(); }
 
@@ -1099,6 +1151,13 @@ async function handleUserQuery() {
     try {
         if (isViewingPdf) {
             // PDF Textbook Mode: Dynamic context payload extraction
+            // Wait for any in-progress page render so we don't grab a half-drawn page.
+            if (isRenderingPdf) {
+                await new Promise(resolve => {
+                    const check = () => isRenderingPdf ? setTimeout(check, 200) : resolve();
+                    check();
+                });
+            }
             cachedImageParts = []; // Wipe previous message's image context
             const currentPageIndex = getCurrentVisiblePageIndex();
             const activePageData = currentPages[currentPageIndex];
@@ -1147,4 +1206,3 @@ init();
 <script defer src="/_vercel/insights/script.js"></script>
 </body>  
 </html>
-
